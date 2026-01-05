@@ -56,3 +56,4 @@ dkms.conf
 
 # test directory
 unit_test
+build
