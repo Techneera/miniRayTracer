@@ -12,7 +12,7 @@
 
 NAME = miniRT
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -Wall -Wextra -Werror -lm
 IDIR = include/
 ODIR = obj/
 SDIR = src/
@@ -22,6 +22,9 @@ OBJ = $(patsubst %.c, $(ODIR)%.o, $(SRCFILES))
 DEP = $(IDIR)
 
 all: $(NAME)
+
+debug: CFLAGS += -g
+debug: re
 
 $(NAME): $(OBJ) 
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
