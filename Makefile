@@ -16,7 +16,8 @@ VECDIR = $(SDIR)vec_utils
 # ------------------------------ VECTORS -------------------------------- #
 
 _VEC_SRCS = base.c
-VEC_SRCS = $(patsubst %.c, $(VECDIR)/%.c, $(_VEC_SCRS))
+VEC_SRCS = $(patsubst %.c, $(VECDIR)/%.c, $(_VEC_SRCS))
+VEC_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)%.o, $(VEC_SRCS))
 
 
 # ------------------------------ UNIT TESTS-------------------------------- #
@@ -31,7 +32,7 @@ DEP = $(IDIR)
 # ------------------------------ SOURCES -------------------------------- #
 
 SRCFILES = $(SDIR)main.c \
-		   $(VECSRCS)
+		   $(VEC_SRCS)
 
 # ------------------------------ RULES -------------------------------- #
 
@@ -40,15 +41,13 @@ all: $(NAME)
 debug: CFLAGS += -g
 debug: re
 
-vec_test:
-	mkdir -p $(BDIR)
-	$(CC) $(CFLAGS) $(TDIR)$(_OPS_SRCS) -o $(BDIR) -I $(IDIR) $(LMATH)
-
+vec_test: $(VEC_OBJS)
+	$(CC) $(CFLAGS) $(TDIR)$(_OPS_SRCS) $^ -o $(BDIR)vec_tester -I$(IDIR) $(LMATH)
 
 $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
-%.o: %.c
+$(ODIR)%.o: $(SDIR)%.c
 	mkdir -p $(BDIR)
 	mkdir -p $(ODIR)vec_utils
 	$(CC) $(CFLAGS) -c $< -o $@ -I $(IDIR)

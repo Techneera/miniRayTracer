@@ -1,6 +1,5 @@
 #include "vector.h"
 
-inline
 t_vec3	point_constructor(double x, double y, double z)
 {
 	t_vec3	result;
@@ -12,7 +11,6 @@ t_vec3	point_constructor(double x, double y, double z)
 	return (result);
 }
 
-inline
 t_vec3	vector_constructor(double x, double y, double z)
 {
 	t_vec3	result;
@@ -24,19 +22,16 @@ t_vec3	vector_constructor(double x, double y, double z)
 	return (result);
 }
 
-inline
 double	vector_length_squared(const t_vec3 u)
 {
 	return (u.x * u.x + u.y * u.y + u.z * u.z);
 }
 
-inline
 double	vector_length(const t_vec3 u)
 {
 	return (sqrt(u.x * u.x + u.y * u.y + u.z * u.z));
 }
 
-inline
 t_vec3	vector_normalization(const t_vec3 u)
 {
 	double	len;
@@ -59,13 +54,11 @@ t_vec3	vector_normalization(const t_vec3 u)
 	return (result);
 }
 
-inline
 double	vector_dot_product(const t_vec3 u, const t_vec3 v)
 {
 	return (u.x * v.x + u.y * v.y + u.z * v.z);
 }
 
-inline
 t_vec3	vector_cross_product(const t_vec3 u, const t_vec3 v)
 {
 	t_vec3	result;
@@ -77,7 +70,6 @@ t_vec3	vector_cross_product(const t_vec3 u, const t_vec3 v)
 	return (result);
 }
 
-inline
 t_vec3	vector_add(const t_vec3 u, const t_vec3 v)
 {
 	t_vec3	result;
@@ -89,7 +81,6 @@ t_vec3	vector_add(const t_vec3 u, const t_vec3 v)
 	return (result);
 }
 
-inline
 t_vec3	vector_sub(const t_vec3 u, const t_vec3 v)
 {
 	t_vec3	result;
@@ -101,7 +92,6 @@ t_vec3	vector_sub(const t_vec3 u, const t_vec3 v)
 	return (result);
 }
 
-inline
 t_vec3	vector_scale(const t_vec3 u, double scalar)
 {
 	t_vec3	result;
