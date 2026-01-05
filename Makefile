@@ -6,13 +6,13 @@
 #    By: jcesar-s <jcesar-s@student.42porto.com>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/05 13:42:18 by jcesar-s          #+#    #+#              #
-#    Updated: 2026/01/05 13:46:43 by jcesar-s         ###   ########.fr        #
+#    Updated: 2026/01/05 16:27:20 by jcesar-s         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = miniRT
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -lm
+CFLAGS = -Wall -Wextra -Werror
 
 # ------------------------------ DIRECTORIES -------------------------------- #
 
@@ -24,12 +24,15 @@ VECDIR = $(SDIR)vec_utils
 
 # ------------------------------ VECTORS -------------------------------- #
 
-VEC_SRCS = base.c
-PATH_OBJS_VEC = $(patsubst %.c,$(ODIR)vec_utils/%.o,$(VEC_SRCS))
+_VEC_SRCS = base.c
+VEC_SRCS = $(patsubst %.c, $(VECDIR)/%.c, $(_VECSCRS))
+
+SRCFILES = $(SDIR)main.c \
+		   $(VECSRCS)
 
 # ------------------------------ BUILD -------------------------------- #
 
-OBJ = $(PATH_OBJS_VEC)
+OBJ = $(patsubst %.c, %.o, $(SRCFILES))
 DEP = $(IDIR)
 
 # ------------------------------ RULES -------------------------------- #
@@ -40,9 +43,9 @@ debug: CFLAGS += -g
 debug: re
 
 $(NAME): $(OBJ)
-	$(CC) $(CFLAGS) main.c $(OBJ) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
-$(ODIR)vec_utils/%.o: $(VECDIR)%.c $(DEP)
+%.o: %.c
 	mkdir -p $(ODIR)vec_utils
 	$(CC) $(CFLAGS) -c $< -o $@ -I $(IDIR)
 
