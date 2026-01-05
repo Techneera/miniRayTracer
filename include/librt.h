@@ -1,5 +1,5 @@
-#ifndef RT_H
-# define RT_H
+#ifndef LIBRT_H
+# define LIBRT_H
 
 typedef struct s_scene
 {
