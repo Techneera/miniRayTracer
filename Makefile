@@ -13,24 +13,37 @@
 NAME = miniRT
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -lm
+
+# ------------------------------ DIRECTORIES -------------------------------- #
+
 IDIR = include/
 ODIR = obj/
 SDIR = src/
-SRCFILES = main.c
-SRC = $(patsubst %, $(SDIR)%, $(SRCFILES))
-OBJ = $(patsubst %.c, $(ODIR)%.o, $(SRCFILES))
+
+VECDIR = $(SDIR)vec_utils
+
+# ------------------------------ VECTORS -------------------------------- #
+
+VEC_SRCS = base.c
+PATH_OBJS_VEC = $(patsubst %.c,$(ODIR)vec_utils/%.o,$(VEC_SRCS))
+
+# ------------------------------ BUILD -------------------------------- #
+
+OBJ = $(PATH_OBJS_VEC)
 DEP = $(IDIR)
+
+# ------------------------------ RULES -------------------------------- #
 
 all: $(NAME)
 
 debug: CFLAGS += -g
 debug: re
 
-$(NAME): $(OBJ) 
-	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
+$(NAME): $(OBJ)
+	$(CC) $(CFLAGS) main.c $(OBJ) -o $(NAME)
 
-$(ODIR)%.o: $(SDIR)%.c $(DEP)
-	mkdir -p $(ODIR)
+$(ODIR)vec_utils/%.o: $(VECDIR)%.c $(DEP)
+	mkdir -p $(ODIR)vec_utils
 	$(CC) $(CFLAGS) -c $< -o $@ -I $(IDIR)
 
 clean:
@@ -41,4 +54,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re debug
