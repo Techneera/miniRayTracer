@@ -55,5 +55,4 @@ dkms.conf
 *.dwo
 
 # test directory
-unit_test
 build
