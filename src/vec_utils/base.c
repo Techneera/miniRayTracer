@@ -77,7 +77,7 @@ t_vec3	vector_add(const t_vec3 u, const t_vec3 v)
 	result.x = u.x + v.x;
 	result.y = u.y + v.y;
 	result.z = u.z + v.z;
-	result.w = 0.0;
+	result.w = u.w + v.w;
 	return (result);
 }
 
@@ -88,7 +88,7 @@ t_vec3	vector_sub(const t_vec3 u, const t_vec3 v)
 	result.x = u.x - v.x;
 	result.y = u.y - v.y;
 	result.z = u.z - v.z;
-	result.w = 0.0;
+	result.w = u.w - v.w;
 	return (result);
 }
 

@@ -42,7 +42,7 @@ debug: CFLAGS += -g
 debug: re
 
 vec_test: $(VEC_OBJS)
-	$(CC) $(CFLAGS) $(TDIR)$(_OPS_SRCS) $^ -o $(BDIR)vec_tester -I$(IDIR) $(LMATH)
+	$(CC) $(CFLAGS) -g $(TDIR)$(_OPS_SRCS) $^ -o $(BDIR)vec_tester -I$(IDIR) $(LMATH)
 
 $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
