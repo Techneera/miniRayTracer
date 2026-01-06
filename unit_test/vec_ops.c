@@ -51,9 +51,9 @@ void	subtraction_tester(const double epsilon)
 	
 	print_vector("Element A", sub_a);
 	print_vector("Element B", sub_b);
-	print_vector("A + B", sub_result);
+	print_vector("A - B", sub_result);
 	
-	t_vec3	expected = point_constructor(-2.0, -4.0, -6.0);
+	t_vec3	expected = vector_constructor(-2.0, -4.0, -6.0);
 	if (vectors_equal(expected, sub_result, epsilon))
 		printf("✓ Subtraction test passed\n\n");
 	else
