@@ -56,3 +56,6 @@ dkms.conf
 
 # test directory
 build
+
+# compile instructions
+compile_flags.txt
