@@ -62,7 +62,7 @@ void	subtraction_tester(const double epsilon)
 }
 
 /* COLOR TESTS */
-void test_color_constructor(const double epsilon)
+void	test_color_constructor(const double epsilon)
 {
 	t_vec3	color = color_constructor(-0.5, 0.4, 1.7);
 	t_vec3	expected = {
@@ -80,6 +80,89 @@ void test_color_constructor(const double epsilon)
 		printf("✗ Color construction test failed\n\n");
 }
 
+void	test_color_add(const double epsilon)
+{
+	t_vec3	u = color_constructor(0.9, 0.6, 0.75);
+	t_vec3	v = color_constructor(0.7, 0.1, 0.25);
+
+	t_vec3	expected = {
+		.x = 1.6,
+		.y = 0.7,
+		.z = 1.0,
+		.w = 2.0
+	};
+
+	t_vec3	color = color_add(u, v);
+	print_vector("color", color);
+	if (vectors_equal(expected, color, epsilon))
+		printf("✓ Color addition test passed\n\n");
+	else
+		printf("✗ Color addition test failed\n\n");
+
+}
+
+void	test_color_subtract(const double epsilon)
+{
+	t_vec3	u = color_constructor(0.9, 0.6, 0.75);
+	t_vec3	v = color_constructor(0.7, 0.1, 0.25);
+
+	t_vec3	expected = {
+		.x = 0.2,
+		.y = 0.5,
+		.z = 0.5,
+		.w = 2.0
+	};
+
+	t_vec3	color = color_subtract(u, v);
+	print_vector("color", color);
+	if (vectors_equal(expected, color, epsilon))
+		printf("✓ Color subtraction test passed\n\n");
+	else
+		printf("✗ Color subtraction test failed\n\n");
+
+}
+
+void	test_color_scalar(const double epsilon)
+{
+	t_vec3	u = color_constructor(0.2, 0.3, 0.4);
+	double	scalar = 2.0;
+
+	t_vec3	expected = {
+		.x = 0.4,
+		.y = 0.6,
+		.z = 0.8,
+		.w = 2.0
+	};
+
+	t_vec3	color = color_scalar(u, scalar);
+	print_vector("color", color);
+	if (vectors_equal(expected, color, epsilon))
+		printf("✓ Color multiplying by a scale test passed\n\n");
+	else
+		printf("✗ Color multiplying by a scale test failed\n\n");
+
+}
+
+void	test_color_multiply(const double epsilon)
+{
+	t_vec3	u = color_constructor(1.0, 0.2, 0.4);
+	t_vec3	v = color_constructor(0.9, 1.0, 0.1);
+
+	t_vec3	expected = {
+		.x = 0.9,
+		.y = 0.2,
+		.z = 0.04,
+		.w = 2.0
+	};
+
+	t_vec3	color = color_multiply(u, v);
+	print_vector("color", color);
+	if (vectors_equal(expected, color, epsilon))
+		printf("✓ Color multiplying test passed\n\n");
+	else
+		printf("✗ Color multiplying test failed\n\n");
+
+}
 
 int	main(void)
 {
@@ -240,6 +323,18 @@ int	main(void)
 	printf("11. Testing color contruction:\n");
 	test_color_constructor(EPSILON);
 	
+	printf("12. Testing color addition:\n");
+	test_color_add(EPSILON);
+
+	printf("13. Testing color addition:\n");
+	test_color_subtract(EPSILON);
+
+	printf("14. Testing color multiplying by a scale:\n");
+	test_color_scalar(EPSILON);
+
+	printf("15. Testing color multiplying:\n");
+	test_color_multiply(EPSILON);
+
 	printf("=== Test Suite Complete ===\n");
 
 	return (0);

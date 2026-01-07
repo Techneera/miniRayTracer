@@ -18,11 +18,11 @@ COLORDIR = $(SDIR)color_utils
 
 _VEC_SRCS = base.c
 VEC_SRCS = $(patsubst %.c, $(VECDIR)/%.c, $(_VEC_SRCS))
-VEC_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)%.o, $(VEC_SRCS))
+VEC_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(VEC_SRCS))
 
 # ------------------------------ COLORS -------------------------------- #
 
-_COLOR_SRCS = colors.c
+_COLOR_SRCS = color_operations.c
 COLOR_SRCS = $(patsubst %.c, $(COLORDIR)/%.c, $(_COLOR_SRCS))
 COLOR_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)%.o, $(COLOR_SRCS))
 
@@ -33,8 +33,8 @@ TESTEROBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTERSRCS))
 
 # ------------------------------ BUILD -------------------------------- #
 
-OBJ = $(patsubst $(SDIR)%.c, $(ODIR)%.o, $(SRCFILES))
-TESTOBJ = $(filter-out $(ODIR)main.o, $(OBJ))
+OBJ = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(SRCFILES))
+TESTOBJ = $(filter-out $(ODIR)$(SDIR)main.o, $(OBJ))
 DEP = $(IDIR)
 
 # ------------------------------ SOURCES -------------------------------- #
@@ -56,14 +56,15 @@ test: $(TESTEROBJS) $(TESTOBJ)
 $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
-$(ODIR)%.o: $(SDIR)%.c
-	mkdir -p $(BDIR)
-	mkdir -p $(ODIR)$(VECDIR)
-	mkdir -p $(ODIR)$(COLORDIR)
+$(ODIR)$(SDIR)%.o: $(SDIR)%.c
+	@mkdir -p $(BDIR)
+	@mkdir -p $(ODIR)$(VECDIR)
+	@mkdir -p $(ODIR)$(COLORDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -I $(IDIR)
 
 $(ODIR)$(TDIR)%.o: $(TDIR)%.c
-	mkdir -p $(ODIR)$(TDIR)
+	@mkdir -p $(BDIR)
+	@mkdir -p $(ODIR)$(TDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -I$(IDIR)
 
 clean:
