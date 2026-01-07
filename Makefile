@@ -2,6 +2,7 @@ NAME = $(BDIR)miniRT
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -g
 LMATH = -lm
+LMLX = -lmlx
 
 # ------------------------------ DIRECTORIES -------------------------------- #
 
@@ -10,6 +11,8 @@ ODIR = obj/
 SDIR = src/
 TDIR = unit_test/
 BDIR = build/
+
+MLXDIR = $(IDIR)minilibx-linux/
 
 VECDIR = $(SDIR)vec_utils
 COLORDIR = $(SDIR)color_utils
@@ -32,6 +35,9 @@ COLOR_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)%.o, $(COLOR_SRCS))
 TESTERSRCS = $(TDIR)main_tester.c
 TESTEROBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTERSRCS))
 
+# ------------------------------ LIBRARIES -------------------------------- #
+MLX = $(MLXDIR)libmlx.a
+
 # ------------------------------ BUILD -------------------------------- #
 
 OBJ = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(SRCFILES))
@@ -51,10 +57,10 @@ all: $(NAME)
 debug: CFLAGS += -g
 debug: re
 
-test: $(TESTEROBJS) $(TESTOBJ) 
-	$(CC) $(CFLAGS) -g $^ -o $(BDIR)tester -I$(IDIR) $(LMATH)
+test: $(MLX) $(TESTEROBJS) $(TESTOBJ)
+	$(CC) $(CFLAGS) -g $(TESTEROBJS) $(TESTOBJ) -o $(BDIR)tester -I$(IDIR) $(LMATH) -L$(MLXDIR) $(LMLX)
 
-$(NAME): $(OBJ)
+$(NAME): $(OBJ) $(MLX)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
 $(ODIR)$(SDIR)%.o: $(SDIR)%.c
@@ -68,7 +74,11 @@ $(ODIR)$(TDIR)%.o: $(TDIR)%.c
 	@mkdir -p $(ODIR)$(TDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -I$(IDIR)
 
+$(MLX):
+	make -C $(MLXDIR)
+
 clean:
+	make clean -C $(MLXDIR)
 	rm -rf $(ODIR)
 
 fclean: clean
