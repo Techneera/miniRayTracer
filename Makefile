@@ -22,7 +22,8 @@ VEC_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(VEC_SRCS))
 
 # ------------------------------ COLORS -------------------------------- #
 
-_COLOR_SRCS = color_operations.c
+_COLOR_SRCS = color_operations.c \
+			  color_conversion.c
 COLOR_SRCS = $(patsubst %.c, $(COLORDIR)/%.c, $(_COLOR_SRCS))
 COLOR_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)%.o, $(COLOR_SRCS))
 

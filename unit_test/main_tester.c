@@ -164,6 +164,19 @@ void	test_color_multiply(const double epsilon)
 
 }
 
+void	test_color_to_int(void)
+{
+	int		expected = 0x9eeb34;
+	t_vec3	color = color_constructor(0.61960784313, 0.92156862745, 0.20392156862);
+
+	int	result = color_to_int(color);
+	printf("color = %d\n", result);
+	if (expected == result)
+		printf("✓ Color conversion test passed\n\n");
+	else
+		printf("✗ Color conversion test failed\n\n");
+}
+
 int	main(void)
 {
 	const double EPSILON = 1e-10;
@@ -334,6 +347,9 @@ int	main(void)
 
 	printf("15. Testing color multiplying:\n");
 	test_color_multiply(EPSILON);
+
+	printf("16. Testing color conversion:\n");
+	test_color_to_int();
 
 	printf("=== Test Suite Complete ===\n");
 
