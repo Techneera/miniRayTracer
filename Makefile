@@ -1,6 +1,6 @@
 NAME = $(BDIR)miniRT
 CC = cc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g
 LMATH = -lm
 
 # ------------------------------ DIRECTORIES -------------------------------- #
@@ -28,12 +28,13 @@ COLOR_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)%.o, $(COLOR_SRCS))
 
 # ------------------------------ UNIT TESTS-------------------------------- #
 
-_OPS_SRCS = vec_ops.c
-COLOR_TEST_SRCS = $(TDIR)color_tester.c
+TESTERSRCS = $(TDIR)main_tester.c
+TESTEROBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTERSRCS))
 
 # ------------------------------ BUILD -------------------------------- #
 
-OBJ = $(patsubst %.c, %.o, $(SRCFILES))
+OBJ = $(patsubst $(SDIR)%.c, $(ODIR)%.o, $(SRCFILES))
+TESTOBJ = $(filter-out $(ODIR)main.o, $(OBJ))
 DEP = $(IDIR)
 
 # ------------------------------ SOURCES -------------------------------- #
@@ -42,8 +43,6 @@ SRCFILES = $(SDIR)main.c \
 		   $(VEC_SRCS) \
 		   $(COLOR_SRCS)
 
-TESTFILES = $(filter-out $(SDIR)main.c, $(SRCFILES))
-
 # ------------------------------ RULES -------------------------------- #
 
 all: $(NAME)
@@ -51,21 +50,21 @@ all: $(NAME)
 debug: CFLAGS += -g
 debug: re
 
-vec_test: $(VEC_OBJS)
-	$(CC) $(CFLAGS) -g $(TDIR)$(_OPS_SRCS) $^ -o $(BDIR)vec_tester -I$(IDIR) $(LMATH)
-
-color_test: TESTFILES += $(COLOR_TEST_SRCS)
-color_test:
-	$(CC) $(CFLAGS) -g $(TESTFILES) $^ -o $(BDIR)color_tester -I$(IDIR) $(LMATH)
+test: $(TESTEROBJS) $(TESTOBJ) 
+	$(CC) $(CFLAGS) -g $^ -o $(BDIR)tester -I$(IDIR) $(LMATH)
 
 $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
 $(ODIR)%.o: $(SDIR)%.c
 	mkdir -p $(BDIR)
-	mkdir -p $(ODIR)vec_utils
-	mkdir -p $(ODIR)color_utils
+	mkdir -p $(ODIR)$(VECDIR)
+	mkdir -p $(ODIR)$(COLORDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -I $(IDIR)
+
+$(ODIR)$(TDIR)%.o: $(TDIR)%.c
+	mkdir -p $(ODIR)$(TDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -I$(IDIR)
 
 clean:
 	rm -rf $(ODIR)
@@ -75,4 +74,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re debug vec_test
+.PHONY: all clean fclean re debug test

@@ -1,14 +1,6 @@
 #include "color.h"
 #include <stdio.h>
 
-void test_color_constructor(double r, double g, double b)
-{
-	t_vec3	color;
-	color = color_constructor(r, g, b);
-	printf("%f\n", color.x);
-	printf("%f\n", color.y);
-	printf("%f\n", color.z);
-}
 
 void test_color_add()
 {
@@ -26,7 +18,7 @@ void test_color_add()
 
 int main(void)
 {
-	test_color_constructor(-0.5, 0.4, 1.7);
+	test_color_constructor();
 	test_color_add();
 	return (1);
 }

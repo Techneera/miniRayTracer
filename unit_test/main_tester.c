@@ -1,4 +1,5 @@
 #include "vector.h"
+#include "color.h"
 
 // Helper function to print vectors
 static
@@ -59,6 +60,26 @@ void	subtraction_tester(const double epsilon)
 	else
 		printf("✗ Subtraction test failed\n\n");
 }
+
+/* COLOR TESTS */
+void test_color_constructor(const double epsilon)
+{
+	t_vec3	color = color_constructor(-0.5, 0.4, 1.7);
+	t_vec3	expected = {
+		.x = -0.5,
+		.y = 0.4,
+		.z = 1.7,
+		.w = 2.0
+	};
+
+	print_vector("color", color);
+
+	if (vectors_equal(expected, color, epsilon))
+		printf("✓ Color construction test passed\n\n");
+	else
+		printf("✗ Color construction test failed\n\n");
+}
+
 
 int	main(void)
 {
@@ -215,8 +236,11 @@ int	main(void)
 	    printf("✓ Edge case tests passed\n\n");
 	else
 	    printf("✗ Edge case tests failed\n\n");
+
+	printf("11. Testing color contruction:\n");
+	test_color_constructor(EPSILON);
 	
 	printf("=== Test Suite Complete ===\n");
-	
+
 	return (0);
 }
