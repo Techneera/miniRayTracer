@@ -89,10 +89,10 @@ void	matrix_transpose(double *m)
 			tmp = m[idx_i];
 			m[idx_i] = m[idxj];
 			m[idx_j] = tmp;
+			j++;
 		}
-		j++;
+		i++;
 	}
-	i++;
 }
 
 /*
