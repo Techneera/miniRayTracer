@@ -1,4 +1,4 @@
-#include "color.h"
+#include "canvas.h"
 
 int	color_to_int(t_vec3 color)
 {

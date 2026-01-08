@@ -1,5 +1,5 @@
 #include "vector.h"
-#include "color.h"
+#include "canvas.h"
 
 // Helper function to print vectors
 static

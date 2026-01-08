@@ -15,7 +15,7 @@ BDIR = build/
 MLXDIR = $(IDIR)minilibx-linux/
 
 VECDIR = $(SDIR)vec_utils
-COLORDIR = $(SDIR)color_utils
+CANVASDIR = $(SDIR)canvas_utils
 
 # ------------------------------ VECTORS -------------------------------- #
 
@@ -23,12 +23,13 @@ _VEC_SRCS = base.c
 VEC_SRCS = $(patsubst %.c, $(VECDIR)/%.c, $(_VEC_SRCS))
 VEC_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(VEC_SRCS))
 
-# ------------------------------ COLORS -------------------------------- #
+# ------------------------------ CANVASS -------------------------------- #
 
-_COLOR_SRCS = color_operations.c \
-			  color_conversion.c
-COLOR_SRCS = $(patsubst %.c, $(COLORDIR)/%.c, $(_COLOR_SRCS))
-COLOR_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)%.o, $(COLOR_SRCS))
+_CANVAS_SRCS = color_operations.c \
+			  color_conversion.c \
+			  canvas_constructor.c
+CANVAS_SRCS = $(patsubst %.c, $(CANVASDIR)/%.c, $(_CANVAS_SRCS))
+CANVAS_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)%.o, $(CANVAS_SRCS))
 
 # ------------------------------ UNIT TESTS-------------------------------- #
 
@@ -48,7 +49,7 @@ DEP = $(IDIR)
 
 SRCFILES = $(SDIR)main.c \
 		   $(VEC_SRCS) \
-		   $(COLOR_SRCS)
+		   $(CANVAS_SRCS)
 
 # ------------------------------ RULES -------------------------------- #
 
@@ -58,7 +59,7 @@ debug: CFLAGS += -g
 debug: re
 
 test: $(MLX) $(TESTEROBJS) $(TESTOBJ)
-	$(CC) $(CFLAGS) -g $(TESTEROBJS) $(TESTOBJ) -o $(BDIR)tester -I$(IDIR) $(LMATH) -L$(MLXDIR) $(LMLX)
+	$(CC) $(CFLAGS) -g $(TESTEROBJS) $(TESTOBJ) -o $(BDIR)tester -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX)
 
 $(NAME): $(OBJ) $(MLX)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
@@ -67,12 +68,12 @@ $(ODIR)$(SDIR)%.o: $(SDIR)%.c
 	@mkdir -p $(BDIR)
 	@mkdir -p $(ODIR)$(VECDIR)
 	@mkdir -p $(ODIR)$(COLORDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -I $(IDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -I $(IDIR) -I$(MLXDIR)
 
 $(ODIR)$(TDIR)%.o: $(TDIR)%.c
 	@mkdir -p $(BDIR)
 	@mkdir -p $(ODIR)$(TDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -I$(IDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -I$(IDIR) -I$(MLXDIR)
 
 $(MLX):
 	make -C $(MLXDIR)
