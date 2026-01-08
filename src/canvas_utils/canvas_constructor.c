@@ -34,6 +34,8 @@ void	write_pixel(t_canvas *c, int x, int y, t_vec3 color)
 {
 	char	*dest;
 
+	if (x >= c->width || x < 0 || y >= c->height || y < 0)
+		return ;
 	dest = c->img.addr + (y * c->img.line_len + x * (c->img.bpp / 8));
 	*(t_uint *)dest = (t_uint) color_to_int(color);
 }

@@ -1,5 +1,15 @@
+#include "mlx.h"
 #include "vector.h"
 #include "canvas.h"
+
+// Helper to get pixel from canvas
+t_uint	get_pixel(t_canvas *c, int x, int y)
+{
+	char	*dest;
+
+	dest = c->img.addr + (y * c->img.line_len + x * (c->img.bpp / 8));
+	return (*(t_uint *)dest);
+}
 
 // Helper function to print vectors
 static
@@ -177,6 +187,115 @@ void	test_color_to_int(void)
 		printf("✗ Color conversion test failed\n\n");
 }
 
+void	test_canvas_constructor(double epsilon)
+{
+	t_canvas	expected_canvas = {
+		.width = 10,
+		.height = 20,
+		.bg_color = {
+			.x = 0.0,
+			.y = 0.0,
+			.z = 0.0,
+			.w = 2.0
+		},
+	};
+	t_canvas	canvas;
+
+	if (canvas_constructor(10, 20, &canvas) == false)
+	{
+		printf("✗ Canvas construction test failed (returned false)\n\n");
+		return ;
+	}
+	printf("width = %d\nheight = %d\n", canvas.width, canvas.height);
+	print_vector("bg_color", canvas.bg_color)	;
+	if (canvas.width == expected_canvas.width
+	 	&& canvas.height == expected_canvas.height
+	 	&& vectors_equal(canvas.bg_color, expected_canvas.bg_color, epsilon))
+		printf("✓ Canvas construction test passed\n\n");
+	else
+		printf("✗ Canvas construction test failed\n\n");
+}
+
+void	test_write_pixel(void)
+{
+	t_canvas	canvas;
+	t_vec3		red = color_constructor(1.0, 0, 0);
+	t_uint		expected = 0xff0000;
+	t_uint		pixel;
+
+	if (canvas_constructor(10, 20, &canvas) == false)
+	{
+		printf("✗ Writing to canvas test failed (returned false)\n\n");
+		return ;
+	}
+	write_pixel(&canvas, 2, 3, red);
+	pixel = get_pixel(&canvas, 2, 3);
+	printf("Pixel at x = 2, y = 3 -> %d\n", pixel);
+	if (pixel == expected)
+		printf("✓ Writing to canvas test passed\n\n");
+	else
+		printf("✗ Writing to canvas test failed\n\n");
+}
+
+// =================================== TEST PROJECTILES ===================================
+struct s_projectile
+{
+	t_vec3	position;
+	t_vec3	velocity;
+};
+
+struct s_environment
+{
+	t_vec3	gravity;
+	t_vec3	wind;
+};
+
+struct s_projectile tick(struct s_projectile proj, struct s_environment env)
+{
+	t_vec3	position;
+	t_vec3	velocity;
+
+	position = vector_add(proj.position, proj.velocity);
+	velocity = vector_add(proj.velocity, vector_add(env.gravity, env.wind));
+	struct s_projectile projectile = {
+			.velocity = velocity,
+			.position = position,
+	};
+	return (projectile);
+}
+
+void	test_window_opening(void)
+{
+	t_canvas	c;
+	t_vec3		red = color_constructor(1.0, 0, 0);
+
+	if (canvas_constructor(1000, 1000, &c) == false)
+	{
+		printf("✗ canvas construction failed (returned false)\n\n");
+		return ;
+	}
+	struct s_projectile proj = {
+		.position = point_constructor(0, 1.0, 0),
+		.velocity = vector_scale(vector_normalization(vector_constructor(2.0, 1.8, 0)), 11.25),
+	};
+	struct s_environment env = {
+		.gravity = vector_constructor(0, -0.1, 0),
+		.wind = vector_constructor(-0.01, 0, 0),
+	};
+	struct s_projectile p = proj;
+	while (p.position.y > 0)
+	{
+		int x = (int)p.position.x;
+		int y = c.height - (int)p.position.y;
+		
+		write_pixel(&c, x, y, red);
+		p = tick(p, env);
+	}
+	void	*win = mlx_new_window(c.mlx, c.width, c.height, "Tester");
+	mlx_put_image_to_window(c.mlx, win, c.img.img, 0, 0);
+	mlx_loop(c.mlx);
+}
+
 int	main(void)
 {
 	const double EPSILON = 1e-10;
@@ -350,6 +469,15 @@ int	main(void)
 
 	printf("16. Testing color conversion:\n");
 	test_color_to_int();
+
+	printf("17. Testing canvas construction:\n");
+	test_canvas_constructor(EPSILON);
+
+	printf("18. Testing writing to canvas construction:\n");
+	test_write_pixel();
+
+	printf("19. Testing window opening:\n");
+	test_window_opening();
 
 	printf("=== Test Suite Complete ===\n");
 

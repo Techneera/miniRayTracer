@@ -2,7 +2,7 @@ NAME = $(BDIR)miniRT
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -g
 LMATH = -lm
-LMLX = -lmlx
+LMLX = -lmlx_Linux -lXext -lX11
 
 # ------------------------------ DIRECTORIES -------------------------------- #
 
@@ -37,7 +37,7 @@ TESTERSRCS = $(TDIR)main_tester.c
 TESTEROBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTERSRCS))
 
 # ------------------------------ LIBRARIES -------------------------------- #
-MLX = $(MLXDIR)libmlx.a
+MLX = $(MLXDIR)libmlx_Linux.a
 
 # ------------------------------ BUILD -------------------------------- #
 
@@ -67,7 +67,7 @@ $(NAME): $(OBJ) $(MLX)
 $(ODIR)$(SDIR)%.o: $(SDIR)%.c
 	@mkdir -p $(BDIR)
 	@mkdir -p $(ODIR)$(VECDIR)
-	@mkdir -p $(ODIR)$(COLORDIR)
+	@mkdir -p $(ODIR)$(CANVASDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -I $(IDIR) -I$(MLXDIR)
 
 $(ODIR)$(TDIR)%.o: $(TDIR)%.c
