@@ -312,6 +312,53 @@ void	test_ray_constructor(const double epsilon)
 		printf("✗ Ray construction test failed\n\n");
 }
 
+void	test_ray_position(const double epsilon)
+{
+	t_vec3	origin = point_constructor(2, 3, 4);
+	t_vec3	direction = vector_constructor(1, 0, 0);
+	t_ray	r = ray_constructor(origin, direction);
+
+	t_vec3	expected1 = {
+		.x = 2,
+		.y = 3,
+		.z = 4,
+		.w = 1
+	};
+	t_vec3	expected2 = {
+		.x = 3,
+		.y = 3,
+		.z = 4,
+		.w = 1
+	};
+	t_vec3	expected3 = {
+		.x = 1,
+		.y = 3,
+		.z = 4,
+		.w = 1
+	};
+	t_vec3	expected4 = {
+		.x = 4.5,
+		.y = 3,
+		.z = 4,
+		.w = 1
+	};
+	t_vec3	p1 = ray_position(r, 0);
+	t_vec3	p2 = ray_position(r, 1);
+	t_vec3	p3 = ray_position(r, -1);
+	t_vec3	p4 = ray_position(r, 2.5);
+	print_vector("p1", p1);
+	print_vector("p2", p2);
+	print_vector("p3", p3);
+	print_vector("p4", p4);
+	if (vectors_equal(p1, expected1, epsilon)
+		&& vectors_equal(p2, expected2, epsilon)
+		&& vectors_equal(p3, expected3, epsilon)
+		&& vectors_equal(p4, expected4, epsilon))
+		printf("✓ Ray position computing test passed\n\n");
+	else
+		printf("✗ Ray position computing test failed\n\n");
+}
+
 int	main(void)
 {
 	const double EPSILON = 1e-10;
@@ -494,6 +541,12 @@ int	main(void)
 
 	printf("19. Testing ray construction:\n");
 	test_ray_constructor(EPSILON);
+
+	printf("20. Testing compution point from a distance:\n");
+	test_ray_position(EPSILON);
+
+	printf("20. Testing two point sphere intersection:\n");
+	test_intersect();
 
 	//printf("19. Testing window opening:\n");
 	//test_window_opening();
