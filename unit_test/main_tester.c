@@ -303,8 +303,8 @@ void	test_ray_constructor(const double epsilon)
 	t_vec3	direction = vector_constructor(4, 5, 6);
 	t_ray	r = ray_constructor(origin, direction);
 
-	print_vector("r.origin", origin);
-	print_vector("r.direction", direction);
+	print_vector("r.origin", r.origin);
+	print_vector("r.direction", r.direction);
 	if (vectors_equal(r.origin, origin, epsilon)
 		&& vectors_equal(r.direction, direction, epsilon))
 		printf("✓ Ray construction test passed\n\n");
@@ -357,6 +357,27 @@ void	test_ray_position(const double epsilon)
 		printf("✓ Ray position computing test passed\n\n");
 	else
 		printf("✗ Ray position computing test failed\n\n");
+}
+
+void	test_intersect(void)
+{
+	t_ray	r = ray_constructor(
+			point_constructor(0, 0, -5),
+			vector_constructor(0, 0, 1)
+	);
+	t_sphere	s = sphere();
+	t_intersect	xs = intersect(r, s);
+
+	printf("xs.count == %d\n", xs.count);
+	printf("xs.t[0] == %f\n", xs.t[0]);
+	printf("xs.t[1]	== %f\n", xs.t[1]);
+
+	if (xs.count == 2
+		&& xs.t[0] == 4.0
+		&& xs.t[1] == 6.0)
+		printf("✓ two point sphere intersection test passed\n\n");
+	else
+		printf("✗ two point sphere intersection test failed\n\n");
 }
 
 int	main(void)
