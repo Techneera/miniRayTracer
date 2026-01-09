@@ -622,12 +622,13 @@ static
 void	test_minor_matrix_3x3(const double epsilon)
 {
 	double matrix[9] = {1.0, 5.0, 0.0, -3.0, 2.0, 7.0, 0.0, 6.0, -3.0};
+	double expected = -18.0;
 	double minor = minor_matrix_3x3(matrix, 0, 2);
 	
 	print_matrix("Original 3x3", matrix, 3);
-	printf("Minor M(0,2): %.3f (expected: %.3f)\n", minor, (-3.0 * (-3.0) - 2.0 * 0.0)); // det of {{-3,2},{0,6}}
+	printf("Minor M(0,2): %.3f (expected: %.3f)\n", minor, (-3.0 * (-3.0) - 2.0 * 0.0));
 	
-	if (doubles_equal(minor, 9.0, epsilon))
+	if (doubles_equal(minor, expected, epsilon))
 		printf("✓ Minor matrix test passed\n\n");
 	else
 		printf("✗ Minor matrix test failed\n\n");
@@ -638,11 +639,12 @@ void	test_cofactor_compute_3x3(const double epsilon)
 {
 	double matrix[9] = {1.0, 5.0, 0.0, -3.0, 2.0, 7.0, 0.0, 6.0, -3.0};
 	double cofactor = cofactor_compute_3x3(matrix, 0, 2);
+	double expected = -18.0;
 	
 	print_matrix("Original 3x3", matrix, 3);
-	printf("Cofactor C(0,2): %.3f (expected: %.3f)\n", cofactor, 9.0); // Since (0+2)%2==0, no sign change
+	printf("Cofactor C(0,2): %.3f (expected: %.3f)\n", cofactor, expected);
 	
-	if (doubles_equal(cofactor, 9.0, epsilon))
+	if (doubles_equal(cofactor, expected, epsilon))
 		printf("✓ Cofactor compute test passed\n\n");
 	else
 		printf("✗ Cofactor compute test failed\n\n");
