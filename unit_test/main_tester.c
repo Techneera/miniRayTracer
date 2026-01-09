@@ -34,7 +34,7 @@ bool	doubles_equal(double a, double b, double epsilon)
 /* *********************************************************************** */
 
 static
-void	test_vector_point_constructor(const double epsilon)
+void	test_vector_point_constructor(void)
 {
 	t_vec3 point = point_constructor(1.0, 2.0, 3.0);
 	t_vec3 vector = vector_constructor(4.0, 5.0, 6.0);
@@ -354,7 +354,7 @@ int	main(void)
 	
 	// Test 1: Constructor functions
 	printf("1. Testing Constructor Functions:\n");
-	test_vector_point_constructor(EPSILON);
+	test_vector_point_constructor();
 	
 	// Test 2: Length functions
 	printf("2. Testing Length Functions:\n");
