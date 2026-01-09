@@ -16,6 +16,7 @@ MLXDIR = $(IDIR)minilibx-linux/
 
 VECDIR = $(SDIR)vec_utils
 CANVASDIR = $(SDIR)canvas_utils
+RAYDIR = $(SDIR)ray_utils
 
 # ------------------------------ VECTORS -------------------------------- #
 
@@ -23,13 +24,19 @@ _VEC_SRCS = base.c
 VEC_SRCS = $(patsubst %.c, $(VECDIR)/%.c, $(_VEC_SRCS))
 VEC_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(VEC_SRCS))
 
-# ------------------------------ CANVASS -------------------------------- #
+# ------------------------------ CANVAS -------------------------------- #
 
 _CANVAS_SRCS = color_operations.c \
 			  color_conversion.c \
 			  canvas_constructor.c
 CANVAS_SRCS = $(patsubst %.c, $(CANVASDIR)/%.c, $(_CANVAS_SRCS))
 CANVAS_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)%.o, $(CANVAS_SRCS))
+
+# ------------------------------ RAYS -------------------------------- #
+
+_RAY_SRCS = ray_constructor.c
+RAY_SRCS = $(patsubst %.c, $(RAYDIR)/%.c, $(_RAY_SRCS))
+RAY_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(RAY_SRCS))
 
 # ------------------------------ UNIT TESTS-------------------------------- #
 
@@ -49,7 +56,8 @@ DEP = $(IDIR)
 
 SRCFILES = $(SDIR)main.c \
 		   $(VEC_SRCS) \
-		   $(CANVAS_SRCS)
+		   $(CANVAS_SRCS) \
+		   $(RAY_SRCS)
 
 # ------------------------------ RULES -------------------------------- #
 
@@ -68,6 +76,7 @@ $(ODIR)$(SDIR)%.o: $(SDIR)%.c
 	@mkdir -p $(BDIR)
 	@mkdir -p $(ODIR)$(VECDIR)
 	@mkdir -p $(ODIR)$(CANVASDIR)
+	@mkdir -p $(ODIR)$(RAYDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -I $(IDIR) -I$(MLXDIR)
 
 $(ODIR)$(TDIR)%.o: $(TDIR)%.c

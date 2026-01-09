@@ -1,6 +1,7 @@
 #include "mlx.h"
 #include "vector.h"
 #include "canvas.h"
+#include "ray.h"
 
 // Helper to get pixel from canvas
 t_uint	get_pixel(t_canvas *c, int x, int y)
@@ -296,6 +297,21 @@ void	test_window_opening(void)
 	mlx_loop(c.mlx);
 }
 
+void	test_ray_constructor(const double epsilon)
+{
+	t_vec3	origin = point_constructor(1, 2, 3);
+	t_vec3	direction = vector_constructor(4, 5, 6);
+	t_ray	r = ray_constructor(origin, direction);
+
+	print_vector("r.origin", origin);
+	print_vector("r.direction", direction);
+	if (vectors_equal(r.origin, origin, epsilon)
+		&& vectors_equal(r.direction, direction, epsilon))
+		printf("✓ Ray construction test passed\n\n");
+	else
+		printf("✗ Ray construction test failed\n\n");
+}
+
 int	main(void)
 {
 	const double EPSILON = 1e-10;
@@ -473,11 +489,14 @@ int	main(void)
 	printf("17. Testing canvas construction:\n");
 	test_canvas_constructor(EPSILON);
 
-	printf("18. Testing writing to canvas construction:\n");
+	printf("18. Testing writing to canvas:\n");
 	test_write_pixel();
 
-	printf("19. Testing window opening:\n");
-	test_window_opening();
+	printf("19. Testing ray construction:\n");
+	test_ray_constructor(EPSILON);
+
+	//printf("19. Testing window opening:\n");
+	//test_window_opening();
 
 	printf("=== Test Suite Complete ===\n");
 
