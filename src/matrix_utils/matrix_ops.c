@@ -5,6 +5,8 @@
 #include "vector.h"
 
 # define DIM4 4
+# define DIM3 3
+# define DIM2 2
 # define DIM16 16
 
 void	matrix_row_constructor(double *matrix, t_vec3 this, int row)
@@ -82,7 +84,7 @@ void	matrix_transpose(double *m)
 	while (i < DIM4)
 	{
 		j = 0;
-		while (j < DIM4)
+		while (j < i)
 		{
 			idx_i = i * DIM4 + j;
 			idx_j = j * DIM4 + i;
@@ -95,65 +97,148 @@ void	matrix_transpose(double *m)
 	}
 }
 
-/*
-int	main(void)
+double	matrix_determinant_2x2(double *m)
 {
-	double	matrix1[16];
-	double	matrix2[16];
-	double	matrix3[16];
-	int		i = 0;
-	//double	matrix2[16];
-	//double	matrix3[16];
-	//int		i;
-	//int		j;
-	
-	t_vec3	v = vector_constructor(1.0, 3.0, 4.0);
-	for(i = 0; i < DIM; i++)
-		matrix_row_constructor(matrix1, v, i);
+	return (m[0] * m[3] - m[1] * m[2]);
+}
 
-	t_vec3 v2 = vector_constructor(5.0, -3.0, 1.0);
-	for(i = 0; i < DIM; i++)
-		matrix_row_constructor(matrix2, v2, i);
-	matrix_multiply(matrix1, matrix2, matrix3);
-	i = 0;
-	j = 0;
-	while (i < 4)
-	{
-		j = 0;
-		while (j < 4)
-		{
-			if ((i + 1) % 2 != 0)
-				matrix[i * DIM + j] = i * 4 + j + 1;
-			else
-				matrix[i * DIM + j] = i * 4 + j + 1.5;
-			j++;
-		}
-		i++;
-	}
+double	matrix_determinant_3x3(double *m)
+{
+	return (m[0] * (m[4] * m[8] - m[5] * m[7]) - \
+m[1] * (m[3] * m[8] - m[5] * m[6]) + \
+m[2] * (m[3] * m[7] - m[4] * m[6]));
+}
 
-	i = 0;
-	while (i < DIM)
-	{
-		j = 0;
-		while (j < DIM)
-		{
-			matrix2[i * DIM + j] = i + j;
-			j++;
-		}
-		i++;
-	}
+void	submatrix_constructor_3x3(double *original, double *result, int row, int column)
+{
+	int	original_row;
+	int	original_col;
+	int	result_row;
+	int	result_col;
 
-	if (matrix_compare(matrix, matrix2, 1e-10))
-		exit(1);
-	if (matrix_compare(matrix, matrix3, 1e-10))
-		exit(1);
-	exit(0);
-	for (i = 0; i < 4; i++)
+	original_row = 0;
+	result_row = 0;
+	while (original_row < DIM3)
 	{
-		for (j = 0; j < 4; j++)
+		if (original_row == row)
 		{
-			printf("Position (%d, %d):\t%.1f\n", i, j, matrix[i][j]);
+			original_row++;
+			continue ;
 		}
+		original_col = 0;
+		result_col = 0;
+		while (original_col < DIM3)
+		{
+			if (original_col == col)
+			{
+				original_col++;
+				continue ;
+			}
+			result[result_row * DIM2 + result_col] = original[original_row * DIM3 + original_col];
+			result_col++;
+			original_col++;
+		}
+		original_row++;
+		result_row++;
 	}
 }
-*/
+
+void	submatrix_constructor_4x4(double *original, double *result, int row, int column)
+{
+	int	original_row;
+	int	original_col;
+	int	result_row;
+	int	result_col;
+
+	result_row = 0;
+	original_row = 0;
+	while (original_row < DIM4)
+	{
+		if (original_row == row)
+		{
+			original_row++;
+			continue ;
+		}
+		original_col = 0;
+		result_col = 0;
+		while (original_col < DIM4)
+		{
+			if (original_col == col)
+			{
+				original_col++;
+				continue ;
+			}
+			result[result_row * DIM3 + result_col] = original[original_row * DIM4 + original_col];
+			original_col++;
+			result_col++;
+		}
+		original_row++;
+		result_row++;
+	}
+}
+
+double	minor_matrix_3x3(double *m, int row, int col)
+{
+	double	tmp[4];
+
+	submatrix_constructor_3x3(m, &tmp, row, col);
+	return (matrix_determinant_2x2(&tmp));
+}
+
+double	cofactor_compute_3x3(double *m, int row, int col)
+{
+	double	tmp;
+
+	tmp = minor_matrix_2x2(m, row, col);
+	if ((row + j) % 2 != 0)
+		return (-tmp);
+	return (tmp);
+}
+
+double	determinant3x3(double *m)
+{
+	double	det;
+	int		col;
+
+	det = 0.0;
+	col = 0.0;
+	while (col < DIM3)
+	{
+		det += m[col] * cofactor_compute_3x3(m, 0, col);
+		col++;
+	}
+	return (det);
+}
+
+double	determinant4x4(double *m)
+{
+	double	det;
+	double	submatrix[9];
+	double	minor;
+	int		col;
+
+	det = 0.0;
+	col = 0.0;
+	while (col < DIM4)
+	{
+		submatrix_constructor_4x4(m, submatrix, 0, col);
+		minor = matrix_determinant_3x3(submatrix);
+		if (col % 2 == 0)
+			det += m[col] * minor;
+		else
+			det -= m[col] * minor;
+		col++;
+	}
+	return (det);
+}
+
+double	determinant(dounle *m, int size)
+{
+	if (size == 2)
+		return (matrix_determinant_2x2(m));
+	else if (size == 3)
+		return (matrix_determinant_3x3(m));
+	else if (size == 4)
+		return (matrix_determinant_4x4(m));
+	return (0.0);
+}
