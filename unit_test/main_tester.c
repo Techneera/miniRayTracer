@@ -1,5 +1,6 @@
 #include "vector.h"
 #include "color.h"
+#include "matrix.h"
 
 /* *********************************************************************** */
 /*                             HELPER FUNCTIONS                            */
@@ -10,6 +11,28 @@ static
 void	print_vector(const char *name, t_vec3 v)
 {
 	printf("%s: (%.3f, %.3f, %.3f, w=%.3f)\n", name, v.x, v.y, v.z, v.w);
+}
+
+// Helper function to print matrix
+static
+void	print_matrix(const char *name, double *matrix, int size)
+{
+	int	i;
+	int	j;
+
+	printf("%s:\n", name);
+	i = 0;
+	while (i < size)
+	{
+		j = 0;
+		while (j < size)
+		{
+			printf("%.3f", matrix[i * size + j]);
+			j++;
+		}
+		i++;
+		printf("\n");
+	}
 }
 
 // Helper function to check if two vectors are equal within epsilon
@@ -27,6 +50,22 @@ static
 bool	doubles_equal(double a, double b, double epsilon)
 {
 	return fabs(a - b) < epsilon;
+}
+
+// Helper function to check if two matrices are equal within epsilon
+static
+bool	matrices_equal(double *a, double *b, int size, double epsilon)
+{
+	int	i;
+
+	i = 0;
+	while (i < size)
+	{
+		if (!doubles_equal(a[i], b[i], epsilon))
+			return (false);
+		i++;
+	}
+	return (true);
 }
 
 /* *********************************************************************** */
@@ -346,6 +385,300 @@ void	test_color_to_int(void)
 		printf("✗ Color conversion test failed\n\n");
 }
 
+/* *********************************************************************** */
+/*                             MATRIX FUNCTIONS                            */
+/* *********************************************************************** */
+
+static
+void	test_identity_matrix_constructor(const double epsilon)
+{
+	double	matrix[16];
+	bool	is_identity;
+
+	identity_matrix_constructor(matrix);
+	print_matrix("Identity Matrix", matrix, 4);
+
+	for (int i = 0; i < DIM4; i++)
+	{
+		for (int j = 0; j < DIM4; j++)
+		{
+			double	expected = (i == j) ? 1.0:0.0;
+			if (!doubles_equal(matrix[i * DIM4 + j], expected, epsilon))
+			{
+				is_identity = false;
+				break ;
+			}
+		}
+		if (!is_identity) break;
+	}
+	if (is_identity)
+		printf("✓ Identity matrix constructor test passed\n\n");
+	else
+		printf("✗ Identity matrix constructor test failed\n\n");
+}
+
+static
+void	test_matrix_transpose(const double epsilon)
+{
+	double matrix[16] = {
+		1.0, 2.0, 3.0, 4.0,
+		5.0, 6.0, 7.0, 8.0,
+		9.0, 10.0, 11.0, 12.0,
+		13.0, 14.0, 15.0, 16.0
+	};
+	
+	print_matrix("Original Matrix", matrix, 4);
+	
+	matrix_transpose(matrix);
+	
+	print_matrix("Transposed Matrix", matrix, 4);
+	
+	double expected[16] = {
+		1.0, 5.0, 9.0, 13.0,
+		2.0, 6.0, 10.0, 14.0,
+		3.0, 7.0, 11.0, 15.0,
+		4.0, 8.0, 12.0, 16.0
+	};
+	
+	if (matrices_equal(matrix, expected, 4, epsilon))
+		printf("✓ Matrix transpose test passed\n\n");
+	else
+		printf("✗ Matrix transpose test failed\n\n");
+}
+
+static
+void	test_matrix_multiply(const double epsilon)
+{
+	double m1[16] = {
+		1.0, 2.0, 3.0, 4.0,
+		5.0, 6.0, 7.0, 8.0,
+		9.0, 10.0, 11.0, 12.0,
+		13.0, 14.0, 15.0, 16.0
+	};
+	
+	double m2[16] = {
+		1.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, 1.0, 0.0,
+		0.0, 0.0, 0.0, 1.0
+	};
+	
+	double result[16];
+	matrix_multiply(m1, m2, result);
+	
+	print_matrix("Matrix 1", m1, 4);
+	print_matrix("Matrix 2 (Identity)", m2, 4);
+	print_matrix("Result", result, 4);
+	
+	if (matrices_equal(result, m1, 4, epsilon))
+		printf("✓ Matrix multiply test passed\n\n");
+	else
+		printf("✗ Matrix multiply test failed\n\n");
+}
+
+static
+void	test_matrix_row_constructor(const double epsilon)
+{
+	double matrix[16] = {0}; // Initialize to zeros
+	t_vec3 row_data = vector_constructor(1.0, 2.0, 3.0);
+	
+	matrix_row_constructor(matrix, row_data, 2); // Insert into row 2
+	
+	print_matrix("Matrix after inserting row", matrix, 4);
+	
+	bool row_inserted_correctly = true;
+	for (int j = 0; j < 4; j++)
+	{
+		if (!doubles_equal(matrix[2 * 4 + j], row_data.v[j], epsilon))
+		{
+			row_inserted_correctly = false;
+			break;
+		}
+	}
+	
+	// Check that other rows are still zeros
+	for (int i = 0; i < 4; i++)
+	{
+		if (i != 2)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				if (!doubles_equal(matrix[i * 4 + j], 0.0, epsilon))
+				{
+					row_inserted_correctly = false;
+					break;
+				}
+			}
+		}
+	}
+	
+	if (row_inserted_correctly)
+		printf("✓ Matrix row constructor test passed\n\n");
+	else
+		printf("✗ Matrix row constructor test failed\n\n");
+}
+
+static
+void	test_matrix_vector_multiply(const double epsilon)
+{
+	double matrix[16] = {
+		1.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, 1.0, 0.0,
+		0.0, 0.0, 0.0, 1.0
+	};
+	
+	t_vec3 input = point_constructor(1.0, 2.0, 3.0);
+	t_vec3 result = matrix_vector_multiply(matrix, input);
+	
+	print_vector("Input vector", input);
+	print_vector("Result vector", result);
+	
+	if (vectors_equal(input, result, epsilon))
+		printf("✓ Matrix-vector multiply test passed\n\n");
+	else
+		printf("✗ Matrix-vector multiply test failed\n\n");
+}
+
+static
+void	test_matrix_determinant_2x2(const double epsilon)
+{
+	double matrix[4] = {1.0, 2.0, 3.0, 4.0};
+	double det = matrix_determinant_2x2(matrix);
+	
+	printf("2x2 Matrix:\n%.3f %.3f\n%.3f %.3f\n", matrix[0], matrix[1], matrix[2], matrix[3]);
+	printf("Determinant: %.3f (expected: -2.0)\n", det);
+	
+	if (doubles_equal(det, -2.0, epsilon))
+		printf("✓ 2x2 determinant test passed\n\n");
+	else
+		printf("✗ 2x2 determinant test failed\n\n");
+}
+
+static
+void	test_matrix_determinant_3x3(const double epsilon)
+{
+	double matrix[9] = {1.0, 2.0, 3.0, 0.0, 1.0, 4.0, 5.0, 6.0, 0.0};
+	double det = matrix_determinant_3x3(matrix);
+	
+	printf("3x3 Matrix:\n%.3f %.3f %.3f\n%.3f %.3f %.3f\n%.3f %.3f %.3f\n",
+		   matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5], matrix[6], matrix[7], matrix[8]);
+	printf("Determinant: %.3f (expected: 1.0)\n", det);
+	
+	if (doubles_equal(det, 1.0, epsilon))
+		printf("✓ 3x3 determinant test passed\n\n");
+	else
+		printf("✗ 3x3 determinant test failed\n\n");
+}
+
+static
+void	test_submatrix_constructor_3x3(const double epsilon)
+{
+	double original[9] = {1.0, 5.0, 0.0, -3.0, 2.0, 7.0, 0.0, 6.0, -3.0};
+	double result[4];
+	
+	submatrix_constructor_3x3(original, result, 0, 2);
+	
+	print_matrix("Original 3x3", original, 3);
+	print_matrix("Submatrix (remove row 0, col 2)", result, 2);
+	
+	double expected[4] = {-3.0, 2.0, 0.0, 6.0}; // Should be {{-3, 2}, {0, 6}}
+	
+	if (matrices_equal(result, expected, 2, epsilon))
+		printf("✓ 3x3 submatrix constructor test passed\n\n");
+	else
+		printf("✗ 3x3 submatrix constructor test failed\n\n");
+}
+
+static
+void	test_submatrix_constructor_4x4(const double epsilon)
+{
+	double original[16] = {
+		1.0, 5.0, 0.0, 2.0,
+		-3.0, 2.0, 7.0, 1.0,
+		0.0, 6.0, -3.0, 4.0,
+		1.0, 1.0, 1.0, 1.0
+	};
+	double result[9];
+	
+	submatrix_constructor_4x4(original, result, 0, 1);
+	
+	print_matrix("Original 4x4", original, 4);
+	print_matrix("Submatrix (remove row 0, col 1)", result, 3);
+	
+	double expected[9] = {
+		-3.0, 7.0, 1.0,
+		0.0, -3.0, 4.0,
+		1.0, 1.0, 1.0
+	};
+	
+	if (matrices_equal(result, expected, 3, epsilon))
+		printf("✓ 4x4 submatrix constructor test passed\n\n");
+	else
+		printf("✗ 4x4 submatrix constructor test failed\n\n");
+}
+
+static
+void	test_minor_matrix_3x3(const double epsilon)
+{
+	double matrix[9] = {1.0, 5.0, 0.0, -3.0, 2.0, 7.0, 0.0, 6.0, -3.0};
+	double minor = minor_matrix_3x3(matrix, 0, 2);
+	
+	print_matrix("Original 3x3", matrix, 3);
+	printf("Minor M(0,2): %.3f (expected: %.3f)\n", minor, (-3.0 * (-3.0) - 2.0 * 0.0)); // det of {{-3,2},{0,6}}
+	
+	if (doubles_equal(minor, 9.0, epsilon))
+		printf("✓ Minor matrix test passed\n\n");
+	else
+		printf("✗ Minor matrix test failed\n\n");
+}
+
+static
+void	test_cofactor_compute_3x3(const double epsilon)
+{
+	double matrix[9] = {1.0, 5.0, 0.0, -3.0, 2.0, 7.0, 0.0, 6.0, -3.0};
+	double cofactor = cofactor_compute_3x3(matrix, 0, 2);
+	
+	print_matrix("Original 3x3", matrix, 3);
+	printf("Cofactor C(0,2): %.3f (expected: %.3f)\n", cofactor, 9.0); // Since (0+2)%2==0, no sign change
+	
+	if (doubles_equal(cofactor, 9.0, epsilon))
+		printf("✓ Cofactor compute test passed\n\n");
+	else
+		printf("✗ Cofactor compute test failed\n\n");
+}
+
+static
+void	test_determinant_function(const double epsilon)
+{
+	// Test 2x2
+	double mat2[4] = {1.0, 2.0, 3.0, 4.0};
+	double det2 = determinant(mat2, 2);
+	
+	// Test 3x3
+	double mat3[9] = {1.0, 2.0, 3.0, 0.0, 1.0, 4.0, 5.0, 6.0, 0.0};
+	double det3 = determinant(mat3, 3);
+	
+	// Test 4x4 (simple identity)
+	double mat4[16] = {0};
+	identity_matrix_constructor(mat4);
+	double det4 = determinant(mat4, 4);
+	
+	printf("2x2 Determinant: %.3f (expected: -2.0)\n", det2);
+	printf("3x3 Determinant: %.3f (expected: 1.0)\n", det3);
+	printf("4x4 Identity Determinant: %.3f (expected: 1.0)\n", det4);
+	
+	if (doubles_equal(det2, -2.0, epsilon) && 
+		doubles_equal(det3, 1.0, epsilon) && 
+		doubles_equal(det4, 1.0, epsilon))
+		printf("✓ General determinant function test passed\n\n");
+	else
+		printf("✗ General determinant function test failed\n\n");
+}
+
+/* *********************************************************************** */
+/*                             MAIN TESTER                                 */
+/* *********************************************************************** */
 
 int	main(void)
 {
@@ -392,6 +725,7 @@ int	main(void)
 	printf("10. Testing Edge Cases:\n");
 	test_edge_cases();
 
+	// Color tests
 	printf("11. Testing color contruction:\n");
 	test_color_constructor(EPSILON);
 	
@@ -409,6 +743,43 @@ int	main(void)
 
 	printf("16. Testing color conversion:\n");
 	test_color_to_int();
+
+	// Matrix Tests
+	printf("17. Testing identity matrix constructor:\n");
+	test_identity_matrix_constructor(EPSILON);
+	
+	printf("18. Testing matrix transpose:\n");
+	test_matrix_transpose(EPSILON);
+	
+	printf("19. Testing matrix multiply:\n");
+	test_matrix_multiply(EPSILON);
+	
+	printf("20. Testing matrix row constructor:\n");
+	test_matrix_row_constructor(EPSILON);
+	
+	printf("21. Testing matrix-vector multiply:\n");
+	test_matrix_vector_multiply(EPSILON);
+	
+	printf("22. Testing 2x2 determinant:\n");
+	test_matrix_determinant_2x2(EPSILON);
+	
+	printf("23. Testing 3x3 determinant:\n");
+	test_matrix_determinant_3x3(EPSILON);
+	
+	printf("24. Testing 3x3 submatrix constructor:\n");
+	test_submatrix_constructor_3x3(EPSILON);
+	
+	printf("25. Testing 4x4 submatrix constructor:\n");
+	test_submatrix_constructor_4x4(EPSILON);
+	
+	printf("26. Testing minor matrix:\n");
+	test_minor_matrix_3x3(EPSILON);
+	
+	printf("27. Testing cofactor compute:\n");
+	test_cofactor_compute_3x3(EPSILON);
+	
+	printf("28. Testing general determinant function:\n");
+	test_determinant_function(EPSILON);
 
 	printf("=== Test Suite Complete ===\n");
 

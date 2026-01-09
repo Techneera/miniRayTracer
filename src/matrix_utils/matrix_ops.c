@@ -1,13 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <math.h>
 #include "vector.h"
-
-# define DIM4 4
-# define DIM3 3
-# define DIM2 2
-# define DIM16 16
+#include "matrix.h"
 
 void	matrix_row_constructor(double *matrix, t_vec3 this, int row)
 {
@@ -41,14 +33,14 @@ void	matrix_multiply(double *m1, double *m2, double *m3)
 	m3[15] = m1[12] * m2[3] + m1[13] * m2[7] + m1[14] * m2[11] + m1[15] * m2[15];
 }
 
-t_vec3	matrix_vector_multiply(double *m, t_vec3 v)
+t_vec3	matrix_vector_multiply(double *m, t_vec3 this)
 {
 	t_vec3	result;
 
-	result.x = m[0] * v[0] + m[1] * v[1] + m[2] * v[2] + m[3] * v[3];
-	result.y = m[4] * v[0] + m[5] * v[1] + m[6] * v[2] + m[7] * v[3];
-	result.z = m[8] * v[0] + m[9] * v[1] + m[10] * v[2] + m[11] * v[3];
-	result.w = m[12] * v[0] + m[13] * v[1] + m[14] * v[2] + m[15] * v[3];
+	result.x = m[0] * this.v[0] + m[1] * this.v[1] + m[2] * this.v[2] + m[3] * this.v[3];
+	result.y = m[4] * this.v[0] + m[5] * this.v[1] + m[6] * this.v[2] + m[7] * this.v[3];
+	result.z = m[8] * this.v[0] + m[9] * this.v[1] + m[10] * this.v[2] + m[11] * this.v[3];
+	result.w = m[12] * this.v[0] + m[13] * this.v[1] + m[14] * this.v[2] + m[15] * this.v[3];
 	return (result);
 }
 
@@ -89,7 +81,7 @@ void	matrix_transpose(double *m)
 			idx_i = i * DIM4 + j;
 			idx_j = j * DIM4 + i;
 			tmp = m[idx_i];
-			m[idx_i] = m[idxj];
+			m[idx_i] = m[idx_j];
 			m[idx_j] = tmp;
 			j++;
 		}
@@ -109,7 +101,7 @@ m[1] * (m[3] * m[8] - m[5] * m[6]) + \
 m[2] * (m[3] * m[7] - m[4] * m[6]));
 }
 
-void	submatrix_constructor_3x3(double *original, double *result, int row, int column)
+void	submatrix_constructor_3x3(double *original, double *result, int row, int col)
 {
 	int	original_row;
 	int	original_col;
@@ -143,7 +135,7 @@ void	submatrix_constructor_3x3(double *original, double *result, int row, int co
 	}
 }
 
-void	submatrix_constructor_4x4(double *original, double *result, int row, int column)
+void	submatrix_constructor_4x4(double *original, double *result, int row, int col)
 {
 	int	original_row;
 	int	original_col;
@@ -181,16 +173,16 @@ double	minor_matrix_3x3(double *m, int row, int col)
 {
 	double	tmp[4];
 
-	submatrix_constructor_3x3(m, &tmp, row, col);
-	return (matrix_determinant_2x2(&tmp));
+	submatrix_constructor_3x3(m, tmp, row, col);
+	return (matrix_determinant_2x2(tmp));
 }
 
 double	cofactor_compute_3x3(double *m, int row, int col)
 {
 	double	tmp;
 
-	tmp = minor_matrix_2x2(m, row, col);
-	if ((row + j) % 2 != 0)
+	tmp = minor_matrix_3x3(m, row, col);
+	if ((row + col) % 2 != 0)
 		return (-tmp);
 	return (tmp);
 }
@@ -232,13 +224,13 @@ double	determinant4x4(double *m)
 	return (det);
 }
 
-double	determinant(dounle *m, int size)
+double	determinant(double *m, int size)
 {
 	if (size == 2)
 		return (matrix_determinant_2x2(m));
 	else if (size == 3)
 		return (matrix_determinant_3x3(m));
 	else if (size == 4)
-		return (matrix_determinant_4x4(m));
+		return (determinant4x4(m));
 	return (0.0);
 }

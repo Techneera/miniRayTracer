@@ -12,6 +12,7 @@ TDIR = unit_test/
 BDIR = build/
 
 VECDIR = $(SDIR)vec_utils
+MATDIR = $(SDIR)matrix_utils
 COLORDIR = $(SDIR)color_utils
 
 # ------------------------------ VECTORS -------------------------------- #
@@ -19,6 +20,12 @@ COLORDIR = $(SDIR)color_utils
 _VEC_SRCS = base.c
 VEC_SRCS = $(patsubst %.c, $(VECDIR)/%.c, $(_VEC_SRCS))
 VEC_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(VEC_SRCS))
+
+# ------------------------------ MATRIX -------------------------------- #
+
+_MATRIX_SRCS = matrix_ops.c
+MATRIX_SRCS = $(patsubst %.c, $(MATDIR)/%.c, $(_MATRIX_SRCS))
+MATRIX_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(MATRIX_SRCS))
 
 # ------------------------------ COLORS -------------------------------- #
 
@@ -42,6 +49,7 @@ DEP = $(IDIR)
 
 SRCFILES = $(SDIR)main.c \
 		   $(VEC_SRCS) \
+		   $(MATRIX_SRCS) \
 		   $(COLOR_SRCS)
 
 # ------------------------------ RULES -------------------------------- #
@@ -60,6 +68,7 @@ $(NAME): $(OBJ)
 $(ODIR)$(SDIR)%.o: $(SDIR)%.c
 	@mkdir -p $(BDIR)
 	@mkdir -p $(ODIR)$(VECDIR)
+	@mkdir -p $(ODIR)$(MATDIR)
 	@mkdir -p $(ODIR)$(COLORDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -I $(IDIR)
 
