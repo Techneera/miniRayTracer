@@ -60,7 +60,7 @@ debug: CFLAGS += -g
 debug: re
 
 test: $(TESTEROBJS) $(TESTOBJ) 
-	$(CC) $(CFLAGS) -g $^ -o $(BDIR)tester -I$(IDIR) $(LMATH)
+	$(CC) $(CFLAGS) $^ -o $(BDIR)tester -I$(IDIR) $(LMATH)
 
 $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
