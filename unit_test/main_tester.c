@@ -359,25 +359,67 @@ void	test_ray_position(const double epsilon)
 		printf("✗ Ray position computing test failed\n\n");
 }
 
-void	test_intersect(void)
+int	test_sphere_intersect(t_ray r, int ex_count, double ex_t0, double ex_t1)
 {
-	t_ray	r = ray_constructor(
-			point_constructor(0, 0, -5),
-			vector_constructor(0, 0, 1)
-	);
 	t_sphere	s = sphere();
-	t_intersect	xs = intersect(r, s);
+	t_intersect	xs = sphere_intersect(r, s);
 
-	printf("xs.count == %d\n", xs.count);
-	printf("xs.t[0] == %f\n", xs.t[0]);
-	printf("xs.t[1]	== %f\n", xs.t[1]);
+	printf("xs.count == %d, expected %d\n", xs.count, ex_count);
+	if (ex_count != 0)
+	{
+		printf("xs.t[0] == %f, expected %f\n", xs.t[0], ex_t0);
+		printf("xs.t[1]	== %f, expected %f\n", xs.t[1], ex_t1);
+	}
 
-	if (xs.count == 2
-		&& xs.t[0] == 4.0
-		&& xs.t[1] == 6.0)
-		printf("✓ two point sphere intersection test passed\n\n");
+	if ((xs.count == ex_count
+		&& xs.t[0] == ex_t0
+		&& xs.t[1] == ex_t1)
+		|| (xs.count == 0 && ex_count == 0))
+		return (0);
 	else
-		printf("✗ two point sphere intersection test failed\n\n");
+		return(1);
+}
+
+void	test_sphere_intersections(void)
+{
+	int t1 = test_sphere_intersect(
+		ray_constructor(point_constructor(0, 0, -5), vector_constructor(0, 0, 1)),
+		2,
+		4.0,
+		6.0
+	);
+	int t2 = test_sphere_intersect(
+		ray_constructor(point_constructor(0, 1, -5), vector_constructor(0, 0, 1)),
+		2,
+		5.0,
+		5.0
+	);
+	int t3 = test_sphere_intersect(
+		ray_constructor(point_constructor(0, 2, -5), vector_constructor(0, 0, 1)),
+		0,
+		0,
+		0
+	);
+	int t4 = test_sphere_intersect(
+		ray_constructor(point_constructor(0, 0, 0), vector_constructor(0, 0, 1)),
+		2,
+		-1,
+		1
+	);
+	int t5 = test_sphere_intersect(
+		ray_constructor(point_constructor(0, 0, 5), vector_constructor(0, 0, 1)),
+		2,
+		-6.0,
+		-4.0
+	);
+	if (t1 == 0
+		&& t2 == 0
+		&& t3 == 0
+		&& t4 == 0
+		&& t5 == 0)
+		printf("✓ Sphere intersections test passed\n\n");
+	else
+		printf("✗ Sphere intersections test failed\n\n");
 }
 
 int	main(void)
@@ -566,8 +608,8 @@ int	main(void)
 	printf("20. Testing compution point from a distance:\n");
 	test_ray_position(EPSILON);
 
-	printf("20. Testing two point sphere intersection:\n");
-	test_intersect();
+	printf("20. Testing sphere intersections:\n");
+	test_sphere_intersections();
 
 	//printf("19. Testing window opening:\n");
 	//test_window_opening();

@@ -34,7 +34,8 @@ CANVAS_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)%.o, $(CANVAS_SRCS))
 
 # ------------------------------ RAYS -------------------------------- #
 
-_RAY_SRCS = ray_constructor.c
+_RAY_SRCS = ray_constructor.c \
+			sphere.c
 RAY_SRCS = $(patsubst %.c, $(RAYDIR)/%.c, $(_RAY_SRCS))
 RAY_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(RAY_SRCS))
 
