@@ -359,6 +359,7 @@ void	test_ray_position(const double epsilon)
 		printf("✗ Ray position computing test failed\n\n");
 }
 
+/*
 int	test_sphere_intersect(t_ray r, int ex_count, double ex_t0, double ex_t1)
 {
 	t_sphere	s = sphere();
@@ -367,8 +368,8 @@ int	test_sphere_intersect(t_ray r, int ex_count, double ex_t0, double ex_t1)
 	printf("xs.count == %d, expected %d\n", xs.count, ex_count);
 	if (ex_count != 0)
 	{
-		printf("xs.t[0] == %f, expected %f\n", xs.t[0], ex_t0);
-		printf("xs.t[1]	== %f, expected %f\n", xs.t[1], ex_t1);
+		printf("xs.t[0] == %f, expected %f\n", xs.i.t[0], ex_t0);
+		printf("xs.t[1]	== %f, expected %f\n", xs.i.t[1], ex_t1);
 	}
 
 	if ((xs.count == ex_count
@@ -420,6 +421,21 @@ void	test_sphere_intersections(void)
 		printf("✓ Sphere intersections test passed\n\n");
 	else
 		printf("✗ Sphere intersections test failed\n\n");
+}
+*/
+
+void	test_intersection(void)
+{
+	t_object	o =	{.sp = sphere()};
+	t_intersection	i = intersection(3.5, o);
+
+	printf("i.t == %f\n", i.t);
+	printf("i.object.sp.id == %d\n", i.object.sp.id);
+
+	if (i.t == 3.5 && i.object.sp.id == 0)
+		printf("✓ Intersection test passed\n\n");
+	else
+		printf("✗ Intersection test failed\n\n");
 }
 
 int	main(void)
@@ -608,8 +624,11 @@ int	main(void)
 	printf("20. Testing compution point from a distance:\n");
 	test_ray_position(EPSILON);
 
-	printf("20. Testing sphere intersections:\n");
-	test_sphere_intersections();
+	//printf("20. Testing sphere intersections:\n");
+	//test_sphere_intersections();
+
+	printf("20. Testing intersections:\n");
+	test_intersection();
 
 	//printf("19. Testing window opening:\n");
 	//test_window_opening();

@@ -1,7 +1,11 @@
 #ifndef RAY_H
 # define RAY_H
 
-#include "vector.h"
+# include "vector.h"
+
+# ifndef MAX_INTERSECTION
+#  define MAX_INTERSECTION 10
+# endif
 
 typedef struct s_ray
 {
@@ -16,10 +20,21 @@ typedef struct s_sphere
 	double	radius;
 }	t_sphere;
 
+typedef union u_object
+{
+	t_sphere	sp;
+}	t_object;
+
+typedef struct s_intersection
+{
+	double		t;
+	t_object	object;
+}	t_intersection;
+
 typedef struct s_intersect
 {
-	int		count;
-	double	t[2];
+	int				count;
+	t_intersection	i[MAX_INTERSECTION];
 }	t_intersect;
 
 struct s_quadratic
@@ -30,10 +45,13 @@ struct s_quadratic
 	double	discriminant;
 };
 
-t_ray		ray_constructor(t_vec3 origin, t_vec3 direction);
-t_vec3		ray_position(t_ray ray, double t);
+t_ray			ray_constructor(t_vec3 origin, t_vec3 direction);
+t_vec3			ray_position(t_ray ray, double t);
 
-t_sphere	sphere(void);
-t_intersect	sphere_intersect(t_ray ray, t_sphere sphere);
+t_sphere		sphere(void);
+t_intersect		sphere_intersect(t_ray ray, t_sphere sphere);
+
+t_intersection	intersection(double t, t_object object);
+t_intersect		*intersections(t_intersection *items, t_intersect *result, int size);
 
 #endif
