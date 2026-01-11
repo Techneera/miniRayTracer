@@ -171,7 +171,7 @@ void	submatrix_constructor_4x4(double *original, double *result, int row, int co
 
 double	minor_matrix_3x3(double *m, int row, int col)
 {
-	double	tmp[4];
+	double	tmp[9];
 
 	submatrix_constructor_3x3(m, tmp, row, col);
 	return (matrix_determinant_2x2(tmp));
@@ -240,7 +240,37 @@ int	matrix_invertability(double *m)
 	double	det;
 
 	det = determinant(m, 4);
-	if (!det)
+	if (fabs(det) < 1e-10)
 		return (0);
 	return (1);
+}
+
+void	matrix_inverse(double *m, double *inv)
+{
+	double	det;
+	double	cofactor_matrix[16];
+	int		i;
+	int		j;
+
+	det = determinant(m, 4);
+	if (fabs(det) < 1e-10)
+		return ;
+	i = 0;
+	while (i < DIM4)
+	{
+		j = 0;
+		while (j < DIM4)
+		{
+			cofactor_matrix[i * DIM4 + j] = cofactor_compute_3x3(m, i, j);
+			j++;
+		}
+		i++;
+	}
+	matrix_transpose(cofactor_matrix);
+	i = 0;
+	while (i < 16)
+	{
+		inv[i] = cofactor_matrix[i] / det;
+		i++;
+	}
 }

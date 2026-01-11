@@ -395,6 +395,7 @@ void	test_identity_matrix_constructor(const double epsilon)
 	double	matrix[16];
 	bool	is_identity;
 
+	is_identity = true;
 	identity_matrix_constructor(matrix);
 	print_matrix("Identity Matrix", matrix, 4);
 
@@ -687,7 +688,34 @@ void	test_invertability(void)
 	if (matrix_invertability(matrix_a) == 1 && matrix_invertability(matrix_b) == 0)
 		printf("✓ Invertability compute test passed\n\n");
 	else
-		printf("✗ Cofactor compute test failed\n\n");
+		printf("✗ Invertability compute test failed\n\n");
+}
+
+static
+void	test_matrix_inverse(const double epsilon)
+{
+	double	matrix_a[16] = {8.0, -5.0, 9.0, 2.0, \
+							7.0, 5.0, 6.0, 1.0, \
+							-6.0, 0.0, 9.0, 6.0, \
+							-3.0, 0.0, -9.0, -4.0};
+	double	matrix_b[16] = {9.0, 3.0, 0.0, 9.0, \
+							-5.0, -2.0, -6.0, -3.0, \
+							-4.0, 9.0, 6.0, 4.0, \
+							-7.0, 6.0, 6.0, 2.0};
+	double	inverse_a[16] = {0.0};
+	double	inverse_b[16] = {0.0};
+	matrix_inverse(matrix_a, inverse_a);
+	matrix_inverse(matrix_b, inverse_b);
+	double	expected_a[16] = {-0.15385, -0.15385, -0.28205, -0.53846, -0.07692, 0.12308, 0.02564, 0.03077, 0.35897, 0.35897, 0.43590, 0.92308, -0.69231, -0.69231, -0.76923, -1.92308};
+	double	expected_b[16] = {-0.04074 , -0.07778 , 0.14444 , -0.22222 ,
+-0.07778 , 0.03333 , 0.36667 , -0.33333 ,
+-0.02901 , -0.14630 , -0.10926 , 0.12963 ,
+0.17778 , 0.06667 , -0.26667 , 0.33333};
+
+	if (matrices_equal(inverse_a, expected_a, 4, epsilon) && matrices_equal(inverse_b, expected_b, 4, epsilon))
+		printf("✓ Inverse compute test passed\n\n");
+	else
+		printf("✗ Inverse compute test failed\n\n");
 }
 
 /* *********************************************************************** */
@@ -842,9 +870,13 @@ int	main(void)
 	printf("29. Testing invertability function:\n");
 	test_invertability();
 
+	printf("30. Testing matrix inverse function:\n");
+	test_matrix_inverse(EPSILON);
+
 	// Transformations Tests
-	printf("30. Testing matrix translation function:\n");
+	printf("31. Testing matrix translation function:\n");
 	test_translation_matrix(EPSILON);
+
 	printf("=== Test Suite Complete ===\n");
 
 	return (0);

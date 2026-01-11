@@ -22,6 +22,7 @@ double	determinant3x3(double *m);
 double	determinant4x4(double *m);
 double	determinant(double *m, int size);
 int		matrix_invertability(double *m);
+void	matrix_inverse(double *m, double *inv);
 
 void	matrix_translation_constructor(double *m_trans, double x, double y, double z);
 #endif
