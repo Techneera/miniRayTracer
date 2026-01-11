@@ -234,3 +234,13 @@ double	determinant(double *m, int size)
 		return (determinant4x4(m));
 	return (0.0);
 }
+
+int	matrix_invertability(double *m)
+{
+	double	det;
+
+	det = determinant(m, 4);
+	if (!det)
+		return (0);
+	return (1);
+}
