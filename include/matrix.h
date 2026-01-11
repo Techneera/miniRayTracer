@@ -1,6 +1,8 @@
 #ifndef MATRIX_H
 # define MATRIX_H
 
+# include "vector.h"
+
 # define DIM2 2
 # define DIM3 3
 # define DIM4 4
@@ -19,5 +21,7 @@ double	cofactor_compute_3x3(double *m, int row, int col);
 double	determinant3x3(double *m);
 double	determinant4x4(double *m);
 double	determinant(double *m, int size);
+int		matrix_invertability(double *m);
 
+void	matrix_translation_constructor(double *m_trans, double x, double y, double z);
 #endif

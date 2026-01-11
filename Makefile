@@ -23,7 +23,7 @@ VEC_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(VEC_SRCS))
 
 # ------------------------------ MATRIX -------------------------------- #
 
-_MATRIX_SRCS = matrix_ops.c
+_MATRIX_SRCS = matrix_ops.c matrix_transforms.c
 MATRIX_SRCS = $(patsubst %.c, $(MATDIR)/%.c, $(_MATRIX_SRCS))
 MATRIX_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(MATRIX_SRCS))
 

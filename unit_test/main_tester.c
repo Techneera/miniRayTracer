@@ -27,7 +27,7 @@ void	print_matrix(const char *name, double *matrix, int size)
 		j = 0;
 		while (j < size)
 		{
-			printf("%.3f", matrix[i * size + j]);
+			printf("%.3f ", matrix[i * size + j]);
 			j++;
 		}
 		i++;
@@ -678,6 +678,62 @@ void	test_determinant_function(const double epsilon)
 		printf("✗ General determinant function test failed\n\n");
 }
 
+static
+void	test_invertability(void)
+{
+	double	matrix_a[16] = {6.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 6.0, 4.0, -9.0, 3.0, -7.0, 9.0, 1.0, 7.0, -6.0};
+	double	matrix_b[16] = {-4.0, 2.0, -2.0, -3.0, 9.0, 6.0, 2.0, 6.0, 0.0, -5.0, 1.0, -5.0, 0.0, 0.0, 0.0, 0.0};
+
+	if (matrix_invertability(matrix_a) == 1 && matrix_invertability(matrix_b) == 0)
+		printf("✓ Invertability compute test passed\n\n");
+	else
+		printf("✗ Cofactor compute test failed\n\n");
+}
+
+/* *********************************************************************** */
+/*                             TRANSFORMS FUNCTIONS                         */
+/* *********************************************************************** */
+
+static
+void	test_translation_matrix(const double epsilon)
+{
+	double translation_matrix[16];
+	t_vec3 point_a;
+	t_vec3 result;
+	t_vec3 expected;
+	
+	expected = point_constructor(2.0, 1.0, 7.0);
+	point_a = point_constructor(-3.0, 4.0, 5.0);
+	matrix_translation_constructor(translation_matrix, 5.0, -3.0, 2.0);
+	print_matrix("Translation matrix", translation_matrix, 4);
+	result = matrix_vector_multiply(translation_matrix, point_a);
+	if (vectors_equal(result, expected, epsilon))
+		printf("✓ Matrix translation test passed\n\n");
+	else
+		printf("✗ Matrix translation test failed\n\n");
+}
+
+/*
+static
+void	test_translation_matrix_inverse(const double epsilon)
+{
+	double translation_matrix[16];
+	t_vec3 point_a;
+	t_vec3 result;
+	t_vec3 expected;
+	
+	expected = point_constructor(2.0, 1.0, 7.0);
+	point_a = point_constructor(-3.0, 4.0, 5.0);
+	matrix_translation_constructor(translation_matrix, 5.0, -3.0, 2.0);
+	print_matrix("Translation matrix", translation_matrix, 4);
+	result = matrix_vector_multiply(translation_matrix, point_a);
+	if (vectors_equal(result, expected, epsilon))
+		printf("✓ Matrix translation test passed\n\n");
+	else
+		printf("✗ Matrix translation test failed\n\n");
+}
+*/
+
 /* *********************************************************************** */
 /*                             MAIN TESTER                                 */
 /* *********************************************************************** */
@@ -783,6 +839,12 @@ int	main(void)
 	printf("28. Testing general determinant function:\n");
 	test_determinant_function(EPSILON);
 
+	printf("29. Testing invertability function:\n");
+	test_invertability();
+
+	// Transformations Tests
+	printf("30. Testing matrix translation function:\n");
+	test_translation_matrix(EPSILON);
 	printf("=== Test Suite Complete ===\n");
 
 	return (0);
