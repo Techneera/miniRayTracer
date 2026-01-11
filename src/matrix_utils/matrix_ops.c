@@ -187,6 +187,18 @@ double	cofactor_compute_3x3(double *m, int row, int col)
 	return (tmp);
 }
 
+double	cofactor_compute_4x4(double *m, int row, int col)
+{
+	double	submatrix[9];
+	double minor;
+
+	submatrix_constructor_4x4(m, submatrix, row, col);
+	minor = matrix_determinant_3x3(submatrix);
+	if ((row + col) % 2 != 0)
+		return (-minor);
+	return (minor);
+}
+
 double	determinant3x3(double *m)
 {
 	double	det;
@@ -261,7 +273,7 @@ void	matrix_inverse(double *m, double *inv)
 		j = 0;
 		while (j < DIM4)
 		{
-			cofactor_matrix[i * DIM4 + j] = cofactor_compute_3x3(m, i, j);
+			cofactor_matrix[i * DIM4 + j] = cofactor_compute_4x4(m, i, j);
 			j++;
 		}
 		i++;

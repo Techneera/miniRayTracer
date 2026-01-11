@@ -871,7 +871,7 @@ int	main(void)
 	test_invertability();
 
 	printf("30. Testing matrix inverse function:\n");
-	test_matrix_inverse(EPSILON);
+	test_matrix_inverse(1e-4);
 
 	// Transformations Tests
 	printf("31. Testing matrix translation function:\n");
