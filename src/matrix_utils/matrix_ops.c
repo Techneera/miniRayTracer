@@ -257,7 +257,7 @@ int	matrix_invertability(double *m)
 	return (1);
 }
 
-void	matrix_inverse(double *m, double *inv)
+void	matrix_inverse(double *m)
 {
 	double	det;
 	double	cofactor_matrix[16];
@@ -282,7 +282,7 @@ void	matrix_inverse(double *m, double *inv)
 	i = 0;
 	while (i < 16)
 	{
-		inv[i] = cofactor_matrix[i] / det;
+		m[i] = cofactor_matrix[i] / det;
 		i++;
 	}
 }

@@ -702,17 +702,15 @@ void	test_matrix_inverse(const double epsilon)
 							-5.0, -2.0, -6.0, -3.0, \
 							-4.0, 9.0, 6.0, 4.0, \
 							-7.0, 6.0, 6.0, 2.0};
-	double	inverse_a[16] = {0.0};
-	double	inverse_b[16] = {0.0};
-	matrix_inverse(matrix_a, inverse_a);
-	matrix_inverse(matrix_b, inverse_b);
+	matrix_inverse(matrix_a);
+	matrix_inverse(matrix_b);
 	double	expected_a[16] = {-0.15385, -0.15385, -0.28205, -0.53846, -0.07692, 0.12308, 0.02564, 0.03077, 0.35897, 0.35897, 0.43590, 0.92308, -0.69231, -0.69231, -0.76923, -1.92308};
 	double	expected_b[16] = {-0.04074 , -0.07778 , 0.14444 , -0.22222 ,
 -0.07778 , 0.03333 , 0.36667 , -0.33333 ,
 -0.02901 , -0.14630 , -0.10926 , 0.12963 ,
 0.17778 , 0.06667 , -0.26667 , 0.33333};
 
-	if (matrices_equal(inverse_a, expected_a, 4, epsilon) && matrices_equal(inverse_b, expected_b, 4, epsilon))
+	if (matrices_equal(matrix_a, expected_a, 4, epsilon) && matrices_equal(matrix_b, expected_b, 4, epsilon))
 		printf("✓ Inverse compute test passed\n\n");
 	else
 		printf("✗ Inverse compute test failed\n\n");
@@ -736,12 +734,11 @@ void	test_translation_matrix(const double epsilon)
 	print_matrix("Translation matrix", translation_matrix, 4);
 	result = matrix_vector_multiply(translation_matrix, point_a);
 	if (vectors_equal(result, expected, epsilon))
-		printf("✓ Matrix translation test passed\n\n");
+		printf("✓ Matrix translation (point) test passed\n\n");
 	else
-		printf("✗ Matrix translation test failed\n\n");
+		printf("✗ Matrix translation (point) test failed\n\n");
 }
 
-/*
 static
 void	test_translation_matrix_inverse(const double epsilon)
 {
@@ -750,17 +747,158 @@ void	test_translation_matrix_inverse(const double epsilon)
 	t_vec3 result;
 	t_vec3 expected;
 	
-	expected = point_constructor(2.0, 1.0, 7.0);
+	expected = point_constructor(-8.0, 7.0, 3.0);
 	point_a = point_constructor(-3.0, 4.0, 5.0);
 	matrix_translation_constructor(translation_matrix, 5.0, -3.0, 2.0);
-	print_matrix("Translation matrix", translation_matrix, 4);
+	matrix_inverse(translation_matrix);
+	print_matrix("Inverse matrix", translation_matrix, 4);
 	result = matrix_vector_multiply(translation_matrix, point_a);
 	if (vectors_equal(result, expected, epsilon))
-		printf("✓ Matrix translation test passed\n\n");
+		printf("✓ Inverse matrix translation test passed\n\n");
 	else
-		printf("✗ Matrix translation test failed\n\n");
+		printf("✗ Inverse matrix translation test failed\n\n");
 }
-*/
+
+static
+void	test_translation_matrix_vector(const double epsilon)
+{
+	double translation_matrix[16];
+	t_vec3 vector_a;
+	t_vec3 result;
+	t_vec3 expected;
+	
+	expected = vector_constructor(-3.0, 4.0, 5.0);
+	vector_a = vector_constructor(-3.0, 4.0, 5.0);
+	matrix_translation_constructor(translation_matrix, 5.0, -3.0, 2.0);
+	print_matrix("Translation matrix", translation_matrix, 4);
+	result = matrix_vector_multiply(translation_matrix, vector_a);
+	if (vectors_equal(result, expected, epsilon))
+		printf("✓ Translation matrix (vector) test passed\n\n");
+	else
+		printf("✗ Translation matrix (vector) test failed\n\n");
+}
+
+static
+void	test_scale_point(const double epsilon)
+{
+	double scale_matrix[16];
+	t_vec3 point_a;
+	t_vec3 result;
+	t_vec3 expected;
+	
+	expected = point_constructor(-8.0, 18.0, 32.0);
+	point_a = point_constructor(-4.0, 6.0, 8.0);
+	print_matrix("Scale matrix", scale_matrix, 4);
+	result = matrix_scale(scale_matrix, point_constructor(2.0, 3.0, 4.0), point_a);
+	if (vectors_equal(result, expected, epsilon))
+		printf("✓ Matrix scale point test passed\n\n");
+	else
+		printf("✗ Matrix scale point test failed\n\n");
+}
+
+static
+void	test_scale_vector(const double epsilon)
+{
+	double scale_matrix[16];
+	t_vec3 result;
+	t_vec3 expected;
+	
+	expected = vector_constructor(-8.0, 18.0, 32.0);
+	print_matrix("Scale matrix", scale_matrix, 4);
+	result = matrix_scale(scale_matrix, point_constructor(2.0, 3.0, 4.0), vector_constructor(-4.0, 6.0, 8.0));
+	if (vectors_equal(result, expected, epsilon))
+		printf("✓ Matrix scale vector test passed\n\n");
+	else
+		printf("✗ Matrix scale vector test failed\n\n");
+}
+
+static
+void	test_scale_inverse(const double epsilon)
+{
+	double scale_matrix[16];
+	t_vec3 result;
+	t_vec3 expected;
+	
+	expected = vector_constructor(-2.0, 2.0, 2.0);
+	print_matrix("Scale matrix", scale_matrix, 4);
+	result = matrix_scale_inverse(scale_matrix, point_constructor(2.0, 3.0, 4.0), vector_constructor(-4.0, 6.0, 8.0));
+	if (vectors_equal(result, expected, epsilon))
+		printf("✓ Matrix scale inverse test passed\n\n");
+	else
+		printf("✗ Matrix scale inverse test failed\n\n");
+}
+
+static
+void	test_rotation_x(const double epsilon)
+{
+	double rotation_matrix[16];
+	t_vec3 result1;
+	t_vec3 result2;
+	t_vec3 expected;
+	
+	print_matrix("Rotation matrix", rotation_matrix, 4);
+	result1 = matrix_rotation(point_constructor(0.0, 1.0, 0.0), M_PI / 4, rotation_x_constructor);
+
+	if (vectors_equal(result1, point_constructor(0.0, 0.707106781187, 0.707106781187), epsilon))
+		printf("✓ Matrix rotation around x test passed\n\n");
+	else
+		printf("✗ Matrix rotation around x test failed\n\n");
+
+	result2 = matrix_rotation(point_constructor(0.0, 1.0, 0.0), M_PI / 2, rotation_x_constructor);
+	expected = point_constructor(0.0, 0.0, 1.0);
+	if (vectors_equal(result2, expected, epsilon))
+		printf("✓ Matrix rotation around x test passed\n\n");
+	else
+		printf("✗ Matrix rotation around x test failed\n\n");
+}
+
+static
+void	test_rotation_y(const double epsilon)
+{
+	double rotation_matrix[16];
+	t_vec3 result1;
+	t_vec3 result2;
+	t_vec3 expected;
+	
+	print_matrix("Rotation matrix", rotation_matrix, 4);
+	result1 = matrix_rotation(point_constructor(0.0, 0.0, 1.0), M_PI / 4, rotation_y_constructor);
+
+	if (vectors_equal(result1, point_constructor(0.707106781187, 0.0, 0.707106781187), epsilon))
+		printf("✓ Matrix rotation around y test passed\n\n");
+	else
+		printf("✗ Matrix rotation around y test failed\n\n");
+
+	result2 = matrix_rotation(point_constructor(0.0, 0.0, 1.0), M_PI / 2, rotation_y_constructor);
+	expected = point_constructor(1.0, 0.0, 0.0);
+	if (vectors_equal(result2, expected, epsilon))
+		printf("✓ Matrix rotation around y test passed\n\n");
+	else
+		printf("✗ Matrix rotation around y test failed\n\n");
+}
+
+static
+void	test_rotation_z(const double epsilon)
+{
+	double rotation_matrix[16];
+	t_vec3 result1;
+	t_vec3 result2;
+	t_vec3 expected;
+	
+	print_matrix("Rotation matrix", rotation_matrix, 4);
+	result1 = matrix_rotation(point_constructor(0.0, 1.0, 0.0), M_PI / 4, rotation_z_constructor);
+
+	if (vectors_equal(result1, point_constructor(-0.707106781187, 0.707106781187, 0.0), epsilon))
+		printf("✓ Matrix rotation around z test passed\n\n");
+	else
+		printf("✗ Matrix rotation around z test failed\n\n");
+
+	result2 = matrix_rotation(point_constructor(0.0, 1.0, 0.0), M_PI / 2, rotation_z_constructor);
+	expected = point_constructor(-1.0, 0.0, 0.0);
+	if (vectors_equal(result2, expected, epsilon))
+		printf("✓ Matrix rotation around z test passed\n\n");
+	else
+		printf("✗ Matrix rotation around z test failed\n\n");
+}
 
 /* *********************************************************************** */
 /*                             MAIN TESTER                                 */
@@ -876,6 +1014,30 @@ int	main(void)
 	// Transformations Tests
 	printf("31. Testing matrix translation function:\n");
 	test_translation_matrix(EPSILON);
+
+	printf("32. Testing inverse matrix translation function:\n");
+	test_translation_matrix_inverse(EPSILON);
+
+	printf("33. Testing matrix translation function applied to vector:\n");
+	test_translation_matrix_vector(EPSILON);
+
+	printf("34. Testing matrix scale function applied to point:\n");
+	test_scale_point(EPSILON);
+
+	printf("35. Testing matrix scale function applied to vector:\n");
+	test_scale_vector(EPSILON);
+
+	printf("36. Testing matrix scale function applied to inverse:\n");
+	test_scale_inverse(EPSILON);
+
+	printf("37. Testing matrix rotaion function applied to x axis:\n");
+	test_rotation_x(EPSILON);
+
+	printf("38. Testing matrix rotaion function applied to y axis:\n");
+	test_rotation_y(EPSILON);
+
+	printf("39. Testing matrix rotaion function applied to z axis:\n");
+	test_rotation_z(EPSILON);
 
 	printf("=== Test Suite Complete ===\n");
 
