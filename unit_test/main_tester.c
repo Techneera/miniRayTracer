@@ -1,6 +1,17 @@
+#include "mlx.h"
 #include "vector.h"
-#include "color.h"
+#include "canvas.h"
 #include "matrix.h"
+#include "ray.h"
+
+// Helper to get pixel from canvas
+t_uint	get_pixel(t_canvas *c, int x, int y)
+{
+	char	*dest;
+
+	dest = c->img.addr + (y * c->img.line_len + x * (c->img.bpp / 8));
+	return (*(t_uint *)dest);
+}
 
 /* *********************************************************************** */
 /*                             HELPER FUNCTIONS                            */
@@ -383,6 +394,130 @@ void	test_color_to_int(void)
 		printf("✓ Color conversion test passed\n\n");
 	else
 		printf("✗ Color conversion test failed\n\n");
+}
+
+void	test_canvas_constructor(double epsilon)
+{
+	t_canvas	expected_canvas = {
+		.width = 10,
+		.height = 20,
+		.bg_color = {
+			.x = 0.0,
+			.y = 0.0,
+			.z = 0.0,
+			.w = 2.0
+		},
+	};
+	t_canvas	canvas;
+
+	if (canvas_constructor(10, 20, &canvas) == false)
+	{
+		printf("✗ Canvas construction test failed (returned false)\n\n");
+		return ;
+	}
+	printf("width = %d\nheight = %d\n", canvas.width, canvas.height);
+	print_vector("bg_color", canvas.bg_color)	;
+	if (canvas.width == expected_canvas.width
+	 	&& canvas.height == expected_canvas.height
+	 	&& vectors_equal(canvas.bg_color, expected_canvas.bg_color, epsilon))
+		printf("✓ Canvas construction test passed\n\n");
+	else
+		printf("✗ Canvas construction test failed\n\n");
+}
+
+void	test_write_pixel(void)
+{
+	t_canvas	canvas;
+	t_vec3		red = color_constructor(1.0, 0, 0);
+	t_uint		expected = 0xff0000;
+	t_uint		pixel;
+
+	if (canvas_constructor(10, 20, &canvas) == false)
+	{
+		printf("✗ Writing to canvas test failed (returned false)\n\n");
+		return ;
+	}
+	write_pixel(&canvas, 2, 3, red);
+	pixel = get_pixel(&canvas, 2, 3);
+	printf("Pixel at x = 2, y = 3 -> %d\n", pixel);
+	if (pixel == expected)
+		printf("✓ Writing to canvas test passed\n\n");
+	else
+		printf("✗ Writing to canvas test failed\n\n");
+}
+
+// =================================== TEST PROJECTILES ===================================
+struct s_projectile
+{
+	t_vec3	position;
+	t_vec3	velocity;
+};
+
+struct s_environment
+{
+	t_vec3	gravity;
+	t_vec3	wind;
+};
+
+struct s_projectile tick(struct s_projectile proj, struct s_environment env)
+{
+	t_vec3	position;
+	t_vec3	velocity;
+
+	position = vector_add(proj.position, proj.velocity);
+	velocity = vector_add(proj.velocity, vector_add(env.gravity, env.wind));
+	struct s_projectile projectile = {
+			.velocity = velocity,
+			.position = position,
+	};
+	return (projectile);
+}
+
+void	test_window_opening(void)
+{
+	t_canvas	c;
+	t_vec3		red = color_constructor(1.0, 0, 0);
+
+	if (canvas_constructor(1000, 1000, &c) == false)
+	{
+		printf("✗ canvas construction failed (returned false)\n\n");
+		return ;
+	}
+	struct s_projectile proj = {
+		.position = point_constructor(0, 1.0, 0),
+		.velocity = vector_scale(vector_normalization(vector_constructor(2.0, 1.8, 0)), 11.25),
+	};
+	struct s_environment env = {
+		.gravity = vector_constructor(0, -0.1, 0),
+		.wind = vector_constructor(-0.01, 0, 0),
+	};
+	struct s_projectile p = proj;
+	while (p.position.y > 0)
+	{
+		int x = (int)p.position.x;
+		int y = c.height - (int)p.position.y;
+		
+		write_pixel(&c, x, y, red);
+		p = tick(p, env);
+	}
+	void	*win = mlx_new_window(c.mlx, c.width, c.height, "Tester");
+	mlx_put_image_to_window(c.mlx, win, c.img.img, 0, 0);
+	mlx_loop(c.mlx);
+}
+
+void	test_ray_constructor(const double epsilon)
+{
+	t_vec3	origin = point_constructor(1, 2, 3);
+	t_vec3	direction = vector_constructor(4, 5, 6);
+	t_ray	r = ray_constructor(origin, direction);
+
+	print_vector("r.origin", origin);
+	print_vector("r.direction", direction);
+	if (vectors_equal(r.origin, origin, epsilon)
+		&& vectors_equal(r.direction, direction, epsilon))
+		printf("✓ Ray construction test passed\n\n");
+	else
+		printf("✗ Ray construction test failed\n\n");
 }
 
 /* *********************************************************************** */
@@ -968,75 +1103,86 @@ int	main(void)
 	printf("16. Testing color conversion:\n");
 	test_color_to_int();
 
+	printf("17. Testing canvas construction:\n");
+	test_canvas_constructor(EPSILON);
+
+	printf("18. Testing writing to canvas:\n");
+	test_write_pixel();
+
+	printf("19. Testing ray construction:\n");
+	test_ray_constructor(EPSILON);
+
+	//printf("19. Testing window opening:\n");
+	//test_window_opening();
 	// Matrix Tests
-	printf("17. Testing identity matrix constructor:\n");
+	printf("20. Testing identity matrix constructor:\n");
 	test_identity_matrix_constructor(EPSILON);
 	
-	printf("18. Testing matrix transpose:\n");
+	printf("21. Testing matrix transpose:\n");
 	test_matrix_transpose(EPSILON);
 	
-	printf("19. Testing matrix multiply:\n");
+	printf("22. Testing matrix multiply:\n");
 	test_matrix_multiply(EPSILON);
 	
-	printf("20. Testing matrix row constructor:\n");
+	printf("23. Testing matrix row constructor:\n");
 	test_matrix_row_constructor(EPSILON);
 	
-	printf("21. Testing matrix-vector multiply:\n");
+	printf("24. Testing matrix-vector multiply:\n");
 	test_matrix_vector_multiply(EPSILON);
 	
-	printf("22. Testing 2x2 determinant:\n");
+	printf("25. Testing 2x2 determinant:\n");
 	test_matrix_determinant_2x2(EPSILON);
 	
-	printf("23. Testing 3x3 determinant:\n");
+	printf("26. Testing 3x3 determinant:\n");
 	test_matrix_determinant_3x3(EPSILON);
 	
-	printf("24. Testing 3x3 submatrix constructor:\n");
+	printf("27. Testing 3x3 submatrix constructor:\n");
 	test_submatrix_constructor_3x3(EPSILON);
 	
-	printf("25. Testing 4x4 submatrix constructor:\n");
+	printf("28. Testing 4x4 submatrix constructor:\n");
 	test_submatrix_constructor_4x4(EPSILON);
 	
-	printf("26. Testing minor matrix:\n");
+	printf("29. Testing minor matrix:\n");
 	test_minor_matrix_3x3(EPSILON);
 	
-	printf("27. Testing cofactor compute:\n");
+	printf("30. Testing cofactor compute:\n");
 	test_cofactor_compute_3x3(EPSILON);
 	
-	printf("28. Testing general determinant function:\n");
+	printf("31. Testing general determinant function:\n");
 	test_determinant_function(EPSILON);
 
-	printf("29. Testing invertability function:\n");
+	printf("32. Testing invertability function:\n");
 	test_invertability();
 
-	printf("30. Testing matrix inverse function:\n");
+	printf("33. Testing matrix inverse function:\n");
 	test_matrix_inverse(1e-4);
 
 	// Transformations Tests
-	printf("31. Testing matrix translation function:\n");
+	printf("34. Testing matrix translation function:\n");
 	test_translation_matrix(EPSILON);
 
-	printf("32. Testing inverse matrix translation function:\n");
+	printf("35. Testing inverse matrix translation function:\n");
 	test_translation_matrix_inverse(EPSILON);
 
-	printf("33. Testing matrix translation function applied to vector:\n");
+	printf("36. Testing matrix translation function applied to vector:\n");
 	test_translation_matrix_vector(EPSILON);
 
-	printf("34. Testing matrix scale function applied to point:\n");
+	printf("37. Testing matrix scale function applied to point:\n");
 	test_scale_point(EPSILON);
 
-	printf("35. Testing matrix scale function applied to vector:\n");
+	printf("38. Testing matrix scale function applied to vector:\n");
 	test_scale_vector(EPSILON);
 
-	printf("36. Testing matrix scale function applied to inverse:\n");
+	printf("39. Testing matrix scale function applied to inverse:\n");
 	test_scale_inverse(EPSILON);
 
-	printf("37. Testing matrix rotaion function applied to x axis:\n");
+	printf("40. Testing matrix rotaion function applied to x axis:\n");
 	test_rotation_x(EPSILON);
 
-	printf("38. Testing matrix rotaion function applied to y axis:\n");
+	printf("41. Testing matrix rotaion function applied to y axis:\n");
 	test_rotation_y(EPSILON);
 
-	printf("39. Testing matrix rotaion function applied to z axis:\n");
+	printf("42. Testing matrix rotaion function applied to z axis:\n");
 	test_rotation_z(EPSILON);
 
 	printf("=== Test Suite Complete ===\n");

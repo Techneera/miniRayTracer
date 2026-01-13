@@ -1,4 +1,4 @@
-#include "color.h"
+#include "canvas.h"
 #include "vector.h"
 
 t_vec3	color_constructor(double r, double g, double b)

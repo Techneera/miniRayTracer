@@ -1,10 +1,10 @@
-#include "color.h"
+#include "canvas.h"
 
 int	color_to_int(t_vec3 color)
 {
-	uint8_t	r;
-	uint8_t	g;
-	uint8_t	b;
+	int	r;
+	int	g;
+	int	b;
 
 	r = round(color.x * RGB_MAX);
 	g = round(color.y * RGB_MAX);
