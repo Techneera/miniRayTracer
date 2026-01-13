@@ -13,8 +13,9 @@ t_sphere	sphere(void)
 
 t_intersect	sphere_intersect(t_ray ray, t_sphere sphere)
 {
-	t_intersect			i;
+	t_intersect			this;
 	t_vec3				sphere_to_ray;
+	double				right_side;
 	struct s_quadratic	q;
 
 	sphere_to_ray = vector_sub(ray.origin, sphere.center);
@@ -23,12 +24,13 @@ t_intersect	sphere_intersect(t_ray ray, t_sphere sphere)
 	q.c = vector_dot_product(sphere_to_ray, sphere_to_ray) - 1;
 	q.discriminant = q.b * q.b - 4 * q.a * q.c;
 	if (q.discriminant < 0)
-		i.count = 0;
+		this.count = 0;
 	else
 	{
-		i.count = 2;
-		i.t[0] = (-q.b - sqrt(q.discriminant)) / (2 * q.a);
-		i.t[1] = (-q.b + sqrt(q.discriminant)) / (2 * q.a);
+		right_side = sqrt(q.discriminant) / (2 * q.a);
+		this.count = 2;
+		this.i[0].t = (-q.b - right_side);
+		this.i[1].t = (-q.b + right_side);
 	}
-	return (i);
+	return (this);
 }
