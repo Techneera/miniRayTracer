@@ -42,7 +42,9 @@ MATRIX_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(MATRIX_SRCS))
 
 # ------------------------------ COLORS -------------------------------- #
 
-_RAY_SRCS = ray_constructor.c
+_RAY_SRCS = ray_constructor.c \
+			sphere.c \
+			intersection.c
 RAY_SRCS = $(patsubst %.c, $(RAYDIR)/%.c, $(_RAY_SRCS))
 RAY_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(RAY_SRCS))
 
