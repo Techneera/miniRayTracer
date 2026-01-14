@@ -53,5 +53,6 @@ t_intersect		sphere_intersect(t_ray ray, t_sphere sphere);
 
 t_intersection	intersection(double t, t_object object);
 t_intersect		*intersections(t_intersection *items, t_intersect *result, int size);
+t_intersection	*hit(t_intersect *items, t_intersection *smallest, int size);
 
 #endif
