@@ -6,17 +6,14 @@ void	matrix_translation_constructor(double *m_trans, double x, double y, double 
 	m_trans[1] = 0.0;
 	m_trans[2] = 0.0;
 	m_trans[3] = x;
-
 	m_trans[4] = 0.0;
 	m_trans[5] = 1.0;
 	m_trans[6] = 0.0;
 	m_trans[7] = y;
-
 	m_trans[8] = 0.0;
 	m_trans[9] = 0.0;
 	m_trans[10] = 1.0;
 	m_trans[11] = z;
-
 	m_trans[12] = 0.0;
 	m_trans[13] = 0.0;
 	m_trans[14] = 0.0;
@@ -74,21 +71,23 @@ t_vec3	matrix_scale_inverse(double *scale_matrix, t_vec3 point_scale, t_vec3 poi
 
 void	rotation_x_constructor(double *m, double angle)
 {
+	double	cosine_;
+	double	sine_;
+
+	cosine_ = cos(angle);
+	sine_ = sin(angle);
 	m[0] = 1.0;
 	m[1] = 0.0;
 	m[2] = 0.0;
 	m[3] = 0.0;
-
 	m[4] = 0.0;
-	m[5] = cos(angle);
-	m[6] = -sin(angle);
+	m[5] = cosine_;
+	m[6] = -sine_;
 	m[7] = 0.0;
-
 	m[8] = 0.0;
-	m[9] = sin(angle);
-	m[10] = cos(angle);
+	m[9] = sine_;
+	m[10] = cosine_;
 	m[11] = 0.0;
-
 	m[12] = 0.0;
 	m[13] = 0.0;
 	m[14] = 0.0;
@@ -97,21 +96,23 @@ void	rotation_x_constructor(double *m, double angle)
 
 void	rotation_y_constructor(double *m, double angle)
 {
-	m[0] = cos(angle);
-	m[1] = 0.0;
-	m[2] = sin(angle);
-	m[3] = 0.0;
+	double	cosine_;
+	double	sine_;
 
+	cosine_ = cos(angle);
+	sine_ = sin(angle);
+	m[0] = cosine_;
+	m[1] = 0.0;
+	m[2] = sine_;
+	m[3] = 0.0;
 	m[4] = 0.0;
 	m[5] = 1.0;
 	m[6] = 0.0;
 	m[7] = 0.0;
-
-	m[8] = -sin(angle);
+	m[8] = -sine_;
 	m[9] = 0.0;
-	m[10] = cos(angle);
+	m[10] = cosine_;
 	m[11] = 0.0;
-
 	m[12] = 0.0;
 	m[13] = 0.0;
 	m[14] = 0.0;
@@ -120,21 +121,23 @@ void	rotation_y_constructor(double *m, double angle)
 
 void	rotation_z_constructor(double *m, double angle)
 {
-	m[0] = cos(angle);
-	m[1] = -sin(angle);
+	double	cosine_;
+	double	sine_;
+
+	cosine_ = cos(angle);
+	sine_ = sin(angle);
+	m[0] = cosine_;
+	m[1] = -sine_;
 	m[2] = 0.0;
 	m[3] = 0.0;
-
-	m[4] = sin(angle);
-	m[5] = cos(angle);
+	m[4] = sine_;
+	m[5] = cos_;
 	m[6] = 0.0;
 	m[7] = 0.0;
-
 	m[8] = 0.0;
 	m[9] = 0.0;
 	m[10] = 1.0;
 	m[11] = 0.0;
-
 	m[12] = 0.0;
 	m[13] = 0.0;
 	m[14] = 0.0;
