@@ -1,288 +1,152 @@
-#include "vector.h"
 #include "matrix.h"
 
-void	matrix_row_constructor(double *matrix, t_vec3 this, int row)
+t_mat4	matrix_multiply(t_mat4 a, t_mat4 b)
 {
-	int	col;
+	t_mat4	result;
+	int		i;
 
-	col = 0;
-	while (col < DIM4)
+	i = 0;
+	while(i < 4)
 	{
-		matrix[row * DIM4 + col] = this.v[col];
-		col++;
+		result.rows[i] = (b.rows[0] * a.m[i * 4]) + \
+						(b.rows[1] * a.m[i * 4 + 1]) + \
+						(b.rows[2] * a.m[i * 4 + 2]) + \
+						(b.rows[3] * a.m[i * 4 + 3]);
+		i++;
 	}
-}
-
-void	matrix_multiply(double *m1, double *m2, double *m3)
-{
-	m3[0] = m1[0] * m2[0] + m1[1] * m2[4] + m1[2] * m2[8] + m1[3] * m2[12];
-	m3[1] = m1[0] * m2[1] + m1[1] * m2[5] + m1[2] * m2[9] + m1[3] * m2[13];
-	m3[2] = m1[0] * m2[2] + m1[1] * m2[6] + m1[2] * m2[10] + m1[3] * m2[14];
-	m3[3] = m1[0] * m2[3] + m1[1] * m2[7] + m1[2] * m2[11] + m1[3] * m2[15];
-	m3[4] = m1[4] * m2[0] + m1[5] * m2[4] + m1[6] * m2[8] + m1[7] * m2[12];
-	m3[5] = m1[4] * m2[1] + m1[5] * m2[5] + m1[6] * m2[9] + m1[7] * m2[13];
-	m3[6] = m1[4] * m2[2] + m1[5] * m2[6] + m1[6] * m2[10] + m1[7] * m2[14];
-	m3[7] = m1[4] * m2[3] + m1[5] * m2[7] + m1[6] * m2[11] + m1[7] * m2[15];
-	m3[8] = m1[8] * m2[0] + m1[9] * m2[4] + m1[10] * m2[8] + m1[11] * m2[12];
-	m3[9] = m1[8] * m2[1] + m1[9] * m2[5] + m1[10] * m2[9] + m1[11] * m2[13];
-	m3[10] = m1[8] * m2[2] + m1[9] * m2[6] + m1[10] * m2[10] + m1[11] * m2[14];
-	m3[11] = m1[8] * m2[3] + m1[9] * m2[7] + m1[10] * m2[11] + m1[11] * m2[15];
-	m3[12] = m1[12] * m2[0] + m1[13] * m2[4] + m1[14] * m2[8] + m1[15] * m2[12];
-	m3[13] = m1[12] * m2[1] + m1[13] * m2[5] + m1[14] * m2[9] + m1[15] * m2[13];
-	m3[14] = m1[12] * m2[2] + m1[13] * m2[6] + m1[14] * m2[10] + m1[15] * m2[14];
-	m3[15] = m1[12] * m2[3] + m1[13] * m2[7] + m1[14] * m2[11] + m1[15] * m2[15];
-}
-
-t_vec3	matrix_vector_multiply(double *m, t_vec3 this)
-{
-	t_vec3	result;
-
-	result.x = m[0] * this.v[0] + m[1] * this.v[1] + m[2] * this.v[2] + m[3] * this.v[3];
-	result.y = m[4] * this.v[0] + m[5] * this.v[1] + m[6] * this.v[2] + m[7] * this.v[3];
-	result.z = m[8] * this.v[0] + m[9] * this.v[1] + m[10] * this.v[2] + m[11] * this.v[3];
-	result.w = m[12] * this.v[0] + m[13] * this.v[1] + m[14] * this.v[2] + m[15] * this.v[3];
 	return (result);
 }
 
-void	identity_matrix_constructor(double *m)
+t_vec3	matrix_vector_multiply(t_mat4 m, t_vec3 v)
 {
-	m[0] = 1.0;
-	m[1] = 0.0;
-	m[2] = 0.0;
-	m[3] = 0.0;
-	m[4] = 0.0;
-	m[5] = 1.0;
-	m[6] = 0.0;
-	m[7] = 0.0;
-	m[8] = 0.0;
-	m[9] = 0.0;
-	m[10] = 1.0;
-	m[11] = 0.0;
-	m[12] = 0.0;
-	m[13] = 0.0;
-	m[14] = 0.0;
-	m[15] = 1.0;
+	t_vec3	result;
+	t_f4	tmp;
+
+	tmp = m.rows[0] * v.v;
+	result.x = tmp[0] + tmp[1] + tmp[2] + tmp[3];
+	tmp = m.rows[1] * v.v;
+	result.y = tmp[0] + tmp[1] + tmp[2] + tmp[3];
+	tmp = m.rows[2] * v.v;
+	result.z = tmp[0] + tmp[1] + tmp[2] + tmp[3];
+	tmp = m.rows[3] * v.v;
+	result.w = tmp[0] + tmp[1] + tmp[2] + tmp[3];
+	if (result.w != 1.0f && result.w != 0.0)
+		result.v /= res.w;
+	return (result);
 }
 
-void	matrix_transpose(double *m)
+void	matrix_identity(t_mat4 *dst)
 {
-	double	tmp;
+	dst->row[0] = (t_f4){1, 0, 0, 0};
+	dst->row[1] = (t_f4){0, 1, 0, 0};
+	dst->row[2] = (t_f4){0, 0, 1, 0};
+	dst->row[3] = (t_f4){0, 0, 0, 1};
+}
+
+t_mat4	matrix_transpose(t_mat4 m)
+{
+	t_mat4	result;
 	int		i;
 	int		j;
-	int		idx_i;
-	int		idx_j;
 
-	i = 1;
-	while (i < DIM4)
+	i = 0;
+	while (i < 4)
 	{
 		j = 0;
-		while (j < i)
+		while (j < 4)
 		{
-			idx_i = i * DIM4 + j;
-			idx_j = j * DIM4 + i;
-			tmp = m[idx_i];
-			m[idx_i] = m[idx_j];
-			m[idx_j] = tmp;
+			result.m[j * 4 + i] = m.m[i * 4 + j];
 			j++;
 		}
 		i++;
 	}
+	return (result);
 }
 
-double	matrix_determinant_2x2(double *m)
+float	matrix_determinant_2x2(float a, float b, float c, float d)
 {
-	return (m[0] * m[3] - m[1] * m[2]);
+	return (a * d - b * c);
 }
 
-double	matrix_determinant_3x3(double *m)
+float	matrix_cofactor_3x3(t_mat4 m, int row, int col)
 {
-	return (m[0] * (m[4] * m[8] - m[5] * m[7]) - \
-m[1] * (m[3] * m[8] - m[5] * m[6]) + \
-m[2] * (m[3] * m[7] - m[4] * m[6]));
-}
+	int	idx[3];
+	int	idy[3];
+	int	k;
+	int	l;
 
-void	submatrix_constructor_3x3(double *original, double *result, int row, int col)
-{
-	int	original_row;
-	int	original_col;
-	int	result_row;
-	int	result_col;
-
-	original_row = 0;
-	result_row = 0;
-	while (original_row < DIM3)
+	k = -1;
+	l = 0;
+	while (++k < 4)
 	{
-		if (original_row == row)
-		{
-			original_row++;
-			continue ;
-		}
-		original_col = 0;
-		result_col = 0;
-		while (original_col < DIM3)
-		{
-			if (original_col == col)
-			{
-				original_col++;
-				continue ;
-			}
-			result[result_row * DIM2 + result_col] = original[original_row * DIM3 + original_col];
-			result_col++;
-			original_col++;
-		}
-		original_row++;
-		result_row++;
+		if (k != row)
+			idx[l++] = k;
 	}
-}
-
-void	submatrix_constructor_4x4(double *original, double *result, int row, int col)
-{
-	int	original_row;
-	int	original_col;
-	int	result_row;
-	int	result_col;
-
-	result_row = 0;
-	original_row = 0;
-	while (original_row < DIM4)
+	k = -1;
+	l = 0;
+	while (++k < 4)
 	{
-		if (original_row == row)
-		{
-			original_row++;
-			continue ;
-		}
-		original_col = 0;
-		result_col = 0;
-		while (original_col < DIM4)
-		{
-			if (original_col == col)
-			{
-				original_col++;
-				continue ;
-			}
-			result[result_row * DIM3 + result_col] = original[original_row * DIM4 + original_col];
-			original_col++;
-			result_col++;
-		}
-		original_row++;
-		result_row++;
+		if (k != col)
+			idy[l++] = k;
 	}
+	return (m.m[idx[0] * 4 + idy[0]] * \
+		matrix_determinant_2x2(m.m[idx[1] * 4 + idy[1]], \
+		m.m[idx[1] * 4 + idy[2]], \
+		m.m[idx[2] * 4 + idy[1]], \
+		m.m[idx[2] * 4 + idy[2]]) - \
+		m.m[idx[0] * 4 + idy[1]] * \
+		matrix_determinant_2x2(m.m[idx[1] * 4 + idy[0]], \
+		m.m[idx[1] * 4 + idy[2]], m.m[idx[2] * 4 + idy[0]], \
+		m.m[idx[2] * 4 + idy[2]]) + \
+		m.m[idx[0] * 4 + idy[2]] * \
+		matrix_determinant_2x2(m.m[idx[1] * 4 + idy[0]], \
+		m.m[idx[1] * 4 + idy[1]], m.m[idx[2] * 4 + idy[0]], \
+		m.m[idx[2] * 4 + idy[1]]));
 }
 
-double	minor_matrix_3x3(double *m, int row, int col)
+float	matrix_determinant(t_mat4 m)
 {
-	double	tmp[9];
-
-	submatrix_constructor_3x3(m, tmp, row, col);
-	return (matrix_determinant_2x2(tmp));
+	return (m.m[0] * matrix_cofactor_3x3(m, 0, 0) - \
+			m.m[1] * matrix_cofactor_3x3(m, 0, 1) + \
+			m.m[2] * matrix_cofactor_3x3(m, 0, 2) - \
+			m.m[3] * matrix_cofactor_3x3(m, 0, 3));
 }
 
-double	cofactor_compute_3x3(double *m, int row, int col)
+int	matrix_is_invertable(t_mat4 m)
 {
-	double	tmp;
+	float	det;
 
-	tmp = minor_matrix_3x3(m, row, col);
-	if ((row + col) % 2 != 0)
-		return (-tmp);
-	return (tmp);
-}
-
-double	cofactor_compute_4x4(double *m, int row, int col)
-{
-	double	submatrix[9];
-	double minor;
-
-	submatrix_constructor_4x4(m, submatrix, row, col);
-	minor = matrix_determinant_3x3(submatrix);
-	if ((row + col) % 2 != 0)
-		return (-minor);
-	return (minor);
-}
-
-double	determinant3x3(double *m)
-{
-	double	det;
-	int		col;
-
-	det = 0.0;
-	col = 0.0;
-	while (col < DIM3)
-	{
-		det += m[col] * cofactor_compute_3x3(m, 0, col);
-		col++;
-	}
-	return (det);
-}
-
-double	determinant4x4(double *m)
-{
-	double	det;
-	double	submatrix[9];
-	double	minor;
-	int		col;
-
-	det = 0.0;
-	col = 0.0;
-	while (col < DIM4)
-	{
-		submatrix_constructor_4x4(m, submatrix, 0, col);
-		minor = matrix_determinant_3x3(submatrix);
-		if (col % 2 == 0)
-			det += m[col] * minor;
-		else
-			det -= m[col] * minor;
-		col++;
-	}
-	return (det);
-}
-
-double	determinant(double *m, int size)
-{
-	if (size == 2)
-		return (matrix_determinant_2x2(m));
-	else if (size == 3)
-		return (matrix_determinant_3x3(m));
-	else if (size == 4)
-		return (determinant4x4(m));
-	return (0.0);
-}
-
-int	matrix_invertability(double *m)
-{
-	double	det;
-
-	det = determinant(m, 4);
-	if (fabs(det) < 1e-10)
+	det = matrix_determinant(m);
+	if (fabsf(det) < 1e-6)
 		return (0);
 	return (1);
 }
 
-void	matrix_inverse(double *m)
+t_mat4	matrix_inverse(t_mat4 m)
 {
-	double	det;
-	double	cofactor_matrix[16];
+	t_mat4	result;
+	float	det;
+	float	inv_det;
+	float	sign;
 	int		i;
 	int		j;
 
-	det = determinant(m, 4);
-	if (fabs(det) < 1e-10)
-		return ;
-	i = 0;
-	while (i < DIM4)
+	det = matrix_determinant(m);
+	if (fabsf(det) < 1e-6)
 	{
-		j = 0;
-		while (j < DIM4)
+		matrix_identity(&result);
+		return (result);
+	}
+	inv_det = 1.0f / det;
+	i = -1;
+	while (++i < 4)
+	{
+		j = -1;
+		while (++j < 4)
 		{
-			cofactor_matrix[i * DIM4 + j] = cofactor_compute_4x4(m, i, j);
-			j++;
+			sign = 1.0f - (2.0f * ((i + j) % 2));
+			result.m[j * 4 + i] = matrix_cofactor_3x3(m, i, j) * inv_det * sign;
 		}
-		i++;
 	}
-	matrix_transpose(cofactor_matrix);
-	i = 0;
-	while (i < 16)
-	{
-		m[i] = cofactor_matrix[i] / det;
-		i++;
-	}
+	return (result);
 }
