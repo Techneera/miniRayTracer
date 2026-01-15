@@ -1,152 +1,81 @@
 #include "matrix.h"
 
-void	matrix_translation_constructor(double *m_trans, double x, double y, double z)
+t_mat4	matrix_translation(float x, float y, float z)
 {
-	m_trans[0] = 1.0;
-	m_trans[1] = 0.0;
-	m_trans[2] = 0.0;
-	m_trans[3] = x;
+	t_mat4	result;
 
-	m_trans[4] = 0.0;
-	m_trans[5] = 1.0;
-	m_trans[6] = 0.0;
-	m_trans[7] = y;
-
-	m_trans[8] = 0.0;
-	m_trans[9] = 0.0;
-	m_trans[10] = 1.0;
-	m_trans[11] = z;
-
-	m_trans[12] = 0.0;
-	m_trans[13] = 0.0;
-	m_trans[14] = 0.0;
-	m_trans[15] = 1.0;
+	matrix_identity(&result);
+	result.m[3] = x;
+	result.m[7] = x;
+	result.m[11] = x;
+	return (result);
 }
 
-t_vec3	matrix_translation(double *translation_matrix, t_vec3 point_trans, t_vec3 point_target)
+t_mat4	matrix_inverse_translation(t_mat4 m, float x, float y, float z)
 {
-	matrix_translation_constructor(translation_matrix, point_trans.x, point_trans.y, point_trans.z);
-	return (matrix_vector_multiply(translation_matrix, point_target));
+	t_mat4	result;
+
+	result = matrix_inverse(m);
+	return (matrix_translation(x, y, z));
 }
 
-t_vec3	matrix_inverse_translation(double *translation_matrix, t_vec3 point_trans, t_vec3 point_target)
+t_mat4	matrix_scale(float x, float y, float z)
 {
-	matrix_translation_constructor(translation_matrix, point_trans.x, point_trans.y, point_trans.z);
-	matrix_inverse(translation_matrix);
-	return (matrix_vector_multiply(translation_matrix, point_target));
+	t_mat4	result;
+
+	matrix_identity(&result);
+	result.m[0] = x;
+	result.m[5] = y;
+	result.m[10] = z;
+	return (result);
 }
 
-void	matrix_scale_constructor(double *scale_matrix, t_vec3 point)
+t_mat4	matrix_rot_x(float angle)
 {
-	scale_matrix[0] = point.x;
-	scale_matrix[1] = 0.0;
-	scale_matrix[2] = 0.0;
-	scale_matrix[3] = 0.0;
+	t_mat4	result;
+	float	cos_;
+	float	sin_;
 
-	scale_matrix[4] = 0.0;
-	scale_matrix[5] = point.y;
-	scale_matrix[6] = 0.0;
-	scale_matrix[7] = 0.0;
-
-	scale_matrix[8] = 0.0;
-	scale_matrix[9] = 0.0;
-	scale_matrix[10] = point.z;
-	scale_matrix[11] = 0.0;
-
-	scale_matrix[12] = 0.0;
-	scale_matrix[13] = 0.0;
-	scale_matrix[14] = 0.0;
-	scale_matrix[15] = 1.0;
+	cos_ = cosf(angle);
+	sin_ = sinf(angle);
+	matrix_identity(&result);
+	result.m[5] = cos_;
+	result.m[6] = -sin_;
+	result.m[9] = sin_;
+	result.m[10] = cos_;
+	return (result);
 }
 
-t_vec3	matrix_scale(double *scale_matrix, t_vec3 point_scale, t_vec3 point_target)
+t_mat4	matrix_rot_y(float angle)
 {
-	matrix_scale_constructor(scale_matrix, point_scale);
-	return (matrix_vector_multiply(scale_matrix, point_target));
+	t_mat4	result;
+	float	cos_;
+	float	sin_;
+
+	cos_ = cosf(angle);
+	sin_ = sinf(angle);
+	matrix_identity(&result);
+	result.m[0] = cos_;
+	result.m[1] = sin_;
+	result.m[8] = -sin_;
+	result.m[10] = cos_;
+	return (result);
 }
 
-t_vec3	matrix_scale_inverse(double *scale_matrix, t_vec3 point_scale, t_vec3 point_target)
+t_mat4	matrix_rot_z(float angle)
 {
-	matrix_scale_constructor(scale_matrix, point_scale);
-	matrix_inverse(scale_matrix);
-	return (matrix_vector_multiply(scale_matrix, point_target));
-}
+	t_mat4	result;
+	float	cos_;
+	float	sin_;
 
-void	rotation_x_constructor(double *m, double angle)
-{
-	m[0] = 1.0;
-	m[1] = 0.0;
-	m[2] = 0.0;
-	m[3] = 0.0;
-
-	m[4] = 0.0;
-	m[5] = cos(angle);
-	m[6] = -sin(angle);
-	m[7] = 0.0;
-
-	m[8] = 0.0;
-	m[9] = sin(angle);
-	m[10] = cos(angle);
-	m[11] = 0.0;
-
-	m[12] = 0.0;
-	m[13] = 0.0;
-	m[14] = 0.0;
-	m[15] = 1.0;
-}
-
-void	rotation_y_constructor(double *m, double angle)
-{
-	m[0] = cos(angle);
-	m[1] = 0.0;
-	m[2] = sin(angle);
-	m[3] = 0.0;
-
-	m[4] = 0.0;
-	m[5] = 1.0;
-	m[6] = 0.0;
-	m[7] = 0.0;
-
-	m[8] = -sin(angle);
-	m[9] = 0.0;
-	m[10] = cos(angle);
-	m[11] = 0.0;
-
-	m[12] = 0.0;
-	m[13] = 0.0;
-	m[14] = 0.0;
-	m[15] = 1.0;
-}
-
-void	rotation_z_constructor(double *m, double angle)
-{
-	m[0] = cos(angle);
-	m[1] = -sin(angle);
-	m[2] = 0.0;
-	m[3] = 0.0;
-
-	m[4] = sin(angle);
-	m[5] = cos(angle);
-	m[6] = 0.0;
-	m[7] = 0.0;
-
-	m[8] = 0.0;
-	m[9] = 0.0;
-	m[10] = 1.0;
-	m[11] = 0.0;
-
-	m[12] = 0.0;
-	m[13] = 0.0;
-	m[14] = 0.0;
-	m[15] = 1.0;
-}
-
-t_vec3	matrix_rotation(t_vec3 point_target, double angle, void(*f)(double *, double))
-{
-	double	m_axis[16];
-
-	f(m_axis, angle);
-	return (matrix_vector_multiply(m_axis, point_target));
+	cos_ = cosf(angle);
+	sin_ = sinf(angle);
+	matrix_identity(&result);
+	result.m[0] = cos_;
+	result.m[1] = -sin_;
+	result.m[4] = sin_;
+	result.m[5] = cos_;
+	return (result);
 }
 
 void	matrix_shear_constructor(double *m, t_shear proportions)

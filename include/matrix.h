@@ -39,10 +39,7 @@ t_mat4	matrix_rot_x(float angle);
 t_mat4	matrix_rot_y(float angle);
 t_mat4	matrix_rot_z(float angle);
 
-void	matrix_inverse(t_mat4 m);
-
-double	matrix_determinant(duble *m, int size);
-
 void	matrix_shear_constructor(double *m, t_shear proportions);
 t_vec3	matrix_shearing(t_vec3 point_target, t_shear proportions);
+
 #endif
