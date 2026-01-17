@@ -1,5 +1,4 @@
-#include "vector.h"
-#include "matrix.h"
+#include "ray.h"
 
 #define EPSILON 0.00001
 #define GREEN "\033[0;32m"
@@ -394,8 +393,15 @@ void test_chaining(void)
 
 void	test_ray_transform(void)
 {
+	printf("\n--- Ray Transform ---\n");
+	t_vec3	p1 = point_constructor(1.0, 2.0, 3.0);
+	t_vec3	v1 = vector_constructor(0.0, 1.0, 0.0);
+	t_mat4	trans = matrix_translation(3.0, 4.0, 5.0);
+	t_ray	ray = ray_constructor(p1, v1);
+	t_ray	actual = ray_transform(ray, trans);
 
-	t_ray	ray1 = ray_constructor();
+	assert_vec3_eq(actual.origin, point_constructor(4.0, 6.0, 8.0), "Translate Transform Point(1, 2, 3) to (4, 6, 8)");
+	assert_vec3_eq(actual.direction, vector_constructor(0.0, 1.0, 0.0), "Translate Transform Direction (Unchanged)");
 }
 /* ************************************************************************** */
 /*                                   MAIN                                     */
@@ -423,6 +429,8 @@ int main(void)
 	test_scaling();
 	test_rotation();
 	test_chaining();
+
+	test_ray_transform();
 
 	printf("\n==========================================\n");
 	if (g_tests_passed == g_tests_run)

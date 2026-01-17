@@ -2,6 +2,7 @@
 # define RAY_H
 
 # include "vector.h"
+# include "matrix.h"
 
 # ifndef MAX_INTERSECTION
 #  define MAX_INTERSECTION 10
