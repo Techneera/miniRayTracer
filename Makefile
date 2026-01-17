@@ -53,6 +53,8 @@ RAY_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(RAY_SRCS))
 TESTERSRCS = $(TDIR)main_tester.c
 TESTEROBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTERSRCS))
 
+TESTER2SRCS = $(TDIR)tester_v2.c
+TESTER2OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER2SRCS))
 # ------------------------------ LIBRARIES -------------------------------- #
 MLX = $(MLXDIR)libmlx_Linux.a
 
@@ -79,6 +81,9 @@ debug: re
 
 test: $(MLX) $(TESTEROBJS) $(TESTOBJ)
 	$(CC) $(CFLAGS) -g $(TESTEROBJS) $(TESTOBJ) -o $(BDIR)tester -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX)
+
+test_v2: $(MLX) $(TESTER2OBJS) $(TESTOBJ)
+	$(CC) $(CFLAGS) -g $(TESTER2OBJS) $(TESTOBJ) -o $(BDIR)tester_v2 -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX)
 
 $(NAME): $(OBJ) $(MLX)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)

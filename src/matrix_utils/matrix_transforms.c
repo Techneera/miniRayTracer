@@ -6,8 +6,8 @@ t_mat4	matrix_translation(float x, float y, float z)
 
 	matrix_identity(&result);
 	result.m[3] = x;
-	result.m[7] = x;
-	result.m[11] = x;
+	result.m[7] = y;
+	result.m[11] = z;
 	return (result);
 }
 
@@ -78,33 +78,24 @@ t_mat4	matrix_rot_z(float angle)
 	return (result);
 }
 
-void	matrix_shear_constructor(double *m, t_shear proportions)
+t_mat4	matrix_shear(t_shear p)
 {
-	m[0] = 1.0;
-	m[1] = proportions.xy;
-	m[2] = proportions.xz;
-	m[3] = 0.0;
+	t_mat4	result;
 
-	m[4] = proportions.yx;
-	m[5] = 1.0;
-	m[6] = proportions.yx;
-	m[7] = 0.0;
-
-	m[8] = proportions.zx;
-	m[9] = proportions.zy;
-	m[10] = 1.0;
-	m[11] = 0.0;
-
-	m[12] = 0.0;
-	m[13] = 0.0;
-	m[14] = 0.0;
-	m[15] = 1.0;
+	matrix_identity(&result);
+	result.m[1] = p.xy;
+	result.m[2] = p.xz;
+	result.m[4] = p.yx;
+	result.m[6] = p.yz;
+	result.m[8] = p.zx;
+	result.m[9] = p.zy;
+	return (result);
 }
 
-t_vec3	matrix_shearing(t_vec3 point_target, t_shear proportions)
+t_vec3	matrix_shearing(t_shear p, t_vec3 target)
 {
-	double	m_shear[16];
+	t_mat4	shear_matrix;
 
-	matrix_shear_constructor(m_shear, proportions);
-	return (matrix_vector_multiply(m_shear, point_target));
+	shear_matrix = matrix_shear(p);
+	return (matrix_vector_multiply(shear_matrix, target));
 }

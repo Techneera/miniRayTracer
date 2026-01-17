@@ -14,12 +14,12 @@ typedef struct __attribute__((aligned(32))) s_mat4
 
 typedef struct s_shear
 {
-	double	xy;
-	double	xz;
-	double	yx;
-	double	yz;
-	double	zx;
-	double	zy;
+	float	xy;
+	float	xz;
+	float	yx;
+	float	yz;
+	float	zx;
+	float	zy;
 }	t_shear;
 
 void	matrix_identity(t_mat4 *dst);
@@ -39,7 +39,7 @@ t_mat4	matrix_rot_x(float angle);
 t_mat4	matrix_rot_y(float angle);
 t_mat4	matrix_rot_z(float angle);
 
-void	matrix_shear_constructor(double *m, t_shear proportions);
-t_vec3	matrix_shearing(t_vec3 point_target, t_shear proportions);
+t_mat4	matrix_shear(t_shear p);
+t_vec3	matrix_shearing(t_shear p, t_vec3 target);
 
 #endif

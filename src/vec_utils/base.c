@@ -88,6 +88,6 @@ t_vec3	vector_scale(t_vec3 u, float scalar)
 {
 	t_vec3	result;
 
-	res.v = u.v * scalar;
+	result.v = u.v * scalar;
 	return (result);
 }

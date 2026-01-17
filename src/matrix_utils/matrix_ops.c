@@ -31,16 +31,16 @@ t_vec3	matrix_vector_multiply(t_mat4 m, t_vec3 v)
 	tmp = m.rows[3] * v.v;
 	result.w = tmp[0] + tmp[1] + tmp[2] + tmp[3];
 	if (result.w != 1.0f && result.w != 0.0)
-		result.v /= res.w;
+		result.v /= result.w;
 	return (result);
 }
 
 void	matrix_identity(t_mat4 *dst)
 {
-	dst->row[0] = (t_f4){1, 0, 0, 0};
-	dst->row[1] = (t_f4){0, 1, 0, 0};
-	dst->row[2] = (t_f4){0, 0, 1, 0};
-	dst->row[3] = (t_f4){0, 0, 0, 1};
+	dst->rows[0] = (t_f4){1, 0, 0, 0};
+	dst->rows[1] = (t_f4){0, 1, 0, 0};
+	dst->rows[2] = (t_f4){0, 0, 1, 0};
+	dst->rows[3] = (t_f4){0, 0, 0, 1};
 }
 
 t_mat4	matrix_transpose(t_mat4 m)
