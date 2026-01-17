@@ -5,30 +5,32 @@
 # include <math.h>
 # include <stdbool.h>
 
-typedef struct s_vec3
+typedef float t_f4 __attribute__((vector_size(16)));
+
+typedef struct __attribute__((aligned(16))) s_vec3
 {
 	union // Union for improved redability
 	{
+		t_f4	v; // Array access for fast computation
 		struct
 		{
-			double	x; // X-axis
-			double	y; // Y-axis
-			double	z; // Z-axis
-			double	w; // 1 for points \ 0 for vector
+			float	x; // X-axis
+			float	y; // Y-axis
+			float	z; // Z-axis
+			float	w; // 1 for points \ 0 for vector
 		};
-		double	v[4]; // Array access for fast computation
 	};
 }	t_vec3;
 
-t_vec3	point_constructor(double x, double y, double z);
-t_vec3	vector_constructor(double x, double y, double z);
-double	vector_length_squared(const t_vec3 u);
-double	vector_length(const t_vec3 u);
-t_vec3	vector_normalization(const t_vec3 u);
-double	vector_dot_product(const t_vec3 u, const t_vec3 v);
-t_vec3	vector_cross_product(const t_vec3 u, const t_vec3 v);
-t_vec3	vector_add(const t_vec3 u, const t_vec3 v);
-t_vec3	vector_sub(const t_vec3 u, const t_vec3 v);
-t_vec3	vector_scale(const t_vec3 u, double scalar);
+t_vec3	point_constructor(float x, float y, float z);
+t_vec3	vector_constructor(float x, float y, float z);
+float	vector_length_squared(t_vec3 u);
+float	vector_length(t_vec3 u);
+t_vec3	vector_normalization(t_vec3 u);
+float	vector_dot_product(t_vec3 u, t_vec3 v);
+t_vec3	vector_cross_product(t_vec3 u, t_vec3 v);
+t_vec3	vector_add(t_vec3 u, t_vec3 v);
+t_vec3	vector_sub(t_vec3 u, t_vec3 v);
+t_vec3	vector_scale(t_vec3 u, float scalar);
 
 #endif
