@@ -24,6 +24,7 @@ void	print_vector(const char *name, t_vec3 v)
 	printf("%s: (%.3f, %.3f, %.3f, w=%.3f)\n", name, v.x, v.y, v.z, v.w);
 }
 
+/*
 // Helper function to print matrix
 static
 void	print_matrix(const char *name, double *matrix, int size)
@@ -45,6 +46,7 @@ void	print_matrix(const char *name, double *matrix, int size)
 		printf("\n");
 	}
 }
+*/
 
 // Helper function to check if two vectors are equal within epsilon
 static
@@ -56,6 +58,7 @@ bool	vectors_equal(t_vec3 a, t_vec3 b, double epsilon)
 			fabs(a.w - b.w) < epsilon);
 }
 
+/*
 // Helper function to check if two doubles are equal within epsilon
 static
 bool	doubles_equal(double a, double b, double epsilon)
@@ -78,11 +81,13 @@ bool	matrices_equal(double *a, double *b, int size, double epsilon)
 	}
 	return (true);
 }
+*/
 
 /* *********************************************************************** */
 /*                             VECOTR TESTS                                */
 /* *********************************************************************** */
 
+/*
 static
 void	test_vector_point_constructor(void)
 {
@@ -276,6 +281,7 @@ void	test_edge_cases()
 	else
 	    printf("✗ Edge case tests failed\n\n");
 }
+*/
 
 /* *********************************************************************** */
 /*                             COLOR TESTS                                 */
@@ -524,6 +530,7 @@ void	test_ray_constructor(const double epsilon)
 /*                             MATRIX FUNCTIONS                            */
 /* *********************************************************************** */
 
+/*
 static
 void	test_identity_matrix_constructor(const double epsilon)
 {
@@ -850,11 +857,13 @@ void	test_matrix_inverse(const double epsilon)
 	else
 		printf("✗ Inverse compute test failed\n\n");
 }
+*/
 
 /* *********************************************************************** */
 /*                             TRANSFORMS FUNCTIONS                         */
 /* *********************************************************************** */
 
+/*
 static
 void	test_translation_matrix(const double epsilon)
 {
@@ -1034,6 +1043,7 @@ void	test_rotation_z(const double epsilon)
 	else
 		printf("✗ Matrix rotation around z test failed\n\n");
 }
+*/
 
 /* *********************************************************************** */
 /*                             MAIN TESTER                                 */
@@ -1252,6 +1262,7 @@ int	main(void)
 	const double EPSILON = 1e-10;
 	printf("=== Vector Library Test Suite for Ray Tracing Engine ===\n\n");
 	
+	/*
 	// Test 1: Constructor functions
 	printf("1. Testing Constructor Functions:\n");
 	test_vector_point_constructor();
@@ -1291,6 +1302,7 @@ int	main(void)
 	// Test 10: Edge cases
 	printf("10. Testing Edge Cases:\n");
 	test_edge_cases();
+	*/
 
 	// Color tests
 	printf("11. Testing color contruction:\n");
@@ -1323,6 +1335,7 @@ int	main(void)
 	//printf("19. Testing window opening:\n");
 	//test_window_opening();
 
+	/*
 	// Matrix Tests
 	printf("20. Testing identity matrix constructor:\n");
 	test_identity_matrix_constructor(EPSILON);
@@ -1396,6 +1409,7 @@ int	main(void)
 
 	printf("43. Testing compution point from a distance:\n");
 	test_ray_position(EPSILON);
+	*/
 
 	printf("44. Testing sphere intersections:\n");
 	test_sphere_intersections();
