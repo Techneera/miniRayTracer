@@ -55,4 +55,5 @@ t_intersection	intersection(double t, t_object object);
 t_intersect		*intersections(t_intersection *items, t_intersect *result, int size);
 t_intersection	*hit(t_intersect *items, t_intersection *smallest, int size);
 
+t_ray			ray_transform(t_ray r, t_mat4 m);
 #endif
