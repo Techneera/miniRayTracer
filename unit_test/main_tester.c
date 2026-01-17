@@ -1086,7 +1086,6 @@ void	test_ray_position(const double epsilon)
 		printf("✗ Ray position computing test failed\n\n");
 }
 
-/*
 int	test_sphere_intersect(t_ray r, int ex_count, double ex_t0, double ex_t1)
 {
 	t_sphere	s = sphere();
@@ -1095,13 +1094,13 @@ int	test_sphere_intersect(t_ray r, int ex_count, double ex_t0, double ex_t1)
 	printf("xs.count == %d, expected %d\n", xs.count, ex_count);
 	if (ex_count != 0)
 	{
-		printf("xs.t[0] == %f, expected %f\n", xs.i.t[0], ex_t0);
-		printf("xs.t[1]	== %f, expected %f\n", xs.i.t[1], ex_t1);
+		printf("xs.t[0] == %f, expected %f\n", xs.i[0].t, ex_t0);
+		printf("xs.t[1]	== %f, expected %f\n", xs.i[1].t, ex_t1);
 	}
 
 	if ((xs.count == ex_count
-		&& xs.t[0] == ex_t0
-		&& xs.t[1] == ex_t1)
+		&& xs.i[0].t == ex_t0
+		&& xs.i[1].t == ex_t1)
 		|| (xs.count == 0 && ex_count == 0))
 		return (0);
 	else
@@ -1149,7 +1148,6 @@ void	test_sphere_intersections(void)
 	else
 		printf("✗ Sphere intersections test failed\n\n");
 }
-*/
 
 void	test_intersection(void)
 {
@@ -1159,10 +1157,94 @@ void	test_intersection(void)
 	printf("i.t == %f\n", i.t);
 	printf("i.object.sp.id == %d\n", i.object.sp.id);
 
-	if (i.t == 3.5 && i.object.sp.id == 0)
+	if (i.t == 3.5 && i.object.sp.id == o.sp.id)
 		printf("✓ Intersection test passed\n\n");
 	else
 		printf("✗ Intersection test failed\n\n");
+}
+
+bool	helper_test_hit(t_intersection *items, int items_size, t_intersection *expected)
+{
+	t_intersect xs;
+	t_intersection	result;
+	t_intersection *ret_val;
+
+	intersections(items, &xs, items_size);
+	ret_val = hit(&xs, &result, items_size);
+	if (ret_val == NULL && expected == NULL)
+		return (true);
+	else if (ret_val == NULL && expected != NULL)
+		return (false);
+	printf("result.t == %f, expected %f\n", result.t, expected->t);
+	printf("result.object.sp.id == %d, expected %d\n", result.object.sp.id, expected->object.sp.id);
+	if (result.t != expected->t
+		|| result.object.sp.id != expected->object.sp.id)
+		return (false);
+	return (true);
+}
+
+void	test_hit(void)
+{
+	t_object object = {.sp = sphere()};
+	t_intersection items1[MAX_INTERSECTION] = {
+		{.t = 1, .object = object},
+		{.t = 2, .object = object},
+	};
+	t_intersection items2[MAX_INTERSECTION] = {
+		{.t = -1, .object = object},
+		{.t = 1, .object = object},
+	};
+	t_intersection items3[MAX_INTERSECTION] = {
+		{.t = -2, .object = object},
+		{.t = -1, .object = object},
+	};
+	t_intersection items4[MAX_INTERSECTION] = {
+		{.t = 5, .object = object},
+		{.t = 7, .object = object},
+		{.t = -3, .object = object},
+		{.t = 2, .object = object},
+	};
+	if (helper_test_hit(items1, 2, &items1[0]) == true
+		&& helper_test_hit(items2, 2, &items2[1]) == true
+		&& helper_test_hit(items4, 4, &items4[3]) == true
+		&& helper_test_hit(items3, 2, NULL) == true)
+		printf("✓ Hit test passed\n\n");
+	else
+		printf("✗ Hit test failed\n\n");
+
+}
+
+void	test_plot_circle_on_canvas()
+{
+	t_vec3	ray_origin = point_constructor(0, 0, -5);
+	double	wall_z = 10;
+	double	wall_size = 7.0;
+	int		canvas_pixels = 1000;
+	double	pixel_size = wall_size / canvas_pixels;
+	double	half = wall_size / 2;
+	t_canvas canvas;
+
+	canvas_constructor(canvas_pixels, canvas_pixels, &canvas);
+	t_vec3 color = color_constructor(1, 0, 0);
+	t_object shape = {.sp = sphere()};
+
+	for (int y = 0; y < canvas_pixels - 1; y++)
+	{
+		double world_y = half - pixel_size * y;
+		for (int x = 0; x < canvas_pixels - 1; x++)
+		{
+			double world_x = -half + pixel_size * x;
+			t_vec3 position = point_constructor(world_x, world_y, wall_z);
+			t_ray r = ray_constructor(ray_origin, vector_normalization(vector_sub(position, ray_origin)));
+			t_intersect xs = sphere_intersect(r, shape.sp);
+			t_intersection smallest;
+			if (hit(&xs, &smallest, xs.count) != NULL)
+				write_pixel(&canvas, x, y, color);
+		}
+	}
+	void	*win = mlx_new_window(canvas.mlx, canvas.width, canvas.height, "Tester");
+	mlx_put_image_to_window(canvas.mlx, win, canvas.img.img, 0, 0);
+	mlx_loop(canvas.mlx);
 }
 
 int	main(void)
@@ -1240,6 +1322,7 @@ int	main(void)
 
 	//printf("19. Testing window opening:\n");
 	//test_window_opening();
+
 	// Matrix Tests
 	printf("20. Testing identity matrix constructor:\n");
 	test_identity_matrix_constructor(EPSILON);
@@ -1314,11 +1397,17 @@ int	main(void)
 	printf("43. Testing compution point from a distance:\n");
 	test_ray_position(EPSILON);
 
-	//printf("20. Testing sphere intersections:\n");
-	//test_sphere_intersections();
+	printf("44. Testing sphere intersections:\n");
+	test_sphere_intersections();
 
-	printf("44. Testing intersections:\n");
+	printf("45. Testing intersections:\n");
 	test_intersection();
+
+	printf("46. Testing hits:\n");
+	test_hit();
+
+	//printf("47. Testing plotting circle:\n");
+	//test_plot_circle_on_canvas();
 
 	printf("=== Test Suite Complete ===\n");
 
