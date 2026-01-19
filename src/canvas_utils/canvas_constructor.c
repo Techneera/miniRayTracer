@@ -39,3 +39,10 @@ void	write_pixel(t_canvas *c, int x, int y, t_vec3 color)
 	dest = c->img.addr + (y * c->img.line_len + x * (c->img.bpp / 8));
 	*(t_uint *)dest = (t_uint) color_to_int(color);
 }
+
+int	key_hook(int keycode, t_canvas *vars)
+{
+	if (keycode == 65307)
+		canvas_destructor(vars);
+	return (0);
+}
