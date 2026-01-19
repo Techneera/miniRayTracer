@@ -68,6 +68,9 @@ TESTER2OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER2SRCS))
 TESTER3SRCS = $(TDIR)draw_test.c
 TESTER3OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER3SRCS))
 
+TESTER4SRCS = $(TDIR)parsing_test.c
+TESTER4OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER4SRCS))
+
 # ------------------------------ LIBRARIES -------------------------------- #
 
 MLX = $(MLXDIR)libmlx_Linux.a
@@ -102,6 +105,9 @@ test_v2: $(MLX) $(TESTER2OBJS) $(TESTOBJ)
 
 test_draw: $(MLX) $(TESTER3OBJS) $(TESTOBJ)
 	$(CC) $(CFLAGS) -g $(TESTER3OBJS) $(TESTOBJ) -o $(BDIR)tester_draw -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX)
+
+test_parsing: $(MLX) $(TESTER4OBJS) $(TESTOBJ)
+	$(CC) $(CFLAGS) -g $(TESTER4OBJS) $(TESTOBJ) -o $(BDIR)tester_parsing -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX)
 
 $(NAME): $(OBJ) $(MLX)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
