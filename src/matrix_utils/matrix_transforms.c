@@ -11,14 +11,6 @@ t_mat4	matrix_translation(float x, float y, float z)
 	return (result);
 }
 
-t_mat4	matrix_inverse_translation(t_mat4 m, float x, float y, float z)
-{
-	t_mat4	result;
-
-	result = matrix_inverse(m);
-	return (matrix_translation(x, y, z));
-}
-
 t_mat4	matrix_scale(float x, float y, float z)
 {
 	t_mat4	result;
