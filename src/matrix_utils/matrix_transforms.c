@@ -56,7 +56,7 @@ t_mat4	matrix_rot_y(float angle)
 	sin_ = sinf(angle);
 	matrix_identity(&result);
 	result.m[0] = cos_;
-	result.m[1] = sin_;
+	result.m[2] = sin_;
 	result.m[8] = -sin_;
 	result.m[10] = cos_;
 	return (result);

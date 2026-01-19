@@ -40,5 +40,5 @@ t_intersect	sphere_intersect(t_ray ray, t_sphere sphere)
 void	sphere_set_transform(t_sphere *s, t_mat4 t)
 {
 	s->transform = t;
-	s_transform_inv = matrix_inverse(t);
+	s->transform_inv = matrix_inverse(t);
 }
