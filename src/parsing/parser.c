@@ -63,4 +63,3 @@ void	parse_ambient_light(char **line, t_scene *scene)
 	if (is_valid_color(scene->a_light.color) != true)
 		exit(1);
 }
-
