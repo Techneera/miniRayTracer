@@ -98,6 +98,13 @@ void test_ft_atof(void)
 	assert_float_eq(res, -0.5f, "Parse '-0.5'");
 	assert_int_eq(error, 0, "No error on '-0.5'");
 
+	// Integer
+	ptr = "5";
+	error = 0;
+	res = ft_atof(&ptr, &error);
+	assert_float_eq(res, 5.0, "Parse '5'");
+	assert_int_eq(error, 0, "No error on '5'");
+
 	// Edge Case: Leading dot
 	ptr = ".5 ";
 	error = 0;
