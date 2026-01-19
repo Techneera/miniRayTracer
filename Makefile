@@ -1,6 +1,6 @@
 NAME = $(BDIR)miniRT
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -Wall -Wextra -Werror -Wno-psabi -g
 LMATH = -lm
 LMLX = -lmlx_Linux -lXext -lX11
 
@@ -18,6 +18,7 @@ VECDIR = $(SDIR)vec_utils
 CANVASDIR = $(SDIR)canvas_utils
 RAYDIR = $(SDIR)ray_utils
 MATDIR = $(SDIR)matrix_utils
+PARSEDIR = $(SDIR)parsing
 
 # ------------------------------ VECTORS -------------------------------- #
 
@@ -48,6 +49,14 @@ _RAY_SRCS = ray_constructor.c \
 RAY_SRCS = $(patsubst %.c, $(RAYDIR)/%.c, $(_RAY_SRCS))
 RAY_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(RAY_SRCS))
 
+# ------------------------------ PARSING -------------------------------- #
+
+_PARSE_SRCS = parser.c \
+			  parser_utils.c
+
+PARSE_SRCS = $(patsubst %.c, $(PARSEDIR)/%.c, $(_PARSE_SRCS))
+PARSE_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(PARSE_SRCS))
+
 # ------------------------------ UNIT TESTS-------------------------------- #
 
 TESTERSRCS = $(TDIR)main_tester.c
@@ -58,6 +67,9 @@ TESTER2OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER2SRCS))
 
 TESTER3SRCS = $(TDIR)draw_test.c
 TESTER3OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER3SRCS))
+
+TESTER4SRCS = $(TDIR)parsing_test.c
+TESTER4OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER4SRCS))
 
 # ------------------------------ LIBRARIES -------------------------------- #
 
@@ -76,6 +88,7 @@ SRCFILES = $(SDIR)main.c \
 		   $(CANVAS_SRCS) \
 		   $(RAY_SRCS) \
 		   $(MATRIX_SRCS) \
+		   $(PARSE_SRCS)
 
 # ------------------------------ RULES -------------------------------- #
 
@@ -93,6 +106,9 @@ test_v2: $(MLX) $(TESTER2OBJS) $(TESTOBJ)
 test_draw: $(MLX) $(TESTER3OBJS) $(TESTOBJ)
 	$(CC) $(CFLAGS) -g $(TESTER3OBJS) $(TESTOBJ) -o $(BDIR)tester_draw -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX)
 
+test_parsing: $(MLX) $(TESTER4OBJS) $(TESTOBJ)
+	$(CC) $(CFLAGS) -g $(TESTER4OBJS) $(TESTOBJ) -o $(BDIR)tester_parsing -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX)
+
 $(NAME): $(OBJ) $(MLX)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
@@ -102,6 +118,7 @@ $(ODIR)$(SDIR)%.o: $(SDIR)%.c
 	@mkdir -p $(ODIR)$(CANVASDIR)
 	@mkdir -p $(ODIR)$(RAYDIR)
 	@mkdir -p $(ODIR)$(MATDIR)
+	@mkdir -p $(ODIR)$(PARSEDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -I $(IDIR) -I$(MLXDIR)
 
 $(ODIR)$(TDIR)%.o: $(TDIR)%.c
