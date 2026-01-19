@@ -36,3 +36,9 @@ t_intersect	sphere_intersect(t_ray ray, t_sphere sphere)
 	this.i[1].t = (-q.b + sqrt_disc) / (2 * q.a);
 	return (this);
 }
+
+void	sphere_set_transform(t_sphere *s, t_mat4 t)
+{
+	s->transform = t;
+	s->transform_inv = matrix_inverse(t);
+}

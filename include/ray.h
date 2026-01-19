@@ -53,6 +53,7 @@ t_vec3			ray_position(t_ray ray, float t);
 
 t_sphere		sphere(void);
 t_intersect		sphere_intersect(t_ray ray, t_sphere sphere);
+void			sphere_set_transform(t_sphere *s, t_mat4 t);
 
 t_intersection	intersection(float t, t_object object);
 t_intersect		*intersections(t_intersection *items, t_intersect *result, int size);

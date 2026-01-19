@@ -1,6 +1,8 @@
 #ifndef LIBRT_H
 # define LIBRT_H
 
+# include "ray.h"
+# include "canvas.h"
 # define MAX_OBJECTS 50
 
 //typedef struct s_objects
@@ -34,4 +36,3 @@
 //} t_scene;
 
 #endif
-
