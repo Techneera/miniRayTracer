@@ -11,14 +11,6 @@ t_mat4	matrix_translation(float x, float y, float z)
 	return (result);
 }
 
-t_mat4	matrix_inverse_translation(t_mat4 m, float x, float y, float z)
-{
-	t_mat4	result;
-
-	result = matrix_inverse(m);
-	return (matrix_translation(x, y, z));
-}
-
 t_mat4	matrix_scale(float x, float y, float z)
 {
 	t_mat4	result;
@@ -56,7 +48,7 @@ t_mat4	matrix_rot_y(float angle)
 	sin_ = sinf(angle);
 	matrix_identity(&result);
 	result.m[0] = cos_;
-	result.m[1] = sin_;
+	result.m[2] = sin_;
 	result.m[8] = -sin_;
 	result.m[10] = cos_;
 	return (result);

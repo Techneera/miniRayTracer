@@ -1,5 +1,4 @@
-#include "vector.h"
-#include "matrix.h"
+#include "ray.h"
 
 #define EPSILON 0.00001
 #define GREEN "\033[0;32m"
@@ -14,7 +13,7 @@ static	int	g_tests_run = 0;
 static	int g_tests_passed = 0;
 
 static
-bool	assert_float_eq(double actual, double expected, const char *msg)
+bool	assert_float_eq(float actual, float expected, const char *msg)
 {
 	g_tests_run++;
 	if (fabs(actual - expected) < EPSILON)
@@ -29,13 +28,27 @@ bool	assert_float_eq(double actual, double expected, const char *msg)
 }
 
 static
+bool	assert_int_eq(int actual, int expected, char *msg)
+{
+	g_tests_run++;
+	if (actual == expected)
+	{
+		g_tests_passed++;
+		printf("%s[PASS]%s %s\n", GREEN, RESET, msg);
+		return true;
+	}
+	printf("%s[FAIL]%s %s (Exp: %d, Got: %d)\n", RED, RESET, msg, expected, actual);
+	return false;
+}
+
+static
 bool	assert_vec3_eq(t_vec3 a, t_vec3 b, const char *msg)
 {
 	g_tests_run++;
-	if (fabs(a.x - b.x) < EPSILON && \
-		fabs(a.y - b.y) < EPSILON && \
-		fabs(a.z - b.z) < EPSILON && \
-		fabs(a.w - b.w) < EPSILON)
+	if (fabsf(a.x - b.x) < EPSILON && \
+		fabsf(a.y - b.y) < EPSILON && \
+		fabsf(a.z - b.z) < EPSILON && \
+		fabsf(a.w - b.w) < EPSILON)
 	{
 		g_tests_passed++;
 		printf("%s[PASS]%s %s\n", GREEN, RESET, msg);
@@ -290,10 +303,10 @@ void test_determinant_inverse(void)
 {
 	printf("\n--- Determinant & Inverse ---\n");
 	t_mat4 m;
-	// -5 2 6 -8
-	// 1 -5 1 8
-	// 7 7 -6 -7
-	// 1 -3 7 4
+	// -5  2  6 -8
+	//  1 -5  1  8
+	//  7  7 -6 -7
+	//  1 -3  7  4
 	float vals[] = {-5, 2, 6, -8, 1, -5, 1, 8, 7, 7, -6, -7, 1, -3, 7, 4};
 	for(int i=0; i<16; i++) m.m[i] = vals[i];
 
@@ -389,6 +402,135 @@ void test_chaining(void)
 }
 
 /* ************************************************************************** */
+/*                                   RAY TRANSFORM                            */
+/* ************************************************************************** */
+
+void	test_ray_translate(void)
+{
+	printf("\n--- Ray Transform ---\n");
+
+	// Given r <- ray(point(1, 2, 3), vector(0, 1, 0))
+	t_vec3	origin = point_constructor(1.0, 2.0, 3.0);
+	t_vec3	direction = vector_constructor(0.0, 1.0, 0.0);
+	t_ray	r = ray_constructor(origin, direction);
+	
+	// And m <- scaling(3, 4, 5)
+	t_mat4	trans = matrix_translation(3.0, 4.0, 5.0);
+
+	// When r2 <- transform(r, m)
+	t_ray	r2 = ray_transform(r, trans);
+
+	// Then r2.origin = point(4, 6, 8)
+	assert_vec3_eq(r2.origin, point_constructor(4.0, 6.0, 8.0), "Translate Transform Point(1, 2, 3) to (4, 6, 8)");
+	// And r2.direction = vector(0, 1, 0)
+	// Note: does not change the direction of the ray
+	assert_vec3_eq(r2.direction, vector_constructor(0.0, 1.0, 0.0), "Translate Transform Direction (Unchanged)");
+}
+void test_ray_scaling(void)
+{
+	printf("\n--- Ray Scaling ---\n");
+	
+	// Given r <- ray(point(1, 2, 3), vector(0, 1, 0))
+	t_vec3 origin = point_constructor(1, 2, 3);
+	t_vec3 direction = vector_constructor(0, 1, 0);
+	t_ray r = ray_constructor(origin, direction);
+	
+	// And m <- scaling(2, 3, 4)
+	t_mat4 m = matrix_scale(2, 3, 4);
+	
+	// When r2 <- transform(r, m)
+	t_ray r2 = ray_transform(r, m);
+	
+	// Then r2.origin = point(2, 6, 12)
+	// (1*2, 2*3, 3*4)
+	t_vec3 expected_origin = point_constructor(2, 6, 12);
+	assert_vec3_eq(r2.origin, expected_origin, "Scaled Ray Origin");
+	
+	// And r2.direction = vector(0, 3, 0)
+	// (0*2, 1*3, 0*4) -> Note: It is NOT normalized, as per scenario
+	t_vec3 expected_direction = vector_constructor(0, 3, 0);
+	assert_vec3_eq(r2.direction, expected_direction, "Scaled Ray Direction");
+}
+
+/* ************************************************************************** */
+/*                          SPHERE TRANSFORM TESTS                            */
+/* ************************************************************************** */
+
+void	test_sphere_transform_assignment(void)
+{
+	printf("\n--- Sphere Transform Assignment ---\n");
+
+	t_sphere	s = sphere();
+	t_mat4		m_identity;
+
+	matrix_identity(&m_identity);
+	assert_mat4_eq(s.transform, m_identity, "Sphere construction default Identity Transform");
+
+	t_mat4	t = matrix_translation(2, 3, 4);
+	sphere_set_transform(&s, t);
+	assert_mat4_eq(s.transform, t, "Sphere transform custom assign");
+}
+
+void	test_intersect_scaled_sphere(void)
+{
+	t_sphere	s = sphere();
+	t_mat4		t = matrix_scale(2, 2, 2);
+	t_ray		r = ray_constructor(point_constructor(0, 0, -5), vector_constructor(0, 0, 1));
+
+	sphere_set_transform(&s, t);
+	t_ray		transformed_ray = ray_transform(r, s.transform_inv);
+
+	t_intersect	xs = sphere_intersect(transformed_ray, s);
+	assert_int_eq(xs.count, 2, "Intersecting scaled sphere yields 2 hits");
+
+	// And t[0] = 3
+	// And t[1] = 7
+	if (xs.count == 2)
+	{
+		assert_float_eq(xs.i[0].t, 3.0f, "First hit at t=3");
+		assert_float_eq(xs.i[1].t, 7.0f, "Second hit at t=7");
+	}
+}
+
+void	test_intersect_translated_sphere(void)
+{
+	printf("\n--- Intersecting a Translated Sphere ---\n");
+	t_sphere	s = sphere();
+	t_mat4		t = matrix_translation(5, 0, 0);
+	t_ray		ray = ray_constructor(point_constructor(0, 0, -5), vector_constructor(0,0, 1));
+
+	sphere_set_transform(&s, t);
+	t_ray		transformed_ray = ray_transform(ray, s.transform_inv);
+
+	t_intersect	xs = sphere_intersect(transformed_ray, s);
+	assert_int_eq(xs.count, 0, "Ray missed translated sphere");
+}
+
+void test_hit_function(void) {
+	printf("\n--- The Hit Function ---\n");
+	
+	t_sphere s = sphere();
+	t_intersect xs;
+	xs.count = 4;
+	
+	// Scenario: All positive
+	t_intersection i1 = intersection(1.0, (t_object){.sp=s});
+	t_intersection i2 = intersection(2.0, (t_object){.sp=s});
+	t_intersection i3 = intersection(-3.0, (t_object){.sp=s}); // Negative (behind)
+	t_intersection i4 = intersection(0.5, (t_object){.sp=s}); // Closest
+	
+	xs.i[0] = i1; xs.i[1] = i2; xs.i[2] = i3; xs.i[3] = i4;
+	
+	t_intersection result;
+	t_intersection *hit_point = hit(&xs, &result, 4);
+	
+	if (hit_point != NULL)
+		assert_float_eq(hit_point->t, 0.5f, "Hit returns closest non-negative t");
+	else
+		printf("%s[FAIL]%s Hit returned NULL unexpectedly\n", RED, RESET);
+}
+
+/* ************************************************************************** */
 /*                                   MAIN                                     */
 /* ************************************************************************** */
 
@@ -414,6 +556,14 @@ int main(void)
 	test_scaling();
 	test_rotation();
 	test_chaining();
+
+	test_ray_translate();
+	test_ray_scaling();
+
+	test_sphere_transform_assignment();
+	test_intersect_scaled_sphere();
+	test_intersect_translated_sphere();
+	test_hit_function();
 
 	printf("\n==========================================\n");
 	if (g_tests_passed == g_tests_run)

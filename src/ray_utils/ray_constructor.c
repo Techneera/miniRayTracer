@@ -10,7 +10,7 @@ t_ray	ray_constructor(t_vec3 origin, t_vec3 direction)
 	return (ray);
 }
 
-t_vec3	ray_position(t_ray ray, double t)
+t_vec3	ray_position(t_ray ray, float t)
 {
 	return (vector_add(
 			ray.origin,

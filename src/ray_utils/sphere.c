@@ -7,7 +7,9 @@ t_sphere	sphere(void)
 
 	s.id = id++;
 	s.center = point_constructor(0, 0, 0);
-	s.radius = 1.0;
+	s.radius = 1.0f;
+	matrix_identity(&s.transform);
+	matrix_identity(&s.transform_inv);
 	return (s);
 }
 
@@ -15,7 +17,7 @@ t_intersect	sphere_intersect(t_ray ray, t_sphere sphere)
 {
 	t_intersect			this;
 	t_vec3				sphere_to_ray;
-	double				sqrt_disc;
+	float				sqrt_disc;
 	struct s_quadratic	q;
 
 	sphere_to_ray = vector_sub(ray.origin, sphere.center);
@@ -33,4 +35,10 @@ t_intersect	sphere_intersect(t_ray ray, t_sphere sphere)
 	this.i[0].t = (-q.b - sqrt_disc) / (2 * q.a);
 	this.i[1].t = (-q.b + sqrt_disc) / (2 * q.a);
 	return (this);
+}
+
+void	sphere_set_transform(t_sphere *s, t_mat4 t)
+{
+	s->transform = t;
+	s->transform_inv = matrix_inverse(t);
 }
