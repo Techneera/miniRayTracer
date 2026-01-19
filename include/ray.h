@@ -3,6 +3,7 @@
 
 # include "vector.h"
 # include "matrix.h"
+# include "shades.h"
 
 # ifndef MAX_INTERSECTION
 #  define MAX_INTERSECTION 10
@@ -16,11 +17,12 @@ typedef struct s_ray
 
 typedef struct s_sphere
 {
-	int		id;
-	t_vec3	center;
-	float	radius;
-	t_mat4	transform;
-	t_mat4	transform_inv;
+	int			id;
+	t_vec3		center;
+	float		radius;
+	t_mat4		transform;
+	t_mat4		transform_inv;
+	t_material	material;
 }	t_sphere;
 
 typedef union u_object
