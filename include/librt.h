@@ -2,7 +2,6 @@
 # define LIBRT_H
 
 # include "ray.h"
-#include "vector.h"
 
 # define MAX_OBJECTS 50
 
@@ -47,4 +46,3 @@ typedef struct s_scene
 } t_scene;
 
 #endif
-
