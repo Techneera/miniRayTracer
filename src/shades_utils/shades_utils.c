@@ -23,3 +23,20 @@ t_vec3	reflect(t_vec3 in, t_vec3 normal)
 	dot = vector_dot_product(in, normal);
 	return (vector_sub(in, vector_scale(normal, 2.0f * dot)));
 }
+
+t_material	new_material(void)
+{
+	t_material	result;
+
+	result.color = color_constructor(1.0, 1.0, 1.0);
+	result.ambient = 0.1f;
+	result.diffuse = 0.9f;
+	result.specular = 0.9f;
+	result.shininess = 200.0f;
+	return (result);
+}
+
+t_point_light	point_light(t_vec3 position, t_vec3 intensity)
+{
+
+}
