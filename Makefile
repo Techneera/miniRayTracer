@@ -1,6 +1,6 @@
 NAME = $(BDIR)miniRT
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -Wall -Wextra -Werror -Wno-psabi -g
 LMATH = -lm
 LMLX = -lmlx_Linux -lXext -lX11
 
