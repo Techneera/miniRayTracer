@@ -1,5 +1,4 @@
-#include "vector.h"
-#include "matrix.h"
+#include "ray.h"
 
 #define EPSILON 0.00001
 #define GREEN "\033[0;32m"
@@ -389,6 +388,56 @@ void test_chaining(void)
 }
 
 /* ************************************************************************** */
+/*                                   RAY TRANSFORM                            */
+/* ************************************************************************** */
+
+void	test_ray_translate(void)
+{
+	printf("\n--- Ray Transform ---\n");
+
+	// Given r <- ray(point(1, 2, 3), vector(0, 1, 0))
+	t_vec3	origin = point_constructor(1.0, 2.0, 3.0);
+	t_vec3	direction = vector_constructor(0.0, 1.0, 0.0);
+	t_ray	r = ray_constructor(origin, direction);
+	
+	// And m <- scaling(3, 4, 5)
+	t_mat4	trans = matrix_translation(3.0, 4.0, 5.0);
+
+	// When r2 <- transform(r, m)
+	t_ray	r2 = ray_transform(r, trans);
+
+	// Then r2.origin = point(4, 6, 8)
+	assert_vec3_eq(r2.origin, point_constructor(4.0, 6.0, 8.0), "Translate Transform Point(1, 2, 3) to (4, 6, 8)");
+	// And r2.direction = vector(0, 1, 0)
+	// Note: does not change the direction of the ray
+	assert_vec3_eq(r2.direction, vector_constructor(0.0, 1.0, 0.0), "Translate Transform Direction (Unchanged)");
+}
+void test_ray_scaling(void)
+{
+	printf("\n--- Ray Scaling ---\n");
+	
+	// Given r <- ray(point(1, 2, 3), vector(0, 1, 0))
+	t_vec3 origin = point_constructor(1, 2, 3);
+	t_vec3 direction = vector_constructor(0, 1, 0);
+	t_ray r = ray_constructor(origin, direction);
+	
+	// And m <- scaling(2, 3, 4)
+	t_mat4 m = matrix_scale(2, 3, 4);
+	
+	// When r2 <- transform(r, m)
+	t_ray r2 = ray_transform(r, m);
+	
+	// Then r2.origin = point(2, 6, 12)
+	// (1*2, 2*3, 3*4)
+	t_vec3 expected_origin = point_constructor(2, 6, 12);
+	assert_vec3_eq(r2.origin, expected_origin, "Scaled Ray Origin");
+	
+	// And r2.direction = vector(0, 3, 0)
+	// (0*2, 1*3, 0*4) -> Note: It is NOT normalized, as per scenario
+	t_vec3 expected_direction = vector_constructor(0, 3, 0);
+	assert_vec3_eq(r2.direction, expected_direction, "Scaled Ray Direction");
+}
+/* ************************************************************************** */
 /*                                   MAIN                                     */
 /* ************************************************************************** */
 
@@ -414,6 +463,9 @@ int main(void)
 	test_scaling();
 	test_rotation();
 	test_chaining();
+
+	test_ray_translate();
+	test_ray_scaling();
 
 	printf("\n==========================================\n");
 	if (g_tests_passed == g_tests_run)

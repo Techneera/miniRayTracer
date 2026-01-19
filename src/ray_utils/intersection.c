@@ -1,6 +1,6 @@
 #include "ray.h"
 
-t_intersection	intersection(double t, t_object object)
+t_intersection	intersection(float t, t_object object)
 {
 	t_intersection	i;
 
