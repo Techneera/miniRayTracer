@@ -40,10 +40,11 @@ typedef struct s_light
 
 typedef struct s_scene
 {
-	t_ambient_light a_light;
-	t_camera camera;
-	t_light light;
-	t_objects objects[MAX_OBJECTS];
+	t_ambient_light	a_light;
+	t_camera 		camera;
+	t_light 		light;
+	t_objects 		objects[MAX_OBJECTS];
+	int				object_count;
 } t_scene;
 
 #endif

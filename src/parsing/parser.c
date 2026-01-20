@@ -50,3 +50,11 @@ bool	is_valid_color(t_vec3 color)
 		&& color.z >= 0 && color.z <= RGB_MAX
 	);
 }
+
+void	color_normalize(t_vec3 *color)
+{
+	color->x = round(color->x * RGB_FACTOR);
+	color->y = round(color->y * RGB_FACTOR);
+	color->z = round(color->z * RGB_FACTOR);
+	color->w = 2.0;
+}

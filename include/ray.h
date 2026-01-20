@@ -18,6 +18,7 @@ typedef struct s_sphere
 {
 	int		id;
 	t_vec3	center;
+	t_vec3	color;
 	float	radius;
 	t_mat4	transform;
 	t_mat4	transform_inv;

@@ -1,14 +1,6 @@
 #include "parser.h"
 #include "vector.h"
 
-void	color_normalize(t_vec3 *color)
-{
-	color->x = round(color->x * RGB_FACTOR);
-	color->y = round(color->y * RGB_FACTOR);
-	color->z = round(color->z * RGB_FACTOR);
-	color->w = 2.0;
-}
-
 int	parse_ambient_light(char *line, t_scene *scene)
 {
 	line = skip_to_next(line);
