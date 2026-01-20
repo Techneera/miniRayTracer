@@ -58,16 +58,16 @@ float	ft_atof(char **ptr, int *error)
 
 	init_vars(&result, &div, &sign);
 	ptr = handle_signal(ptr, &sign);
-	if (ft_isdigit(**ptr) != true && **ptr != '.')
+	if (!ft_isdigit(**ptr) && **ptr != '.')
 		return (ft_atof_error(error));
-	while (ft_isdigit(**ptr) == true)
+	while (ft_isdigit(**ptr))
 		result = result * 10.0 + ((*(*ptr)++) - '0');
 	if (**ptr == '.')
 	{
 		++(*ptr);
-		if (ft_isdigit(**ptr) != true)
+		if (!ft_isdigit(**ptr))
 			return (ft_atof_error(error));
-		while (ft_isdigit(**ptr) == true)
+		while (ft_isdigit(**ptr))
 		{
 			result = result + ((*(*ptr)++) - '0') / div;
 			div *= 10;
