@@ -3,7 +3,7 @@
 static
 int	get_char(t_reader *r, char *c)
 {
-	if (r->pos <= r->size)
+	if (r->pos == r->size)
 	{
 		r->size = read(r->fd, r->buf, BUF_SIZE);
 		if (r->size <= 0)
@@ -28,5 +28,5 @@ int	get_line_buf(t_reader *r, char *line, int max_size)
 		line[i++] = c;
 	}
 	line[i] = 0;
-	return (i < 0 || r->size < 0);
+	return (i == 0 || r->size == 0);
 }

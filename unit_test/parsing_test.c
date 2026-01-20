@@ -138,16 +138,16 @@ void test_load_scene(void)
 
 	// Test Case 1: Wrong Extension
 	ft_memset(&scene, 0, sizeof(t_scene));
-	assert_int_eq(load_scene("test_files/test.txt", &scene), 1, "Reject file with .txt extension");
+	assert_int_eq(load_scene("unit_test/test_files/test.txt", &scene), 1, "Reject file with .txt extension");
 
 	// Test Case 2: Non-existent file
 	ft_memset(&scene, 0, sizeof(t_scene));
-	assert_int_eq(load_scene("test_files/non_existent.rt", &scene), 1, "Handle non-existent .rt file");
+	assert_int_eq(load_scene("unit_test/test_files/non_existent.rt", &scene), 1, "Handle non-existent .rt file");
 
 	// Test Case 3: Missing Mandatory Elements (Assuming empty_but_valid_ext.rt exists)
 	// Create a dummy file if needed: touch empty.rt
 	ft_memset(&scene, 0, sizeof(t_scene));
-	assert_int_eq(load_scene("test_files/empty.rt", &scene), 1, "Fail if A or C are missing");
+	assert_int_eq(load_scene("unit_test/test_files/empty.rt", &scene), 1, "Fail if A or C are missing");
 
 	/* Note: For the following tests, ensure these files exist with content:
 	   valid_minimal.rt:
@@ -157,7 +157,7 @@ void test_load_scene(void)
 	
 	// Test Case 4: Valid Minimal Scene
 	ft_memset(&scene, 0, sizeof(t_scene));
-	int res = load_scene("test_files/valid_minimal.rt", &scene);
+	int res = load_scene("unit_test/test_files/valid_minimal.rt", &scene);
 	if (assert_int_eq(res, 0, "Load valid minimal scene (A and C)"))
 	{
 		assert_float_eq(scene.a_light.ratio, 0.2f, "Verify Ambient Ratio");
@@ -172,7 +172,7 @@ void test_load_scene(void)
 	   pl 0,-1,0 0,1,0 255,255,255
 	*/
 	ft_memset(&scene, 0, sizeof(t_scene));
-	if (load_scene("test_files/valid_objects.rt", &scene) == 0)
+	if (load_scene("unit_test/test_files/valid_objects.rt", &scene) == 0)
 	{
 		assert_int_eq(scene.object_count, 2, "Correctly count 2 objects (sp and pl)");
 	}
@@ -190,6 +190,7 @@ int main(void)
 
 	test_skip_to_next();
 	test_ft_atof();
+	test_load_scene();
 
 	printf("\n==========================================\n");
 	if (g_tests_passed == g_tests_run)

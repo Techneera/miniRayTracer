@@ -1,3 +1,4 @@
+#include "libft.h"
 #include "parser.h"
 
 char	*skip_to_next(char *ptr)
@@ -27,12 +28,6 @@ void	init_vars(float *result, float *div, int *sign)
 }
 
 static
-bool	ft_isdigit(int c)
-{
-	return (c >= '0' && c <= '9');
-}
-
-static
 char	**handle_signal(char **ptr, int *sign)
 {
 	if (**ptr == '-' || **ptr == '+')
@@ -42,6 +37,17 @@ char	**handle_signal(char **ptr, int *sign)
 		++(*ptr);
 	}
 	return (ptr);
+}
+
+static
+int	check_trailing_chars(char **ptr)
+{
+	if (**ptr != '\0' && **ptr != ' ' && **ptr != '\t'
+		&& **ptr != ',' && **ptr != '\n')
+		return (1);
+	if (**ptr == ',')
+		++(*ptr);
+	return (0);
 }
 
 float	ft_atof(char **ptr, int *error)
@@ -67,8 +73,7 @@ float	ft_atof(char **ptr, int *error)
 			div *= 10;
 		}
 	}
-	if (**ptr != '\0' && **ptr != ' ' && **ptr != '\t'
-		&& **ptr != ',' && **ptr != '\n')
+	if (check_trailing_chars(ptr) != 0)
 		return (ft_atof_error(error));
 	return (result * sign);
 }

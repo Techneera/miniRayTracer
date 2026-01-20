@@ -12,7 +12,7 @@ int	parse_line(char *line, t_scene *scene)
 		parse_plane,
 		parse_cylinder,
 	};
-	static char			*element[] = {"A", "C", "L", "sp ", "pl ", "cy ", NULL};
+	static char			*element[] = {"A ", "C ", "L ", "sp ", "pl ", "cy ", NULL};
 	int					i;
 
 	if (line == NULL)
@@ -24,7 +24,7 @@ int	parse_line(char *line, t_scene *scene)
 	i = 0;
 	while (element[i] != NULL)
 	{
-		if (ft_strcmp(line, element[i]) == 0)
+		if (ft_strncmp(line, element[i], ft_strlen(element[i])) == 0)
 			return (parse[i](line, scene));
 		++i;
 	}
