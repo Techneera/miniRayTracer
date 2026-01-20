@@ -56,7 +56,7 @@ int	parse_light(char *line, t_scene *scene)
 		return (1);
 	line = skip_to_next(line);
 	if (parse_float(&line, &scene->light.brightness) != 0
-		|| scene->light.brightness < 0 || scene->light.brightness > 1)
+		|| scene->light.brightness < 0 || scene->light.brightness > 1.0)
 		return (1);
 	line = skip_to_next(line);
 	if (parse_vec3(&line, &scene->light.color) != 0
