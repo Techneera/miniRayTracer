@@ -49,4 +49,19 @@ int	parse_camera(char *line, t_scene *scene)
 	return (0);
 }
 
-int	parse_light(char *line, t_scene *scene);
+int	parse_light(char *line, t_scene *scene)
+{
+	line = skip_to_next(line);
+	if (parse_vec3(&line, &scene->light.position) != 0)
+		return (1);
+	line = skip_to_next(line);
+	if (parse_float(&line, &scene->light.brightness) != 0
+		|| scene->light.brightness < 0 || scene->light.brightness > 1)
+		return (1);
+	line = skip_to_next(line);
+	if (parse_vec3(&line, &scene->light.color) != 0
+		|| is_valid_color(scene->light.color) != true)
+		return (1);
+	color_normalize(&scene->light.color);
+	return (0);
+}
