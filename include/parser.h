@@ -8,6 +8,7 @@
 
 # define RGB_FACTOR 0.00392156862745
 # define BUFFER_SIZE 4096
+# define LINE_SIZE 1024
 
 typedef struct e_reader
 {
@@ -37,5 +38,7 @@ char	*skip_to_next(char *ptr);
 float	ft_atof(char **ptr, int *error);
 
 int		get_line_buf(t_reader *r, char *line, int max_size);
+
+int		load_scene(char *filename, t_scene *scene);
 
 #endif
