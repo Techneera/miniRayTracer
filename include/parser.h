@@ -17,6 +17,8 @@ typedef struct e_reader
 	char	buf[BUFFER_SIZE];
 }	t_reader;
 
+typedef int (*t_parse_fn)(char *, t_scene *);
+
 int		parse_line(char *line, t_scene *scene);
 int		parse_float(char **line, float *value);
 int		parse_vec3(char **line, t_vec3 *v);
