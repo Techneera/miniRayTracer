@@ -1,4 +1,5 @@
-#include "parser.h" // Ensure this includes math.h, stdbool.h, and your structs
+#include "parser.h"
+#include "libft.h"
 #include <stdio.h>
 #include <math.h>
 
@@ -128,6 +129,53 @@ void test_ft_atof(void)
 	error = 0;
 	ft_atof(&ptr, &error);
 	assert_int_eq(error, 1, "Error triggered by '2.' (no digits after dot)");
+}
+
+void test_load_scene(void)
+{
+	t_scene scene;
+	printf("\n--- 3. load_scene (File & Scene Validation) ---\n");
+
+	// Test Case 1: Wrong Extension
+	ft_memset(&scene, 0, sizeof(t_scene));
+	assert_int_eq(load_scene("test_files/test.txt", &scene), 1, "Reject file with .txt extension");
+
+	// Test Case 2: Non-existent file
+	ft_memset(&scene, 0, sizeof(t_scene));
+	assert_int_eq(load_scene("test_files/non_existent.rt", &scene), 1, "Handle non-existent .rt file");
+
+	// Test Case 3: Missing Mandatory Elements (Assuming empty_but_valid_ext.rt exists)
+	// Create a dummy file if needed: touch empty.rt
+	ft_memset(&scene, 0, sizeof(t_scene));
+	assert_int_eq(load_scene("test_files/empty.rt", &scene), 1, "Fail if A or C are missing");
+
+	/* Note: For the following tests, ensure these files exist with content:
+	   valid_minimal.rt:
+	   A 0.2 255,255,255
+	   C 0,0,0 0,0,1 70
+	*/
+	
+	// Test Case 4: Valid Minimal Scene
+	ft_memset(&scene, 0, sizeof(t_scene));
+	int res = load_scene("test_files/valid_minimal.rt", &scene);
+	if (assert_int_eq(res, 0, "Load valid minimal scene (A and C)"))
+	{
+		assert_float_eq(scene.a_light.ratio, 0.2f, "Verify Ambient Ratio");
+	}
+
+	// Test Case 5: Object Count Verification
+	/*
+	   valid_objects.rt:
+	   A 0.1 255,255,255
+	   C 0,0,0 0,0,1 70
+	   sp 0,0,20 10 255,0,0
+	   pl 0,-1,0 0,1,0 255,255,255
+	*/
+	ft_memset(&scene, 0, sizeof(t_scene));
+	if (load_scene("test_files/valid_objects.rt", &scene) == 0)
+	{
+		assert_int_eq(scene.object_count, 2, "Correctly count 2 objects (sp and pl)");
+	}
 }
 
 /* ************************************************************************** */
