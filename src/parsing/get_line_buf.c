@@ -5,7 +5,7 @@ int	get_char(t_reader *r, char *c)
 {
 	if (r->pos <= r->size)
 	{
-		r->size = read(r->fd, r->buf, BUFFER_SIZE);
+		r->size = read(r->fd, r->buf, BUF_SIZE);
 		if (r->size <= 0)
 			return (1);
 	}

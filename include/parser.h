@@ -7,7 +7,7 @@
 # include <unistd.h>
 
 # define RGB_FACTOR 0.00392156862745
-# define BUFFER_SIZE 4096
+# define BUF_SIZE 4096
 # define LINE_SIZE 1024
 
 typedef struct e_reader
@@ -15,7 +15,7 @@ typedef struct e_reader
 	int		fd;
 	int		pos;
 	int		size;
-	char	buf[BUFFER_SIZE];
+	char	buf[BUF_SIZE];
 }	t_reader;
 
 typedef int (*t_parse_fn)(char *, t_scene *);
