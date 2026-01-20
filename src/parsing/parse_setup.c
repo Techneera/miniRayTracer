@@ -33,7 +33,7 @@ int	parse_camera(char *line, t_scene *scene)
 	scene->camera.position.w = 1;
 	line = skip_to_next(line);
 	if (parse_vec3(&line, &scene->camera.direction) != 0
-	 	|| is_valid_direction(scene->camera.direction) != 0)
+	 	|| is_valid_direction(scene->camera.direction) != 1)
 		return (1);
 	scene->camera.direction.w = 0;
 	line = skip_to_next(line);

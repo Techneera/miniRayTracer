@@ -5,14 +5,10 @@
 int	parse_line(char *line, t_scene *scene)
 {
 	static t_parse_fn	parse[] = {
-		parse_ambient_light,
-		parse_camera,
-		parse_light,
-		parse_sphere,
-		parse_plane,
-		parse_cylinder,
+		parse_ambient_light, parse_camera,
+		parse_light, parse_sphere, parse_plane, parse_cylinder,
 	};
-	static char			*element[] = {"A ", "C ", "L ", "sp ", "pl ", "cy ", NULL};
+	static char			*elem[] = {"A ", "C ", "L ", "sp ", "pl ", "cy ", NULL};
 	int					i;
 
 	if (line == NULL)
@@ -22,9 +18,9 @@ int	parse_line(char *line, t_scene *scene)
 	if (*line == '\n' || *line == '\0')
 		return (0);
 	i = 0;
-	while (element[i] != NULL)
+	while (elem[i] != NULL)
 	{
-		if (ft_strncmp(line, element[i], ft_strlen(element[i])) == 0)
+		if (ft_strncmp(line, elem[i], ft_strlen(elem[i])) == 0)
 			return (parse[i](line, scene));
 		++i;
 	}
@@ -34,7 +30,7 @@ int	parse_line(char *line, t_scene *scene)
 int	parse_float(char **line, float *value)
 {
 	int	error;
-	
+
 	error = 0;
 	*value = ft_atof(line, &error);
 	return (error);
@@ -44,7 +40,7 @@ int	parse_vec3(char **line, t_vec3 *v)
 {
 	if (parse_float(line, &v->x) != 0
 		|| parse_float(line, &v->y) != 0
-	 	|| parse_float(line, &v->z) != 0)
+		|| parse_float(line, &v->z) != 0)
 		return (1);
 	return (0);
 }
