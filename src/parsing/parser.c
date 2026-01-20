@@ -1,4 +1,5 @@
 #include "parser.h"
+#include "canvas.h"
 #include "librt.h"
 #include "vector.h"
 
@@ -46,20 +47,26 @@ int	parse_vec3(char **line, t_vec3 *v)
 bool	is_valid_color(t_vec3 color)
 {
 	return (
-		color.x >= 0 && color.x <= 255.0
-		&& color.y >= 0 && color.y <= 255.0
-		&& color.z >= 0 && color.z <= 255.0
+		color.x >= 0 && color.x <= RGB_MAX
+		&& color.y >= 0 && color.y <= RGB_MAX
+		&& color.z >= 0 && color.z <= RGB_MAX
 	);
 }
 
-void	parse_ambient_light(char **line, t_scene *scene)
+int	parse_ambient_light(char **line, t_scene *scene)
 {
 	*line = skip_to_next(*line);
-	if (parse_float(line, &scene->a_light.ratio) != 0
-		|| parse_vec3(line, &scene->a_light.color) != 0)
-		exit(1);
+	if (parse_float(line, &scene->a_light.ratio) != 0)
+		return (1);
 	if (scene->a_light.ratio < 0.0 || scene->a_light.ratio > 1.0)
-		exit(1);
+		return (1);
+	*line = skip_to_next(*line);
+	if (parse_vec3(line, &scene->a_light.color) != 0)
+		return (1);
 	if (is_valid_color(scene->a_light.color) != true)
-		exit(1);
+		return (1);
+	scene->a_light.color.x = round(scene->a_light.color.x * RGB_FACTOR);
+	scene->a_light.color.y = round(scene->a_light.color.y * RGB_FACTOR);
+	scene->a_light.color.z = round(scene->a_light.color.z * RGB_FACTOR);
+	return (0);
 }
