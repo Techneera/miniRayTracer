@@ -3,6 +3,7 @@ CC = cc
 CFLAGS = -Wall -Wextra -Werror -Wno-psabi -g
 LMATH = -lm
 LMLX = -lmlx_Linux -lXext -lX11
+LLFT = -lft
 
 # ------------------------------ DIRECTORIES -------------------------------- #
 
@@ -13,7 +14,7 @@ TDIR = unit_test/
 BDIR = build/
 
 MLXDIR = $(IDIR)minilibx-linux/
-
+LFTDIR = $(IDIR)libft/
 VECDIR = $(SDIR)vec_utils
 CANVASDIR = $(SDIR)canvas_utils
 RAYDIR = $(SDIR)ray_utils
@@ -77,6 +78,7 @@ TESTER4OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER4SRCS))
 # ------------------------------ LIBRARIES -------------------------------- #
 
 MLX = $(MLXDIR)libmlx_Linux.a
+LFT = $(LFTDIR)libft.a
 
 # ------------------------------ BUILD -------------------------------- #
 
@@ -100,19 +102,19 @@ all: $(NAME)
 debug: CFLAGS += -g
 debug: re
 
-test: $(MLX) $(TESTEROBJS) $(TESTOBJ)
-	$(CC) $(CFLAGS) -g $(TESTEROBJS) $(TESTOBJ) -o $(BDIR)tester -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX)
+test: $(MLX) $(LFT) $(TESTEROBJS) $(TESTOBJ)
+	$(CC) $(CFLAGS) -g $(TESTEROBJS) $(TESTOBJ) -o $(BDIR)tester -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
 
-test_v2: $(MLX) $(TESTER2OBJS) $(TESTOBJ)
-	$(CC) $(CFLAGS) -g $(TESTER2OBJS) $(TESTOBJ) -o $(BDIR)tester_v2 -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX)
+test_v2: $(MLX) $(LFT) $(TESTER2OBJS) $(TESTOBJ)
+	$(CC) $(CFLAGS) -g $(TESTER2OBJS) $(TESTOBJ) -o $(BDIR)tester_v2 -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
 
-test_draw: $(MLX) $(TESTER3OBJS) $(TESTOBJ)
-	$(CC) $(CFLAGS) -g $(TESTER3OBJS) $(TESTOBJ) -o $(BDIR)tester_draw -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX)
+test_draw: $(MLX) $(LFT) $(TESTER3OBJS) $(TESTOBJ)
+	$(CC) $(CFLAGS) -g $(TESTER3OBJS) $(TESTOBJ) -o $(BDIR)tester_draw -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
 
-test_parsing: $(MLX) $(TESTER4OBJS) $(TESTOBJ)
-	$(CC) $(CFLAGS) -g $(TESTER4OBJS) $(TESTOBJ) -o $(BDIR)tester_parsing -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX)
+test_parsing: $(MLX) $(LFT) $(TESTER4OBJS) $(TESTOBJ)
+	$(CC) $(CFLAGS) -g $(TESTER4OBJS) $(TESTOBJ) -o $(BDIR)tester_parsing -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
 
-$(NAME): $(OBJ) $(MLX)
+$(NAME): $(OBJ) $(MLX) $(LFT)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
 $(ODIR)$(SDIR)%.o: $(SDIR)%.c
@@ -122,18 +124,22 @@ $(ODIR)$(SDIR)%.o: $(SDIR)%.c
 	@mkdir -p $(ODIR)$(RAYDIR)
 	@mkdir -p $(ODIR)$(MATDIR)
 	@mkdir -p $(ODIR)$(PARSEDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -I $(IDIR) -I$(MLXDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -I $(IDIR) -I$(MLXDIR) -I$(LFTDIR)
 
 $(ODIR)$(TDIR)%.o: $(TDIR)%.c
 	@mkdir -p $(BDIR)
 	@mkdir -p $(ODIR)$(TDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -I$(IDIR) -I$(MLXDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -I$(IDIR) -I$(MLXDIR) -I$(LFTDIR)
 
 $(MLX):
 	make -C $(MLXDIR)
 
+$(LFT):
+	make -C $(LFTDIR)
+
 clean:
 	make clean -C $(MLXDIR)
+	make clean -C $(LFTDIR)
 	rm -rf $(ODIR)
 
 fclean: clean
