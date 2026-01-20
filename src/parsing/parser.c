@@ -1,28 +1,35 @@
+#include "libft.h"
 #include "parser.h"
 #include "canvas.h"
 
-//int	parse_line(char *line, t_scene *scene)
-//{
-//	if (line == NULL)
-//		return (1);
-//	while (*line == ' ' || *line == '\t')
-//		++line;
-//	if (*line == '\n' || *line == '\0')
-//		return (0);
-//	if (line[0] == 'A' && line[1] == ' ') // parse_ambient_light()
-//		;
-//	else if (line[0] == 'C' && line[1] == ' ') // parse_camera()
-//		;
-//	else if (line[0] == 'L' && line[1] == ' ') // parse_light()
-//		;
-//	else if (line[0] == 's' && line[1] == 'p' && line[2] == ' ') // parse_sphere()
-//		;
-//	else if (line[0] == 'p' && line[1] == 'l' && line[2] == ' ') // parse_plane()
-//		;
-//	else if (line[0] == 'c' && line[1] == 'y' && line[2] == ' ') // parse_cylinder()
-//		;
-//	return (0);
-//}
+int	parse_line(char *line, t_scene *scene)
+{
+	static t_parse_fn	parse[] = {
+		parse_ambient_light,
+		parse_camera,
+		parse_light,
+		parse_sphere,
+		parse_plane,
+		parse_cylinder,
+	};
+	static char			*element[] = {"A", "C", "L", "sp ", "pl ", "cy ", NULL};
+	int					i;
+
+	if (line == NULL)
+		return (1);
+	while (*line == ' ' || *line == '\t')
+		++line;
+	if (*line == '\n' || *line == '\0')
+		return (0);
+	i = 0;
+	while (element[i] != NULL)
+	{
+		if (ft_strcmp(line, element[i]) == 0)
+			return (parse[i](line, scene));
+		++i;
+	}
+	return (1);
+}
 
 int	parse_float(char **line, float *value)
 {
