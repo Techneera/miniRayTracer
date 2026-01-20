@@ -52,7 +52,8 @@ RAY_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(RAY_SRCS))
 # ------------------------------ PARSING -------------------------------- #
 
 _PARSE_SRCS = parser.c \
-			  parser_utils.c
+			  parser_utils.c \
+			  parse_setup.c
 
 PARSE_SRCS = $(patsubst %.c, $(PARSEDIR)/%.c, $(_PARSE_SRCS))
 PARSE_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(PARSE_SRCS))
