@@ -12,6 +12,7 @@ int	parse_sphere(char *line, t_scene *scene)
 	line = skip_to_next(line);
 	if (parse_vec3(&line, &sphere_center) != 0)
 		return (1);
+	sphere_center.w = 1;
 	scene->objects->object.sp.center = sphere_center;
 	line = skip_to_next(line);
 	if (parse_float(&line, &scene->objects->object.sp.radius) != 0)
@@ -25,6 +26,9 @@ int	parse_sphere(char *line, t_scene *scene)
 	return (0);
 }
 
-int	parse_plane(char *line, t_scene *scene);
+int	parse_plane(char *line, t_scene *scene)
+{
+
+}
 
 int	parse_cylinder(char *line, t_scene *scene);

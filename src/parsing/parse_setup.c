@@ -30,10 +30,12 @@ int	parse_camera(char *line, t_scene *scene)
 	line = skip_to_next(line);
 	if (parse_vec3(&line, &scene->camera.position) != 0)
 		return (1);
+	scene->camera.position.w = 1;
 	line = skip_to_next(line);
 	if (parse_vec3(&line, &scene->camera.direction) != 0
 	 	|| is_valid_direction(scene->camera.direction) != 0)
 		return (1);
+	scene->camera.direction.w = 0;
 	line = skip_to_next(line);
 	if (parse_float(&line, &scene->camera.fov) != 0
 		|| scene->camera.fov < 0 || scene->camera.fov > 180.0)
@@ -46,6 +48,7 @@ int	parse_light(char *line, t_scene *scene)
 	line = skip_to_next(line);
 	if (parse_vec3(&line, &scene->light.position) != 0)
 		return (1);
+	scene->light.position.w = 1;
 	line = skip_to_next(line);
 	if (parse_float(&line, &scene->light.brightness) != 0
 		|| scene->light.brightness < 0 || scene->light.brightness > 1.0)
