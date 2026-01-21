@@ -1,6 +1,7 @@
 #include "parser.h"
 #include "libft.h"
 #include <stdio.h>
+#include <string.h>
 #include <math.h>
 
 #define EPSILON 0.00001
@@ -179,6 +180,72 @@ void test_load_scene(void)
 }
 
 /* ************************************************************************** */
+/* BUFFERED READER TESTS                                                      */
+/* ************************************************************************** */
+
+static bool assert_str_eq(const char *actual, const char *expected, const char *msg)
+{
+	g_tests_run++;
+	if (strcmp(actual, expected) == 0)
+	{
+		g_tests_passed++;
+		printf("%s[PASS]%s %s\n", GREEN, RESET, msg);
+		return (true);
+	}
+	printf("%s[FAIL]%s %s\n", RED, RESET, msg);
+	printf("\tExpected: \"%s\"\n\tActual:   \"%s\"\n", expected, actual);
+	return (false);
+}
+
+void test_get_line_buf(void)
+{
+	t_reader	r;
+	char		line[1024];
+	int			fd;
+
+	printf("\n--- 4. get_line_buf (Buffered Reading) ---\n");
+	fd = open("unit_test/test_files/get_line_test.rt", O_RDONLY);
+	if (fd < 0)
+	{
+		printf("%s[SKIP]%s Could not open get_line_test.rt\n", RED, RESET);
+		return ;
+	}
+	r.fd = fd;
+	r.pos = 0;
+	r.size = 0;
+
+	// Test 1: Standard line with newline
+	int res = get_line_buf(&r, line, 1024);
+	assert_int_eq(res, 1, "get_line_buf returns 1 for Line 1");
+	assert_str_eq(line, "Line 1", "Line 1 content matches (newline removed)");
+
+	// Test 2: Sequential read
+	get_line_buf(&r, line, 1024);
+	assert_str_eq(line, "Line 2", "Line 2 content matches");
+
+	// Test 3: EOF without newline
+	res = get_line_buf(&r, line, 1024);
+	assert_int_eq(res, 1, "get_line_buf returns 1 for last line without newline");
+	assert_str_eq(line, "LongLineWithoutNewline", "Last line content matches");
+
+	// Test 4: Call after EOF
+	res = get_line_buf(&r, line, 1024);
+	assert_int_eq(res, 0, "get_line_buf returns 0 at end of file");
+
+	close(fd);
+
+	// Test 5: Buffer Overflow Protection
+	fd = open("unit_test/test_files/get_line_test.rt", O_RDONLY);
+	r.fd = fd;
+	r.pos = 0;
+	r.size = 0;
+	// Use a tiny max_size to force truncation
+	get_line_buf(&r, line, 5); 
+	assert_str_eq(line, "Line", "Truncates line to max_size - 1");
+	close(fd);
+}
+
+/* ************************************************************************** */
 /* MAIN                                     */
 /* ************************************************************************** */
 
@@ -191,6 +258,7 @@ int main(void)
 	test_skip_to_next();
 	test_ft_atof();
 	test_load_scene();
+	test_get_line_buf();
 
 	printf("\n==========================================\n");
 	if (g_tests_passed == g_tests_run)
