@@ -17,12 +17,13 @@ typedef struct s_ray
 
 typedef struct s_sphere
 {
-	int			id;
-	t_vec3		center;
-	float		radius;
-	t_mat4		transform;
-	t_mat4		transform_inv;
-	t_material	material;
+	int		id;
+	t_vec3	center;
+	t_vec3	color;
+	float	radius;
+	t_mat4	transform;
+	t_mat4	transform_inv;
+  t_material  material;
 }	t_sphere;
 
 typedef union u_object
