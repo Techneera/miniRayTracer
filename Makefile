@@ -20,6 +20,7 @@ RAYDIR = $(SDIR)ray_utils
 MATDIR = $(SDIR)matrix_utils
 PARSEDIR = $(SDIR)parsing
 SHADESDIR = $(SDIR)shades_utils
+SCENEDIR = $(SDIR)scene_utils
 
 # ------------------------------ VECTORS -------------------------------- #
 
@@ -65,6 +66,14 @@ _SHADES_SRCS = shades_utils.c
 SHADES_SRCS = $(patsubst %.c, $(SHADESDIR)/%.c, $(_SHADES_SRCS))
 SHADES_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(SHADES_SRCS))
 
+# ------------------------------ SCENE -------------------------------- #
+
+_SCENE_SRCS = world.c
+
+SCENE_SRCS = $(patsubst %.c, $(SCENEDIR)/%.c, $(_SCENE_SRCS))
+SCENE_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(SCENE_SRCS))
+
+
 # ------------------------------ UNIT TESTS-------------------------------- #
 
 TESTERSRCS = $(TDIR)main_tester.c
@@ -78,6 +87,9 @@ TESTER3OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER3SRCS))
 
 TESTER4SRCS = $(TDIR)parsing_test.c
 TESTER4OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER4SRCS))
+
+TESTER5SRCS = $(TDIR)scene_test.c
+TESTER5OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER5SRCS))
 
 # ------------------------------ LIBRARIES -------------------------------- #
 
@@ -118,6 +130,9 @@ test_draw: $(MLX) $(TESTER3OBJS) $(TESTOBJ)
 test_parsing: $(MLX) $(TESTER4OBJS) $(TESTOBJ)
 	$(CC) $(CFLAGS) -g $(TESTER4OBJS) $(TESTOBJ) -o $(BDIR)tester_parsing -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX)
 
+test_scene: $(MLX) $(TESTER5OBJS) $(TESTOBJ)
+	$(CC) $(CFLAGS) -g $(TESTER5OBJS) $(TESTOBJ) -o $(BDIR)tester_scene -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX)
+
 $(NAME): $(OBJ) $(MLX)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
@@ -129,6 +144,7 @@ $(ODIR)$(SDIR)%.o: $(SDIR)%.c
 	@mkdir -p $(ODIR)$(MATDIR)
 	@mkdir -p $(ODIR)$(PARSEDIR)
 	@mkdir -p $(ODIR)$(SHADESDIR)
+	@mkdir -p $(ODIR)$(SCENEDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -I $(IDIR) -I$(MLXDIR)
 
 $(ODIR)$(TDIR)%.o: $(TDIR)%.c
