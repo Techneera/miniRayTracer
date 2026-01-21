@@ -32,5 +32,6 @@ t_vec3	vector_cross_product(t_vec3 u, t_vec3 v);
 t_vec3	vector_add(t_vec3 u, t_vec3 v);
 t_vec3	vector_sub(t_vec3 u, t_vec3 v);
 t_vec3	vector_scale(t_vec3 u, float scalar);
+t_vec3	vector_multiply(t_vec3 u, t_vec3 v);
 
 #endif

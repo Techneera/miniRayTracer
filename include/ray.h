@@ -3,6 +3,7 @@
 
 # include "vector.h"
 # include "matrix.h"
+# include "shades.h"
 
 # ifndef MAX_INTERSECTION
 #  define MAX_INTERSECTION 10
@@ -22,6 +23,7 @@ typedef struct s_sphere
 	float	radius;
 	t_mat4	transform;
 	t_mat4	transform_inv;
+  t_material  material;
 }	t_sphere;
 
 typedef union u_object
@@ -55,6 +57,7 @@ t_vec3			ray_position(t_ray ray, float t);
 t_sphere		sphere(void);
 t_intersect		sphere_intersect(t_ray ray, t_sphere sphere);
 void			sphere_set_transform(t_sphere *s, t_mat4 t);
+t_vec3			normal_at(t_sphere s, t_vec3 world_point);
 
 t_intersection	intersection(float t, t_object object);
 t_intersect		*intersections(t_intersection *items, t_intersect *result, int size);

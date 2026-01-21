@@ -20,6 +20,7 @@ CANVASDIR = $(SDIR)canvas_utils
 RAYDIR = $(SDIR)ray_utils
 MATDIR = $(SDIR)matrix_utils
 PARSEDIR = $(SDIR)parsing
+SHADESDIR = $(SDIR)shades_utils
 
 # ------------------------------ VECTORS -------------------------------- #
 
@@ -62,6 +63,13 @@ _PARSE_SRCS = parser.c \
 PARSE_SRCS = $(patsubst %.c, $(PARSEDIR)/%.c, $(_PARSE_SRCS))
 PARSE_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(PARSE_SRCS))
 
+# ------------------------------ SHADES -------------------------------- #
+
+_SHADES_SRCS = shades_utils.c
+
+SHADES_SRCS = $(patsubst %.c, $(SHADESDIR)/%.c, $(_SHADES_SRCS))
+SHADES_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(SHADES_SRCS))
+
 # ------------------------------ UNIT TESTS-------------------------------- #
 
 TESTERSRCS = $(TDIR)main_tester.c
@@ -94,7 +102,8 @@ SRCFILES = $(SDIR)main.c \
 		   $(CANVAS_SRCS) \
 		   $(RAY_SRCS) \
 		   $(MATRIX_SRCS) \
-		   $(PARSE_SRCS)
+		   $(PARSE_SRCS) \
+		   $(SHADES_SRCS)
 
 # ------------------------------ RULES -------------------------------- #
 
