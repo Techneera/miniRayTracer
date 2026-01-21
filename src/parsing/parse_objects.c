@@ -19,7 +19,7 @@ int	parse_sphere(char *line, t_scene *scene)
 		return (1);
 	line = skip_to_next(line);
 	if (parse_vec3(&line, &scene->objects->object.sp.color) != 0
-		|| is_valid_color(scene->objects->object.sp.color))
+		|| is_valid_color(scene->objects->object.sp.color) == false)
 		return (1);
 	color_normalize(&scene->objects->object.sp.color);
 	++scene->object_count;
@@ -30,6 +30,7 @@ int	parse_plane(char *line, t_scene *scene)
 {
 	if (scene->object_count == MAX_OBJECTS)
 		return (1);
+	++scene->object_count;
 	scene->objects->type = PLANE;
 	line = skip_to_next(line);
 	return (0);
@@ -39,6 +40,7 @@ int	parse_cylinder(char *line, t_scene *scene)
 {
 	if (scene->object_count == MAX_OBJECTS)
 		return (1);
+	++scene->object_count;
 	scene->objects->type = CYLINDER;
 	line = skip_to_next(line);
 	return (0);

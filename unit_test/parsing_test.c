@@ -246,6 +246,99 @@ void test_get_line_buf(void)
 }
 
 /* ************************************************************************** */
+/* PARSING ELEMENT TESTS                                                      */
+/* ************************************************************************** */
+
+void test_parse_ambient(void)
+{
+	t_scene scene;
+	printf("\n--- 5. parse_ambient_light ---\n");
+
+	// Valid Case
+	ft_memset(&scene, 0, sizeof(t_scene));
+	char s1[] = "A 0.2 255,128,0";
+	assert_int_eq(parse_ambient_light(s1, &scene), 0, "Valid ambient light");
+	assert_float_eq(scene.a_light.ratio, 0.2f, "Ambient ratio correctly set");
+	// After color_normalize, 255 becomes ~1.0
+	assert_float_eq(scene.a_light.color.x, 1.0f, "Color R normalized");
+
+	// Invalid Ratio
+	char s2[] = "A 1.5 255,255,255";
+	assert_int_eq(parse_ambient_light(s2, &scene), 1, "Fail on ratio > 1.0");
+
+	// Invalid Color
+	char s3[] = "A 0.5 256,0,0";
+	assert_int_eq(parse_ambient_light(s3, &scene), 1, "Fail on color component > 255");
+}
+
+void test_parse_camera(void)
+{
+	t_scene scene;
+	printf("\n--- 6. parse_camera ---\n");
+
+	// Valid Case
+	ft_memset(&scene, 0, sizeof(t_scene));
+	char s1[] = "C -50,0,20 0,0,1 70";
+	assert_int_eq(parse_camera(s1, &scene), 0, "Valid camera line");
+	assert_float_eq(scene.camera.position.x, -50.0f, "Camera X position set");
+	assert_int_eq(scene.camera.position.w, 1, "Camera position marked as point (w=1)");
+	assert_float_eq(scene.camera.fov, 70.0f, "Camera FOV set");
+
+	// Invalid Direction (is_valid_direction check)
+	char s2[] = "C 0,0,0 2,0,0 70";
+	assert_int_eq(parse_camera(s2, &scene), 1, "Fail on direction component > 1.0");
+
+	// Invalid FOV
+	char s3[] = "C 0,0,0 0,0,1 181";
+	assert_int_eq(parse_camera(s3, &scene), 1, "Fail on FOV > 180");
+}
+
+void test_parse_sphere(void)
+{
+	t_scene scene;
+	printf("\n--- 7. parse_sphere ---\n");
+
+	// Valid Case
+	ft_memset(&scene, 0, sizeof(t_scene));
+	scene.object_count = 0;
+	char s1[] = "sp 0,0,20 10.5 255,0,0";
+	assert_int_eq(parse_sphere(s1, &scene), 0, "Valid sphere line");
+	assert_int_eq(scene.object_count, 1, "Object count incremented");
+	assert_float_eq(scene.objects[0].object.sp.center.z, 20.0f, "Sphere center Z set");
+	assert_float_eq(scene.objects[0].object.sp.radius, 10.5f, "Sphere radius set");
+
+	// Max Objects Overflow
+	scene.object_count = MAX_OBJECTS;
+	assert_int_eq(parse_sphere(s1, &scene), 1, "Fail when MAX_OBJECTS reached");
+}
+
+void test_parse_light(void)
+{
+	t_scene scene;
+	printf("\n--- 8. parse_light ---\n");
+
+	// Valid Case: Standard Light
+	ft_memset(&scene, 0, sizeof(t_scene));
+	char s1[] = "L -40,0,30 0.7 255,255,255";
+	assert_int_eq(parse_light(s1, &scene), 0, "Valid light line");
+	assert_float_eq(scene.light.position.x, -40.0f, "Light X position set");
+	assert_int_eq(scene.light.position.w, 1, "Light position marked as point (w=1)");
+	assert_float_eq(scene.light.brightness, 0.7f, "Light brightness set");
+	assert_float_eq(scene.light.color.y, 1.0f, "Light color normalized (G)");
+
+	// Invalid Brightness: Out of bounds
+	char s2[] = "L 0,0,0 1.1 255,255,255";
+	assert_int_eq(parse_light(s2, &scene), 1, "Fail on brightness > 1.0");
+
+	char s3[] = "L 0,0,0 -0.1 255,255,255";
+	assert_int_eq(parse_light(s3, &scene), 1, "Fail on negative brightness");
+
+	// Invalid Color: Components out of range
+	char s4[] = "L 0,0,0 0.5 255,300,255";
+	assert_int_eq(parse_light(s4, &scene), 1, "Fail on light color green > 255");
+}
+
+/* ************************************************************************** */
 /* MAIN                                     */
 /* ************************************************************************** */
 
@@ -259,6 +352,10 @@ int main(void)
 	test_ft_atof();
 	test_load_scene();
 	test_get_line_buf();
+	test_parse_ambient();
+	test_parse_camera();
+	test_parse_light();
+	test_parse_sphere();
 
 	printf("\n==========================================\n");
 	if (g_tests_passed == g_tests_run)
