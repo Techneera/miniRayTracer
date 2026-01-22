@@ -35,6 +35,7 @@ int	load_scene(char *filename, t_scene *scene)
 			return (1);
 		}
 	}
+	close(r.fd);
 	if (has_content != true)
 		return (1);
 	return (0);
