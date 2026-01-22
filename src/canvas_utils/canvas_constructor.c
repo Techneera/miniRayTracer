@@ -43,6 +43,9 @@ void	write_pixel(t_canvas *c, int x, int y, t_vec3 color)
 int	key_hook(int keycode, t_canvas *vars)
 {
 	if (keycode == 65307)
+	{
 		canvas_destructor(vars);
+		exit(0);
+	}
 	return (0);
 }

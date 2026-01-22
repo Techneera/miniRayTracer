@@ -28,21 +28,23 @@ typedef struct s_camera
 {
 	t_vec3	position;
 	t_vec3	direction;
-	int		fov;
+	float	fov;
 } t_camera;
 
 typedef struct s_light
 {
 	t_vec3	position;
+	t_vec3	color;
 	float	brightness;
 } t_light;
 
 typedef struct s_scene
 {
-	t_ambient_light a_light;
-	t_camera camera;
-	t_light light;
-	t_objects objects[MAX_OBJECTS];
+	t_ambient_light	a_light;
+	t_camera 		camera;
+	t_light 		light;
+	t_objects 		objects[MAX_OBJECTS];
+	int				object_count;
 } t_scene;
 
 #endif
