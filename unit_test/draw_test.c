@@ -84,10 +84,10 @@ int	close_program(t_canvas *vars)
 int	main(void)
 {
 	// 1. SCENE CONFIGURATION
-	t_vec3		ray_origin = point_constructor(0, 0, -5);
+	t_vec3		ray_origin = point_constructor(0, 0, -15);
 	float		wall_z = 10.0f;
 	float		wall_size = 7.0f;
-	int			canvas_pixels = 700; // Increased resolution
+	int			canvas_pixels = 980; // Increased resolution
 	float		pixel_size = wall_size / canvas_pixels;
 	float		half = wall_size / 2.0f;
 
@@ -96,11 +96,11 @@ int	main(void)
 	
 	// Assign Material
 	shape.material = new_material();
-	shape.material.color = color_constructor(1.0f, 0.2f, 1.0f); // Purple-ish
+	shape.material.color = color_constructor(0.0f, 0.2f, 1.0f);
 
 	// 3. LIGHT SETUP
 	t_vec3			light_position = point_constructor(-10, 10, -10);
-	t_vec3			light_color = color_constructor(1, 1, 1);
+	t_vec3			light_color = color_constructor(1, 0.75, 0.4);
 	t_point_light	light = point_light(light_position, light_color);
 
 	// 4. CANVAS INIT
