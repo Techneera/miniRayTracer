@@ -1,6 +1,7 @@
 #include "shades.h"
 #include "ray.h"
 #include "canvas.h"
+#include <math.h>
 
 t_vec3	normal_at(t_sphere s, t_vec3 world_point)
 {
