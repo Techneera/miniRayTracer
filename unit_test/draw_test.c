@@ -84,23 +84,27 @@ int	close_program(t_canvas *vars)
 int	main(void)
 {
 	// 1. SCENE CONFIGURATION
-	t_vec3		ray_origin = point_constructor(0, 0, -5);
+	t_vec3		ray_origin = point_constructor(0, 0, -15);
 	float		wall_z = 10.0f;
 	float		wall_size = 7.0f;
-	int			canvas_pixels = 700; // Increased resolution
+	int			canvas_pixels = 980; // Increased resolution
 	float		pixel_size = wall_size / canvas_pixels;
 	float		half = wall_size / 2.0f;
 
 	// 2. OBJECT SETUP (Sphere + Material)
 	t_sphere	shape = sphere();
+	t_mat4		scale_mat = matrix_scale(1.0f, 1.0f, 1.0f);
+	t_mat4		rot_mat = matrix_rot_z(M_PI / 4.0f);
+	t_mat4		transform = matrix_multiply(rot_mat, scale_mat);
+	sphere_set_transform(&shape, transform);
 	
 	// Assign Material
-	shape.material = new_material();
-	shape.material.color = color_constructor(1.0f, 0.2f, 1.0f); // Purple-ish
+	shape.material = new_material(0.1, 0.8, 0.9, 200.0);
+	shape.material.color = color_constructor(1.0f, 0.0f, 1.0f);
 
 	// 3. LIGHT SETUP
 	t_vec3			light_position = point_constructor(-10, 10, -10);
-	t_vec3			light_color = color_constructor(1, 1, 1);
+	t_vec3			light_color = color_constructor(1.0, 1.0, 1.0);
 	t_point_light	light = point_light(light_position, light_color);
 
 	// 4. CANVAS INIT
@@ -129,12 +133,10 @@ int	main(void)
             t_vec3 direction = vector_normalization(vector_sub(position, ray_origin));
             t_ray r = ray_constructor(ray_origin, direction);
 
-            // 2. Intersect (Fixing the error here)
-            // Old: int count = sphere_intersect(r, shape);
-            // New: Store the full struct returned by the team's function
+            // 2. Intersect
             t_intersect xs = sphere_intersect(r, shape);
             
-            // 3. Find closest hit using the team's hit() function
+            // 3. Find closest hit
             t_intersection closest_buffer;
             t_intersection *hit_record = hit(&xs, &closest_buffer, xs.count);
 

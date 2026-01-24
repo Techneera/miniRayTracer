@@ -134,6 +134,7 @@ $(ODIR)$(SDIR)%.o: $(SDIR)%.c
 	@mkdir -p $(ODIR)$(RAYDIR)
 	@mkdir -p $(ODIR)$(MATDIR)
 	@mkdir -p $(ODIR)$(PARSEDIR)
+	@mkdir -p $(ODIR)$(SHADESDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -I $(IDIR) -I$(MLXDIR) -I$(LFTDIR)
 
 $(ODIR)$(TDIR)%.o: $(TDIR)%.c
