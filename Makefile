@@ -21,6 +21,7 @@ RAYDIR = $(SDIR)ray_utils
 MATDIR = $(SDIR)matrix_utils
 PARSEDIR = $(SDIR)parsing
 SHADESDIR = $(SDIR)shades_utils
+SHADOWSDIR = $(SDIR)shadows_utils
 
 # ------------------------------ VECTORS -------------------------------- #
 
@@ -70,6 +71,14 @@ _SHADES_SRCS = shades_utils.c
 SHADES_SRCS = $(patsubst %.c, $(SHADESDIR)/%.c, $(_SHADES_SRCS))
 SHADES_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(SHADES_SRCS))
 
+# ------------------------------ SHADOWS -------------------------------- #
+
+_SHADOWS_SRCS = 
+
+SHADOWS_SRCS = $(patsubst %.c, $(SHADOWSDIR)/%.c, $(_SHADOWS_SRCS))
+SHADOWS_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(SHADOWS_SRCS))
+
+
 # ------------------------------ UNIT TESTS-------------------------------- #
 
 TESTERSRCS = $(TDIR)main_tester.c
@@ -83,6 +92,9 @@ TESTER3OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER3SRCS))
 
 TESTER4SRCS = $(TDIR)parsing_test.c
 TESTER4OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER4SRCS))
+
+TESTER5SRCS = $(TDIR)shadows_test.c
+TESTER5OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER5SRCS))
 
 # ------------------------------ LIBRARIES -------------------------------- #
 
@@ -103,7 +115,8 @@ SRCFILES = $(SDIR)main.c \
 		   $(RAY_SRCS) \
 		   $(MATRIX_SRCS) \
 		   $(PARSE_SRCS) \
-		   $(SHADES_SRCS)
+		   $(SHADES_SRCS) \
+		   $(SHADOWS_SRCS)
 
 # ------------------------------ RULES -------------------------------- #
 
@@ -123,6 +136,9 @@ test_draw: $(MLX) $(LFT) $(TESTER3OBJS) $(TESTOBJ)
 
 test_parsing: $(MLX) $(LFT) $(TESTER4OBJS) $(TESTOBJ)
 	$(CC) $(CFLAGS) -g $(TESTER4OBJS) $(TESTOBJ) -o $(BDIR)tester_parsing -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
+
+test_shadows: $(MLX) $(LFT) $(TESTER5OBJS) $(TESTOBJ)
+	$(CC) $(CFLAGS) -g $(TESTER5OBJS) $(TESTOBJ) -o $(BDIR)tester_shadows -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
 
 $(NAME): $(OBJ) $(MLX) $(LFT)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)

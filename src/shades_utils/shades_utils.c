@@ -57,7 +57,7 @@ t_point_light	point_light(t_vec3 position, t_vec3 intensity)
 ** @param eyev: The vector from the point to the camera (normalized).
 ** @param normalv: The surface normal at the point (normalized).
 */
-t_vec3			lighting(t_material m, t_point_light light, t_vec3 point, t_vec3 eyev, t_vec3 normalv)
+t_vec3			lighting(t_material m, t_point_light light, t_vec3 point, t_vec3 eyev, t_vec3 normalv, bool in_shadow)
 {
 	t_vec3	effective_color;
 	t_vec3	lightv;
@@ -72,6 +72,8 @@ t_vec3			lighting(t_material m, t_point_light light, t_vec3 point, t_vec3 eyev, 
 	effective_color = vector_multiply(m.color, light.intensity);
 	lightv = vector_normalization(vector_sub(light.position, point));
 	ambient = vector_scale(effective_color, m.ambient);
+	if (in_shadow == true)
+		return (ambient);
 	light_dot_normal = vector_dot_product(lightv, normalv);
 	if (light_dot_normal < 0.0f)
 	{
