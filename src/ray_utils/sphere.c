@@ -18,12 +18,14 @@ t_intersect	sphere_intersect(t_ray ray, t_sphere sphere)
 {
 	t_intersect			this;
 	t_vec3				sphere_to_ray;
+	t_ray				obj_ray;
 	float				sqrt_disc;
 	struct s_quadratic	q;
 
-	sphere_to_ray = vector_sub(ray.origin, sphere.center);
-	q.a = vector_dot_product(ray.direction, ray.direction);
-	q.b = 2 * vector_dot_product(ray.direction, sphere_to_ray);
+	obj_ray = ray_transform(ray, sphere.transform_inv);
+	sphere_to_ray = vector_sub(obj_ray.origin, sphere.center);
+	q.a = vector_dot_product(obj_ray.direction, obj_ray.direction);
+	q.b = 2 * vector_dot_product(obj_ray.direction, sphere_to_ray);
 	q.c = vector_dot_product(sphere_to_ray, sphere_to_ray) - 1;
 	q.discriminant = q.b * q.b - 4 * q.a * q.c;
 	this.count = 0;

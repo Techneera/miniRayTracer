@@ -3,6 +3,7 @@
 #include "vector.h"
 #include "matrix.h"
 #include "scene.h"
+#include "ray.h"
 
 #define EPSILON 0.00001
 #define GREEN "\033[0;32m"
@@ -128,6 +129,26 @@ void test_default_world(void)
                     "Second sphere has scale 0.5 on Z");
 }
 
+void test_intersect_world(void)
+{
+    t_world     w;
+    t_ray       r;
+    t_intersect xs;
+
+    printf("\n--- Intersecting a world with a ray ---\n");
+
+    w = default_world();
+    r = ray_constructor(point_constructor(0, 0, -5),
+                        vector_constructor(0, 0, 1));
+    xs = intersect_world(&w, r);
+
+    assert_int_eq(xs.count, 4, "intersect_world returns 4 intersections");
+    assert_float_eq(xs.i[0].t, 4.0f, "xs[0].t equals 4.0");
+    assert_float_eq(xs.i[1].t, 4.5f, "xs[1].t equals 4.5");
+    assert_float_eq(xs.i[2].t, 5.5f, "xs[2].t equals 5.5");
+    assert_float_eq(xs.i[3].t, 6.0f, "xs[3].t equals 6.0");
+}
+
 /* ************************************************************************** */
 /* MAIN                                     */
 /* ************************************************************************** */
@@ -140,6 +161,7 @@ int main(void)
 
 	
 	test_default_world();
+    test_intersect_world();
 
 	printf("\n==========================================\n");
 	if (g_tests_passed == g_tests_run)
