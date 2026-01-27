@@ -80,5 +80,7 @@ t_computation	prepare_computations(t_intersection i, t_ray ray)
 	this.t = i.t;
 	this.object = i.object;
 	this.point = ray_position(ray, this.t);
+	this.eyev = vector_scale(ray.direction, -1.0);
+	this.normalv = normal_at(i.object.sp, this.point);
 	return (this);
 }
