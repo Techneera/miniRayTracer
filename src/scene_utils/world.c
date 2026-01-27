@@ -7,7 +7,9 @@ t_world	default_world(void)
 	t_object		o1;
 	t_object		o2;
 
-	light = point_light(point_constructor(-10, 10, -10), color_constructor(1, 1, 1,));
+	light = point_light(
+			point_constructor(-10, 10, -10),
+			color_constructor(1, 1, 1,));
 	o1.sp = sphere();
 	o1.sp.material.color(color_constructor(0.8, 1.0, 0.6));
 	o1.sp.material.diffuse = 0.7;
