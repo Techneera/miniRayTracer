@@ -13,10 +13,12 @@ t_world	default_world(void)
 	o1.sp.material.diffuse = 0.7;
 	o1.sp.material.specular = 0.2;
 	o2.sp = sphere();
-	o2.sp.transform = matrix_scale(0.5, 0.5, 0.5);
+	sphere_set_transform(&o2.sp, matrix_scale(0.5, 0.5, 0.5));
+	world.object_count = 0;
 	world.light = light;
-	world.objects[0] = o1;
-	world.objects[1] = o2;
-	world.object_count = 2;
+	world.objects[world.object_count].object = o1;
+	world.objects[world.object_count++].type = SPHERE;
+	world.objects[world.object_count].object = o2;
+	world.objects[world.object_count++].type = SPHERE;
 	return (world);
 }
