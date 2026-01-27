@@ -1,0 +1,16 @@
+#ifndef SCENE_H
+# define SCENE_H
+
+# include "shades.h"
+# include "librt.h"
+# include "canvas.h"
+# include "matrix.h"
+
+typedef struct s_world
+{
+    t_point_light   light;
+    t_objects       objects[MAX_OBJECTS];
+    int             object_count;
+}   t_world;
+
+#endif
