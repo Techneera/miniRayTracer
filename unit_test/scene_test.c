@@ -150,6 +150,32 @@ void test_intersect_world(void)
     assert_float_eq(xs.i[3].t, 6.0f, "xs[3].t equals 6.0");
 }
 
+void test_prepare_computations(void)
+{
+    t_ray           r;
+    t_object        shape;
+    t_intersection  i;
+    t_computation   comps;
+
+    printf("\n--- Precomputing the state of an intersection ---\n");
+
+    r = ray_constructor(point_constructor(0, 0, -5),
+                        vector_constructor(0, 0, 1));
+    shape.sp = sphere();
+    i = intersection(4.0f, shape);
+    comps = prepare_computations(i, r);
+
+    assert_float_eq(comps.t, i.t, "comps.t equals intersection t");
+    assert_int_eq(comps.object.sp.id, i.object.sp.id,
+                  "comps.object matches intersection object");
+    assert_vec3_eq(comps.point, point_constructor(0, 0, -1),
+                   "comps.point is correct");
+    assert_vec3_eq(comps.eyev, vector_constructor(0, 0, -1),
+                   "comps.eyev is correct");
+    assert_vec3_eq(comps.normalv, vector_constructor(0, 0, -1),
+                   "comps.normalv is correct");
+}
+
 /* ************************************************************************** */
 /* MAIN                                     */
 /* ************************************************************************** */
@@ -163,6 +189,7 @@ int main(void)
 	
 	test_default_world();
     test_intersect_world();
+    test_prepare_computations();
 
 	printf("\n==========================================\n");
 	if (g_tests_passed == g_tests_run)
