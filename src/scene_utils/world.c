@@ -1,6 +1,7 @@
 #include "canvas.h"
 #include "ray.h"
 #include "scene.h"
+#include "shades.h"
 #include "vector.h"
 
 t_world	default_world(void)
@@ -90,4 +91,15 @@ t_computation	prepare_computations(t_intersection i, t_ray ray)
 		this.normalv = vector_scale(this.normalv, -1.0);
 	}
 	return (this);
+}
+
+t_vec3	shade_hit(t_world world, t_computation computations)
+{
+	return (lighting(
+			computations.object.sp.material,
+			world.light,
+			computations.point,
+			computations.eyev,
+			computations.normalv)
+	);
 }

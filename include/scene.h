@@ -26,5 +26,6 @@ typedef struct s_computation
 t_world     	default_world(void);
 t_intersect 	intersect_world(t_world *world, t_ray ray);
 t_computation   prepare_computations(t_intersection i, t_ray ray);
+t_vec3			shade_hit(t_world world, t_computation computations);
 
 #endif
