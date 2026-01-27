@@ -1,6 +1,7 @@
 #include "canvas.h"
 #include "ray.h"
 #include "scene.h"
+#include "vector.h"
 
 t_world	default_world(void)
 {
@@ -82,5 +83,11 @@ t_computation	prepare_computations(t_intersection i, t_ray ray)
 	this.point = ray_position(ray, this.t);
 	this.eyev = vector_scale(ray.direction, -1.0);
 	this.normalv = normal_at(i.object.sp, this.point);
+	this.inside = false;
+	if (vector_dot_product(this.normalv, this.eyev) < 0)
+	{
+		this.inside = true;
+		this.normalv = vector_scale(this.normalv, -1.0);
+	}
 	return (this);
 }
