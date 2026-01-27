@@ -21,6 +21,7 @@ RAYDIR = $(SDIR)ray_utils
 MATDIR = $(SDIR)matrix_utils
 PARSEDIR = $(SDIR)parsing
 SHADESDIR = $(SDIR)shades_utils
+SCENEDIR = $(SDIR)scene_utils
 SHADOWSDIR = $(SDIR)shadows_utils
 
 # ------------------------------ VECTORS -------------------------------- #
@@ -71,6 +72,14 @@ _SHADES_SRCS = shades_utils.c
 SHADES_SRCS = $(patsubst %.c, $(SHADESDIR)/%.c, $(_SHADES_SRCS))
 SHADES_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(SHADES_SRCS))
 
+# ------------------------------ SCENE -------------------------------- #
+
+_SCENE_SRCS = world.c
+
+SCENE_SRCS = $(patsubst %.c, $(SCENEDIR)/%.c, $(_SCENE_SRCS))
+SCENE_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(SCENE_SRCS))
+
+
 # ------------------------------ SHADOWS -------------------------------- #
 
 _SHADOWS_SRCS = 
@@ -93,8 +102,11 @@ TESTER3OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER3SRCS))
 TESTER4SRCS = $(TDIR)parsing_test.c
 TESTER4OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER4SRCS))
 
-TESTER5SRCS = $(TDIR)shadows_test.c
+TESTER5SRCS = $(TDIR)scene_test.c
 TESTER5OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER5SRCS))
+
+TESTER6SRCS = $(TDIR)shadows_test.c
+TESTER6OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER6SRCS))
 
 # ------------------------------ LIBRARIES -------------------------------- #
 
@@ -115,8 +127,7 @@ SRCFILES = $(SDIR)main.c \
 		   $(RAY_SRCS) \
 		   $(MATRIX_SRCS) \
 		   $(PARSE_SRCS) \
-		   $(SHADES_SRCS) \
-		   $(SHADOWS_SRCS)
+		   $(SHADES_SRCS)
 
 # ------------------------------ RULES -------------------------------- #
 
@@ -137,10 +148,13 @@ test_draw: $(MLX) $(LFT) $(TESTER3OBJS) $(TESTOBJ)
 test_parsing: $(MLX) $(LFT) $(TESTER4OBJS) $(TESTOBJ)
 	$(CC) $(CFLAGS) -g $(TESTER4OBJS) $(TESTOBJ) -o $(BDIR)tester_parsing -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
 
-test_shadows: $(MLX) $(LFT) $(TESTER5OBJS) $(TESTOBJ)
-	$(CC) $(CFLAGS) -g $(TESTER5OBJS) $(TESTOBJ) -o $(BDIR)tester_shadows -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
+test_scene: $(MLX) $(TESTER5OBJS) $(TESTOBJ)
+	$(CC) $(CFLAGS) -g $(TESTER5OBJS) $(TESTOBJ) -o $(BDIR)tester_scene -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX)
 
-$(NAME): $(OBJ) $(MLX) $(LFT)
+test_shadows: $(MLX) $(LFT) $(TESTER6OBJS) $(TESTOBJ)
+	$(CC) $(CFLAGS) -g $(TESTER6OBJS) $(TESTOBJ) -o $(BDIR)tester_shadows -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
+
+$(NAME): $(OBJ) $(MLX)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
 $(ODIR)$(SDIR)%.o: $(SDIR)%.c
@@ -151,7 +165,7 @@ $(ODIR)$(SDIR)%.o: $(SDIR)%.c
 	@mkdir -p $(ODIR)$(MATDIR)
 	@mkdir -p $(ODIR)$(PARSEDIR)
 	@mkdir -p $(ODIR)$(SHADESDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -I $(IDIR) -I$(MLXDIR) -I$(LFTDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -I $(IDIR) -I$(MLXDIR)
 
 $(ODIR)$(TDIR)%.o: $(TDIR)%.c
 	@mkdir -p $(BDIR)
