@@ -218,6 +218,56 @@ void test_prepare_computations_inside(void)
                    "comps.normalv is inverted");
 }
 
+void test_shade_hit(void)
+{
+    t_world         w;
+    t_ray           r;
+    t_object        shape;
+    t_intersection  i;
+    t_computation   comps;
+    t_vec3          c;
+    t_vec3          expected;
+
+    printf("\n--- Shading an intersection ---\n");
+
+    w = default_world();
+    r = ray_constructor(point_constructor(0, 0, -5),
+                        vector_constructor(0, 0, 1));
+    shape = w.objects[0].object;
+    i = intersection(4.0f, shape);
+    comps = prepare_computations(i, r);
+    c = shade_hit(w, comps);
+    expected = color_constructor(0.38066, 0.47583, 0.2855);
+
+    assert_vec3_eq(c, expected, "Shaded color is correct");
+}
+
+void test_shade_hit_inside(void)
+{
+    t_world         w;
+    t_ray           r;
+    t_object        shape;
+    t_intersection  i;
+    t_computation   comps;
+    t_vec3          c;
+    t_vec3          expected;
+
+    printf("\n--- Shading an intersection from the inside ---\n");
+
+    w = default_world();
+    w.light = point_light(point_constructor(0, 0.25, 0),
+                          color_constructor(1, 1, 1));
+    r = ray_constructor(point_constructor(0, 0, 0),
+                        vector_constructor(0, 0, 1));
+    shape = w.objects[1].object;
+    i = intersection(0.5f, shape);
+    comps = prepare_computations(i, r);
+    c = shade_hit(w, comps);
+    expected = color_constructor(0.90498, 0.90498, 0.90498);
+
+    assert_vec3_eq(c, expected, "Shaded color from inside is correct");
+}
+
 /* ************************************************************************** */
 /* MAIN                                     */
 /* ************************************************************************** */
@@ -234,6 +284,8 @@ int main(void)
     test_prepare_computations();
     test_prepare_computations_outside();
     test_prepare_computations_inside();
+    test_shade_hit();
+    test_shade_hit_inside();
 
 	printf("\n==========================================\n");
 	if (g_tests_passed == g_tests_run)
