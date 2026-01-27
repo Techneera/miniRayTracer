@@ -18,6 +18,7 @@ typedef struct s_computation
     float       t;
     t_object    object;
     t_vec3      point;
+	t_vec3		eyev;
     t_vec3      normalv;
 }   t_computation;
 

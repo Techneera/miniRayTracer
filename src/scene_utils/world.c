@@ -1,4 +1,5 @@
 #include "canvas.h"
+#include "ray.h"
 #include "scene.h"
 
 t_world	default_world(void)
@@ -69,5 +70,15 @@ t_intersect	intersect_world(t_world *world, t_ray ray)
 		++i;
 	}
 	intersect_sort(&this);
+	return (this);
+}
+
+t_computation	prepare_computations(t_intersection i, t_ray ray)
+{
+	t_computation	this;
+
+	this.t = i.t;
+	this.object = i.object;
+	this.point = ray_position(ray, this.t);
 	return (this);
 }
