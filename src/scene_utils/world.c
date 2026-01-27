@@ -1,3 +1,4 @@
+#include "canvas.h"
 #include "scene.h"
 
 t_world default_world(void)
