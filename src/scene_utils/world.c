@@ -1,16 +1,16 @@
 #include "canvas.h"
 #include "scene.h"
 
-t_world default_world(void)
+t_world	default_world(void)
 {
-	t_world world;
-	t_point_light light;
-	t_object o1;
-	t_object o2;
+	t_world			world;
+	t_point_light	light;
+	t_object		o1;
+	t_object		o2;
 
 	light = point_light(
-		point_constructor(-10, 10, -10),
-		color_constructor(1, 1, 1));
+			point_constructor(-10, 10, -10),
+			color_constructor(1, 1, 1));
 	o1.sp = sphere();
 	o1.sp.material.color = color_constructor(0.8, 1.0, 0.6);
 	o1.sp.material.diffuse = 0.7;
@@ -50,12 +50,12 @@ void	intersect_sort(t_intersect *this)
 	}
 }
 
-t_intersect intersect_world(t_world *world, t_ray ray)
+t_intersect	intersect_world(t_world *world, t_ray ray)
 {
-	t_intersect this;
-	t_intersect current;
-	int i;
-	int j;
+	t_intersect	this;
+	t_intersect	current;
+	int			i;
+	int			j;
 
 	i = 0;
 	this.count = 0;
