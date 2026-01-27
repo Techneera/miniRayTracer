@@ -20,6 +20,7 @@ typedef struct s_computation
     t_vec3      point;
 	t_vec3		eyev;
     t_vec3      normalv;
+	bool		inside;
 }   t_computation;
 
 t_world     	default_world(void);

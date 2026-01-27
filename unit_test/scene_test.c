@@ -176,6 +176,48 @@ void test_prepare_computations(void)
                    "comps.normalv is correct");
 }
 
+void test_prepare_computations_outside(void)
+{
+    t_ray           r;
+    t_object        shape;
+    t_intersection  i;
+    t_computation   comps;
+
+    printf("\n--- The hit, when an intersection occurs on the outside ---\n");
+
+    r = ray_constructor(point_constructor(0, 0, -5),
+                        vector_constructor(0, 0, 1));
+    shape.sp = sphere();
+    i = intersection(4.0f, shape);
+    comps = prepare_computations(i, r);
+
+    assert_bool_eq(comps.inside, false, "comps.inside is false");
+}
+
+void test_prepare_computations_inside(void)
+{
+    t_ray           r;
+    t_object        shape;
+    t_intersection  i;
+    t_computation   comps;
+
+    printf("\n--- The hit, when an intersection occurs on the inside ---\n");
+
+    r = ray_constructor(point_constructor(0, 0, 0),
+                        vector_constructor(0, 0, 1));
+    shape.sp = sphere();
+    i = intersection(1.0f, shape);
+    comps = prepare_computations(i, r);
+
+    assert_vec3_eq(comps.point, point_constructor(0, 0, 1),
+                   "comps.point is correct");
+    assert_vec3_eq(comps.eyev, vector_constructor(0, 0, -1),
+                   "comps.eyev is correct");
+    assert_bool_eq(comps.inside, true, "comps.inside is true");
+    assert_vec3_eq(comps.normalv, vector_constructor(0, 0, -1),
+                   "comps.normalv is inverted");
+}
+
 /* ************************************************************************** */
 /* MAIN                                     */
 /* ************************************************************************** */
@@ -190,6 +232,8 @@ int main(void)
 	test_default_world();
     test_intersect_world();
     test_prepare_computations();
+    test_prepare_computations_outside();
+    test_prepare_computations_inside();
 
 	printf("\n==========================================\n");
 	if (g_tests_passed == g_tests_run)
