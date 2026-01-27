@@ -4,7 +4,7 @@
 # include "shades.h"
 # include "librt.h"
 # include "ray.h"
-#include "vector.h"
+# include "vector.h"
 
 typedef struct s_world
 {
@@ -21,7 +21,8 @@ typedef struct s_computation
     t_vec3      normalv;
 }   t_computation;
 
-t_world default_world(void);
-t_intersect intersect_world(t_world *world, t_ray ray);
+t_world     	default_world(void);
+t_intersect 	intersect_world(t_world *world, t_ray ray);
+t_computation   prepare_computations(t_intersection i, t_ray ray);
 
 #endif
