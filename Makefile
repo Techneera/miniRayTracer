@@ -109,7 +109,8 @@ SRCFILES = $(SDIR)main.c \
 		   $(RAY_SRCS) \
 		   $(MATRIX_SRCS) \
 		   $(PARSE_SRCS) \
-		   $(SHADES_SRCS)
+		   $(SHADES_SRCS) \
+		   $(SCENE_SRCS)
 
 # ------------------------------ RULES -------------------------------- #
 

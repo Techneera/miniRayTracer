@@ -13,4 +13,6 @@ typedef struct s_world
     int             object_count;
 }   t_world;
 
+t_world default_world(void);
+
 #endif
