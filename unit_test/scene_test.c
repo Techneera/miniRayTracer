@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include "canvas.h"
 #include "vector.h"
 #include "matrix.h"
 #include "scene.h"

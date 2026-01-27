@@ -4,8 +4,6 @@
 # include "shades.h"
 # include "librt.h"
 # include "ray.h"
-# include "canvas.h"
-# include "matrix.h"
 
 typedef struct s_world
 {
