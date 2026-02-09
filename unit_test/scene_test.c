@@ -286,6 +286,43 @@ void test_color_when_ray_misses(void)
     assert_vec3_eq(c, expected, "Color when ray misses is black");
 }
 
+void test_color_when_ray_hits(void)
+{
+    t_world         w;
+    t_ray           r;
+    t_vec3          c;
+    t_vec3          expected;
+
+    printf("\n--- The color when a ray hits ---\n");
+
+    w = default_world();
+    r = ray_constructor(point_constructor(0, 0, -5),
+                        vector_constructor(0, 0, 1));
+    c = color_at(w, r);
+    expected = color_constructor(0.38066, 0.47583, 0.2855);
+
+    assert_vec3_eq(c, expected, "Color when ray hits is correct");
+}
+
+void test_color_with_intersection_behind_ray(void)
+{
+    t_world         w;
+    t_ray           r;
+    t_vec3          c;
+
+    printf("\n--- The color with an intersection behind the ray ---\n");
+
+    w = default_world();
+    w.objects[0].object.sp.material.ambient = 1.0f;
+    w.objects[1].object.sp.material.ambient = 1.0f;
+    r = ray_constructor(point_constructor(0, 0, 0.75),
+                        vector_constructor(0, 0, -1));
+    c = color_at(w, r);
+
+    assert_vec3_eq(c, w.objects[1].object.sp.material.color,
+                   "Color matches inner object material color");
+}
+
 /* ************************************************************************** */
 /* MAIN                                     */
 /* ************************************************************************** */
@@ -305,6 +342,8 @@ int main(void)
     test_shade_hit();
     test_shade_hit_inside();
     test_color_when_ray_misses();
+    test_color_when_ray_hits();
+    test_color_with_intersection_behind_ray();
 
 	printf("\n==========================================\n");
 	if (g_tests_passed == g_tests_run)

@@ -111,7 +111,7 @@ t_vec3	color_at(t_world world, t_ray ray)
 	int				hit_index;
 	int				index;
 
-	intersect_world(&world, ray);
+	xs = intersect_world(&world, ray);
 	index = 0;
 	hit_index = -1;
 	while (index < xs.count)
@@ -121,6 +121,7 @@ t_vec3	color_at(t_world world, t_ray ray)
 			hit_index = index;
 			break ;
 		}
+		++index;
 	}
 	if (hit_index == -1)
 		return (color_constructor(0, 0, 0));
