@@ -268,6 +268,24 @@ void test_shade_hit_inside(void)
     assert_vec3_eq(c, expected, "Shaded color from inside is correct");
 }
 
+void test_color_when_ray_misses(void)
+{
+    t_world         w;
+    t_ray           r;
+    t_vec3          c;
+    t_vec3          expected;
+
+    printf("\n--- The color when a ray misses ---\n");
+
+    w = default_world();
+    r = ray_constructor(point_constructor(0, 0, -5),
+                        vector_constructor(0, 1, 0));
+    c = color_at(w, r);
+    expected = color_constructor(0, 0, 0);
+
+    assert_vec3_eq(c, expected, "Color when ray misses is black");
+}
+
 /* ************************************************************************** */
 /* MAIN                                     */
 /* ************************************************************************** */
@@ -286,6 +304,7 @@ int main(void)
     test_prepare_computations_inside();
     test_shade_hit();
     test_shade_hit_inside();
+    test_color_when_ray_misses();
 
 	printf("\n==========================================\n");
 	if (g_tests_passed == g_tests_run)

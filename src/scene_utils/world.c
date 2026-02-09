@@ -103,3 +103,27 @@ t_vec3	shade_hit(t_world world, t_computation computations)
 			computations.normalv)
 	);
 }
+
+t_vec3	color_at(t_world world, t_ray ray)
+{
+	t_intersect		xs;
+	t_computation	comps;
+	int				hit_index;
+	int				index;
+
+	intersect_world(&world, ray);
+	index = 0;
+	hit_index = -1;
+	while (index < xs.count)
+	{
+		if (xs.i[index].t > 0)
+		{
+			hit_index = index;
+			break ;
+		}
+	}
+	if (hit_index == -1)
+		return (color_constructor(0, 0, 0));
+	comps = prepare_computations(xs.i[hit_index], ray);
+	return (shade_hit(world, comps));
+}
