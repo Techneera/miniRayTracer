@@ -7,6 +7,8 @@
 #include "shades.h"
 #include "scene.h"
 #include "shadows.h"
+#include "ray.h"
+#include "matrix.h"
 
 #define EPSILON 0.00001
 #define GREEN "\033[0;32m"
@@ -41,6 +43,23 @@ static bool assert_bool_eq(bool actual, bool expected, const char *msg)
     }
     printf("%s[FAIL]%s %s (Exp: %d, Got: %d)\n",
         RED, RESET, msg, expected, actual);
+    return (false);
+}
+
+static bool assert_vec3_eq(t_vec3 actual, t_vec3 expected, const char *msg)
+{
+    g_tests_run++;
+    if (fabs(actual.x - expected.x) < EPSILON &&
+        fabs(actual.y - expected.y) < EPSILON &&
+        fabs(actual.z - expected.z) < EPSILON)
+    {
+        g_tests_passed++;
+        printf("%s[PASS]%s %s\n", GREEN, RESET, msg);
+        return (true);
+    }
+    printf("%s[FAIL]%s %s\n", RED, RESET, msg);
+    printf("\tExpected: (%.3f, %.3f, %.3f)\n", expected.x, expected.y, expected.z);
+    printf("\tActual:   (%.3f, %.3f, %.3f)\n", actual.x, actual.y, actual.z);
     return (false);
 }
 
@@ -149,6 +168,53 @@ void test_shadow_when_object_behind_point(void)
         "No shadow when object is behind the point");
 }
 
+void test_shade_hit_in_shadow(void)
+{
+    t_world         w;
+    t_object        s1;
+    t_object        s2;
+    t_ray           r;
+    t_intersection  i;
+    t_computation   comps;
+    t_vec3          c;
+    t_vec3          expected;
+
+    printf("\n--- shade_hit() is given an intersection in shadow ---\n");
+
+    // Given: world with light at (0, 0, -10)
+    w.object_count = 0;
+    w.light = point_light(point_constructor(0, 0, -10),
+                          color_constructor(1, 1, 1));
+
+    // And: s1 is added to w (default sphere at origin)
+    s1.sp = sphere();
+    w.objects[w.object_count].object = s1;
+    w.objects[w.object_count++].type = SPHERE;
+
+    // And: s2 with translation(0, 0, 10) added to w
+    s2.sp = sphere();
+    sphere_set_transform(&s2.sp, matrix_translation(0, 0, 10));
+    w.objects[w.object_count].object = s2;
+    w.objects[w.object_count++].type = SPHERE;
+
+    // And: ray from (0, 0, 5) in direction (0, 0, 1)
+    r = ray_constructor(point_constructor(0, 0, 5),
+                        vector_constructor(0, 0, 1));
+
+    // And: intersection at t=4 with s2
+    i = intersection(4.0f, s2);
+
+    // When: prepare computations
+    comps = prepare_computations(i, r);
+
+    // And: shade_hit
+    c = shade_hit(w, comps);
+
+    // Then: result should be ambient only (0.1, 0.1, 0.1)
+    expected = color_constructor(0.1, 0.1, 0.1);
+    assert_vec3_eq(c, expected, "shade_hit in shadow returns ambient color");
+}
+
 /* ************************************************************************** */
 /* MAIN                                     */
 /* ************************************************************************** */
@@ -164,6 +230,7 @@ int main(void)
     test_shadow_when_object_between_point_and_light();
     test_shadow_when_object_behind_light();
     test_shadow_when_object_behind_point();
+    test_shade_hit_in_shadow();
 
 	printf("\n==========================================\n");
 	if (g_tests_passed == g_tests_run)

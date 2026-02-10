@@ -4,6 +4,7 @@
 #include "ray.h"
 #include "scene.h"
 #include "shades.h"
+#include "shadows.h"
 #include "vector.h"
 #include <math.h>
 
@@ -104,7 +105,7 @@ t_vec3	shade_hit(t_world world, t_computation computations)
 			computations.point,
 			computations.eyev,
 			computations.normalv,
-			false)
+			is_shadowed(world, computations.point))
 	);
 }
 
