@@ -226,7 +226,7 @@ t_canvas	render(t_camera c, t_world w)
 
 	canvas_constructor(c.hsize, c.vsize, &image);
 	y = 0;
-	while (y < c.vsize - 1)
+	while (y < c.vsize)
 	{
 		x = 0;
 		while (x < c.hsize)
