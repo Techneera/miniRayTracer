@@ -200,10 +200,13 @@ t_ray	ray_for_pixel(t_camera c, int px, int py)
 	world_x = c.half_width - x_offset;
 	world_y = c.half_height - y_offset;
 	pixel = matrix_vector_multiply(
-		c.transform,
+		matrix_inverse(c.transform),
 		point_constructor(world_x, world_y, -1)
 	);
-	origin = matrix_vector_multiply(c.transform, point_constructor(0, 0, 0));
+	origin = matrix_vector_multiply(
+		matrix_inverse(c.transform),
+		point_constructor(0, 0, 0)
+	);
 	direction = vector_normalization(vector_sub(pixel, origin));
 	return (ray_constructor(origin, direction));
 }
