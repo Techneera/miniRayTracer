@@ -4,6 +4,7 @@
 #include "scene.h"
 #include "shades.h"
 #include "vector.h"
+#include <math.h>
 
 t_world	default_world(void)
 {

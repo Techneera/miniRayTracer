@@ -5,6 +5,7 @@
 #include "matrix.h"
 #include "scene.h"
 #include "ray.h"
+#include "librt.h"
 
 #define EPSILON 0.00001
 #define GREEN "\033[0;32m"
@@ -443,6 +444,129 @@ void test_view_transform_arbitrary(void)
     assert_float_eq(t.m[15], expected.m[15], "Matrix[3,3] matches");
 }
 
+void test_camera_constructor(void)
+{
+    t_camera    c;
+    t_mat4      identity;
+    int         i;
+
+    printf("\n--- Constructing a camera ---\n");
+
+    c = camera(160, 120, M_PI / 2);
+    matrix_identity(&identity);
+
+    assert_int_eq(c.hsize, 160, "Camera hsize equals 160");
+    assert_int_eq(c.vsize, 120, "Camera vsize equals 120");
+    assert_float_eq(c.field_of_view, M_PI / 2, "Camera field_of_view equals π/2");
+    
+    i = 0;
+    while (i < 16)
+    {
+        assert_float_eq(c.transform.m[i], identity.m[i],
+                        "Camera transform is identity matrix");
+        i++;
+    }
+}
+
+void test_pixel_size_horizontal_canvas(void)
+{
+    t_camera    c;
+
+    printf("\n--- The pixel size for a horizontal canvas ---\n");
+
+    c = camera(200, 125, M_PI / 2);
+    assert_float_eq(c.pixel_size, 0.01f, "Pixel size equals 0.01");
+}
+
+void test_pixel_size_vertical_canvas(void)
+{
+    t_camera    c;
+
+    printf("\n--- The pixel size for a vertical canvas ---\n");
+
+    c = camera(125, 200, M_PI / 2);
+    assert_float_eq(c.pixel_size, 0.01f, "Pixel size equals 0.01");
+}
+
+void test_ray_through_canvas_center(void)
+{
+    t_camera    c;
+    t_ray       r;
+
+    printf("\n--- Constructing a ray through the center of the canvas ---\n");
+
+    c = camera(201, 101, M_PI / 2);
+    r = ray_for_pixel(c, 100, 50);
+
+    assert_vec3_eq(r.origin, point_constructor(0, 0, 0),
+                   "Ray origin is point(0, 0, 0)");
+    assert_vec3_eq(r.direction, vector_constructor(0, 0, -1),
+                   "Ray direction is vector(0, 0, -1)");
+}
+
+void test_ray_through_canvas_corner(void)
+{
+    t_camera    c;
+    t_ray       r;
+
+    printf("\n--- Constructing a ray through a corner of the canvas ---\n");
+
+    c = camera(201, 101, M_PI / 2);
+    r = ray_for_pixel(c, 0, 0);
+
+    assert_vec3_eq(r.origin, point_constructor(0, 0, 0),
+                   "Ray origin is point(0, 0, 0)");
+    assert_vec3_eq(r.direction, vector_constructor(0.66519, 0.33259, -0.66851),
+                   "Ray direction is vector(0.66519, 0.33259, -0.66851)");
+}
+
+void test_ray_with_transformed_camera(void)
+{
+    t_camera    c;
+    t_ray       r;
+    t_mat4      rotation;
+    t_mat4      translation;
+
+    printf("\n--- Constructing a ray when the camera is transformed ---\n");
+
+    c = camera(201, 101, M_PI / 2);
+    rotation = matrix_rot_y(M_PI / 4);
+    translation = matrix_translation(0, -2, 5);
+    c.transform = matrix_multiply(rotation, translation);
+    r = ray_for_pixel(c, 100, 50);
+
+    assert_vec3_eq(r.origin, point_constructor(0, 2, -5),
+                   "Ray origin is point(0, 2, -5)");
+    assert_vec3_eq(r.direction, vector_constructor(sqrtf(2) / 2, 0, -sqrtf(2) / 2),
+                   "Ray direction is vector(√2/2, 0, -√2/2)");
+}
+
+void test_render_world_with_camera(void)
+{
+    t_world     w;
+    t_camera    c;
+    t_canvas    image;
+    t_vec3      from;
+    t_vec3      to;
+    t_vec3      up;
+    t_vec3      color;
+    t_vec3      expected;
+
+    printf("\n--- Rendering a world with a camera ---\n");
+
+    w = default_world();
+    c = camera(11, 11, M_PI / 2);
+    from = point_constructor(0, 0, -5);
+    to = point_constructor(0, 0, 0);
+    up = vector_constructor(0, 1, 0);
+    c.transform = view_transform(from, to, up);
+    image = render(c, w);
+    color = pixel_at(image, 5, 5);
+    expected = color_constructor(0.38066, 0.47583, 0.2855);
+
+    assert_vec3_eq(color, expected, "Pixel at (5, 5) is color(0.38066, 0.47583, 0.2855)");
+}
+
 /* ************************************************************************** */
 /* MAIN                                     */
 /* ************************************************************************** */
@@ -468,6 +592,13 @@ int main(void)
     test_view_transform_positive_z();
     test_view_transform_moves_world();
     test_view_transform_arbitrary();
+    test_camera_constructor();
+    test_pixel_size_horizontal_canvas();
+    test_pixel_size_vertical_canvas();
+    test_ray_through_canvas_center();
+    test_ray_through_canvas_corner();
+    test_ray_with_transformed_camera();
+    test_render_world_with_camera();
 
 	printf("\n==========================================\n");
 	if (g_tests_passed == g_tests_run)
