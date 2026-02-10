@@ -4,6 +4,7 @@
 # include "ray.h"
 
 # define MAX_OBJECTS 50
+# define EPSILON 0.00001
 
 typedef enum e_type
 {

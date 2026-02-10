@@ -150,8 +150,8 @@ test_draw: $(MLX) $(LFT) $(TESTER3OBJS) $(TESTOBJ)
 test_parsing: $(MLX) $(LFT) $(TESTER4OBJS) $(TESTOBJ)
 	$(CC) $(CFLAGS) -g $(TESTER4OBJS) $(TESTOBJ) -o $(BDIR)tester_parsing -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
 
-test_scene: $(MLX) $(TESTER5OBJS) $(TESTOBJ)
-	$(CC) $(CFLAGS) -g $(TESTER5OBJS) $(TESTOBJ) -o $(BDIR)tester_scene -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX)
+test_scene: $(MLX) $(LFT) $(TESTER5OBJS) $(TESTOBJ)
+	$(CC) $(CFLAGS) -g $(TESTER5OBJS) $(TESTOBJ) -o $(BDIR)tester_scene -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
 
 test_shadows: $(MLX) $(LFT) $(TESTER6OBJS) $(TESTOBJ)
 	$(CC) $(CFLAGS) -g $(TESTER6OBJS) $(TESTOBJ) -o $(BDIR)tester_shadows -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)

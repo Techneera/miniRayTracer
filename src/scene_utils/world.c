@@ -94,6 +94,10 @@ t_computation	prepare_computations(t_intersection i, t_ray ray)
 		this.inside = true;
 		this.normalv = vector_scale(this.normalv, -1.0);
 	}
+	this.over_point = vector_scale(
+		vector_add(this.point, this.normalv),
+		EPSILON
+	);
 	return (this);
 }
 
@@ -102,10 +106,10 @@ t_vec3	shade_hit(t_world world, t_computation computations)
 	return (lighting(
 			computations.object.sp.material,
 			world.light,
-			computations.point,
+			computations.over_point,
 			computations.eyev,
 			computations.normalv,
-			is_shadowed(world, computations.point))
+			is_shadowed(world, computations.over_point))
 	);
 }
 

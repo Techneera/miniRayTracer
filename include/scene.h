@@ -21,6 +21,7 @@ typedef struct s_computation
     t_vec3      point;
 	t_vec3		eyev;
     t_vec3      normalv;
+	t_vec3		over_point;
 	bool		inside;
 }   t_computation;
 

@@ -215,6 +215,38 @@ void test_shade_hit_in_shadow(void)
     assert_vec3_eq(c, expected, "shade_hit in shadow returns ambient color");
 }
 
+void test_hit_offset_point(void)
+{
+    t_ray           r;
+    t_object        shape;
+    t_intersection  i;
+    t_computation   comps;
+
+    printf("\n--- The hit should offset the point ---\n");
+
+    // Given: ray from (0, 0, -5) in direction (0, 0, 1)
+    r = ray_constructor(point_constructor(0, 0, -5),
+                        vector_constructor(0, 0, 1));
+
+    // And: sphere with translation(0, 0, 1)
+    shape.sp = sphere();
+    sphere_set_transform(&shape.sp, matrix_translation(0, 0, 1));
+
+    // And: intersection at t=5
+    i = intersection(5.0f, shape);
+
+    // When: prepare computations
+    comps = prepare_computations(i, r);
+
+    // Then: over_point.z < -EPSILON/2
+    assert_float_eq(comps.over_point.z < -EPSILON / 2 ? 1.0f : 0.0f, 1.0f,
+                    "over_point.z is offset below surface");
+
+    // And: point.z > over_point.z
+    assert_float_eq(comps.point.z > comps.over_point.z ? 1.0f : 0.0f, 1.0f,
+                    "point is farther from eye than over_point");
+}
+
 /* ************************************************************************** */
 /* MAIN                                     */
 /* ************************************************************************** */
@@ -231,6 +263,7 @@ int main(void)
     test_shadow_when_object_behind_light();
     test_shadow_when_object_behind_point();
     test_shade_hit_in_shadow();
+    test_hit_offset_point();
 
 	printf("\n==========================================\n");
 	if (g_tests_passed == g_tests_run)
