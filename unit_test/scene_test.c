@@ -717,7 +717,7 @@ int main(void)
     test_ray_through_canvas_corner();
     test_ray_with_transformed_camera();
     test_render_world_with_camera();
-    //test_example_scene();
+    //addtest_example_scene();
 
 	printf("\n==========================================\n");
 	if (g_tests_passed == g_tests_run)
