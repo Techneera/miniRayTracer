@@ -170,7 +170,7 @@ t_camera	camera_constructor(int hsize, int vsize, float field_of_view)
 	this.field_of_view = field_of_view;
 	matrix_identity(&this.transform);
 	half_view = tan(this.field_of_view / 2);
-	aspect = this.hsize / this.vsize;
+	aspect = (float) this.hsize / (float) this.vsize;
 	if (aspect >= 1)
 	{
 		this.half_width = half_view;
@@ -183,4 +183,27 @@ t_camera	camera_constructor(int hsize, int vsize, float field_of_view)
 	}
 	this.pixel_size = (this.half_width * 2) / this.hsize;
 	return (this);
+}
+t_ray	ray_for_pixel(t_camera c, int px, int py)
+{
+	float	x_offset;
+	float	y_offset;
+	float	world_x;
+	float	world_y;
+	t_vec3	origin;
+	t_vec3	direction;
+	t_vec3	pixel;
+
+
+	x_offset = (px + 0.5) * c.pixel_size;
+	y_offset = (py + 0.5) * c.pixel_size;
+	world_x = c.half_width - x_offset;
+	world_y = c.half_height - y_offset;
+	pixel = matrix_vector_multiply(
+		c.transform,
+		point_constructor(world_x, world_y, -1)
+	);
+	origin = matrix_vector_multiply(c.transform, point_constructor(0, 0, 0));
+	direction = vector_normalization(vector_sub(pixel, origin));
+	return (ray_constructor(origin, direction));
 }

@@ -477,14 +477,14 @@ void test_pixel_size_horizontal_canvas(void)
     c = camera_constructor(200, 125, M_PI / 2);
     assert_float_eq(c.pixel_size, 0.01f, "Pixel size equals 0.01");
 }
-/*
+
 void test_pixel_size_vertical_canvas(void)
 {
     t_camera    c;
 
     printf("\n--- The pixel size for a vertical canvas ---\n");
 
-    c = camera(125, 200, M_PI / 2);
+    c = camera_constructor(125, 200, M_PI / 2);
     assert_float_eq(c.pixel_size, 0.01f, "Pixel size equals 0.01");
 }
 
@@ -495,7 +495,7 @@ void test_ray_through_canvas_center(void)
 
     printf("\n--- Constructing a ray through the center of the canvas ---\n");
 
-    c = camera(201, 101, M_PI / 2);
+    c = camera_constructor(201, 101, M_PI / 2);
     r = ray_for_pixel(c, 100, 50);
 
     assert_vec3_eq(r.origin, point_constructor(0, 0, 0),
@@ -511,7 +511,7 @@ void test_ray_through_canvas_corner(void)
 
     printf("\n--- Constructing a ray through a corner of the canvas ---\n");
 
-    c = camera(201, 101, M_PI / 2);
+    c = camera_constructor(201, 101, M_PI / 2);
     r = ray_for_pixel(c, 0, 0);
 
     assert_vec3_eq(r.origin, point_constructor(0, 0, 0),
@@ -529,7 +529,7 @@ void test_ray_with_transformed_camera(void)
 
     printf("\n--- Constructing a ray when the camera is transformed ---\n");
 
-    c = camera(201, 101, M_PI / 2);
+    c = camera_constructor(201, 101, M_PI / 2);
     rotation = matrix_rot_y(M_PI / 4);
     translation = matrix_translation(0, -2, 5);
     c.transform = matrix_multiply(rotation, translation);
@@ -541,6 +541,7 @@ void test_ray_with_transformed_camera(void)
                    "Ray direction is vector(√2/2, 0, -√2/2)");
 }
 
+/*
 void test_render_world_with_camera(void)
 {
     t_world     w;
@@ -595,11 +596,11 @@ int main(void)
     test_view_transform_arbitrary();
     test_camera_constructor();
     test_pixel_size_horizontal_canvas();
-    /* test_pixel_size_vertical_canvas();
+    test_pixel_size_vertical_canvas();
     test_ray_through_canvas_center();
     test_ray_through_canvas_corner();
     test_ray_with_transformed_camera();
-    test_render_world_with_camera(); */
+    /* test_render_world_with_camera(); */
 
 	printf("\n==========================================\n");
 	if (g_tests_passed == g_tests_run)
