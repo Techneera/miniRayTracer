@@ -1,4 +1,5 @@
 #include "canvas.h"
+#include "librt.h"
 #include "matrix.h"
 #include "ray.h"
 #include "scene.h"
@@ -157,4 +158,29 @@ t_mat4	view_transform(t_vec3 from, t_vec3 to, t_vec3 up)
 	return (matrix_multiply(
 			orientation,
 			matrix_translation(from_n.x, from_n.y, from_n.z)));
+}
+t_camera	camera_constructor(int hsize, int vsize, float field_of_view)
+{
+	t_camera	this;
+	float		half_view;
+	float		aspect;
+
+	this.hsize = hsize;
+	this.vsize = vsize;
+	this.field_of_view = field_of_view;
+	matrix_identity(&this.transform);
+	half_view = tan(this.field_of_view / 2);
+	aspect = this.hsize / this.vsize;
+	if (aspect >= 1)
+	{
+		this.half_width = half_view;
+		this.half_height = half_view / aspect;
+	}
+	else
+	{
+		this.half_width = half_view * aspect;
+		this.half_height = half_view;
+	}
+	this.pixel_size = (this.half_width * 2) / this.hsize;
+	return (this);
 }
