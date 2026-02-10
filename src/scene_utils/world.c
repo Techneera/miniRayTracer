@@ -94,9 +94,9 @@ t_computation	prepare_computations(t_intersection i, t_ray ray)
 		this.inside = true;
 		this.normalv = vector_scale(this.normalv, -1.0);
 	}
-	this.over_point = vector_scale(
-		vector_add(this.point, this.normalv),
-		EPSILON
+	this.over_point = vector_add(
+		this.point,
+		vector_scale(this.normalv, EPSILON)
 	);
 	return (this);
 }
