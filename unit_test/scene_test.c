@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <math.h>
 #include "canvas.h"
+#include "mlx.h"
+#include "shades.h"
 #include "vector.h"
 #include "matrix.h"
 #include "scene.h"
@@ -83,6 +85,14 @@ bool assert_bool_eq(bool actual, bool expected, const char *msg)
     }
     printf("%s[FAIL]%s %s (Exp: %d, Got: %d)\n", RED, RESET, msg, expected, actual);
     return (false);
+}
+
+static t_uint	pixel_at(t_canvas *c, int x, int y)
+{
+	char	*dest;
+
+	dest = c->img.addr + (y * c->img.line_len + x * (c->img.bpp / 8));
+	return (*(t_uint *)dest);
 }
 
 void test_default_world(void)
@@ -541,7 +551,6 @@ void test_ray_with_transformed_camera(void)
                    "Ray direction is vector(√2/2, 0, -√2/2)");
 }
 
-/*
 void test_render_world_with_camera(void)
 {
     t_world     w;
@@ -550,24 +559,131 @@ void test_render_world_with_camera(void)
     t_vec3      from;
     t_vec3      to;
     t_vec3      up;
-    t_vec3      color;
-    t_vec3      expected;
+    t_uint      color;
+    t_uint      expected;
 
     printf("\n--- Rendering a world with a camera ---\n");
 
     w = default_world();
-    c = camera(11, 11, M_PI / 2);
+    c = camera_constructor(11, 11, M_PI / 2);
     from = point_constructor(0, 0, -5);
     to = point_constructor(0, 0, 0);
     up = vector_constructor(0, 1, 0);
     c.transform = view_transform(from, to, up);
     image = render(c, w);
-    color = pixel_at(image, 5, 5);
-    expected = color_constructor(0.38066, 0.47583, 0.2855);
+    color = pixel_at(&image, 5, 5);
+    expected = color_to_int(color_constructor(0.38066, 0.47583, 0.2855));
 
-    assert_vec3_eq(color, expected, "Pixel at (5, 5) is color(0.38066, 0.47583, 0.2855)");
+    assert_int_eq(color, expected, "Pixel at (5, 5) is color(0.38066, 0.47583, 0.2855)");
 }
-*/
+void    test_example_scene(void) {
+    t_world     world;
+    t_camera    camera;
+    t_canvas    canvas;
+    void        *win;
+    t_object    floor, left_wall, right_wall, middle, right, left;
+    t_mat4      transform;
+
+    // Initialize world
+    world.object_count = 0;
+    world.light = point_light(
+        point_constructor(-10, 10, -10),
+        color_constructor(1, 1, 1)
+    );
+
+    // Floor - flattened sphere
+    floor.sp = sphere();
+    sphere_set_transform(&floor.sp, matrix_scale(10, 0.01, 10));
+    floor.sp.material.color = color_constructor(1, 0.9, 0.9);
+    floor.sp.material.specular = 0;
+    world.objects[world.object_count].object = floor;
+    world.objects[world.object_count++].type = SPHERE;
+
+    // Left wall - sphere scaled, rotated, and translated
+    left_wall.sp = sphere();
+    transform = matrix_multiply(
+        matrix_translation(0, 0, 5),
+        matrix_multiply(
+            matrix_rot_y(-M_PI / 4),
+            matrix_multiply(
+                matrix_rot_x(M_PI / 2),
+                matrix_scale(10, 0.01, 10)
+            )
+        )
+    );
+    sphere_set_transform(&left_wall.sp, transform);
+    left_wall.sp.material = floor.sp.material;
+    world.objects[world.object_count].object = left_wall;
+    world.objects[world.object_count++].type = SPHERE;
+
+    // Right wall - sphere scaled, rotated opposite direction, and translated
+    right_wall.sp = sphere();
+    transform = matrix_multiply(
+        matrix_translation(0, 0, 5),
+        matrix_multiply(
+            matrix_rot_y(M_PI / 4),
+            matrix_multiply(
+                matrix_rot_x(M_PI / 2),
+                matrix_scale(10, 0.01, 10)
+            )
+        )
+    );
+    sphere_set_transform(&right_wall.sp, transform);
+    right_wall.sp.material = floor.sp.material;
+    world.objects[world.object_count].object = right_wall;
+    world.objects[world.object_count++].type = SPHERE;
+
+    // Middle sphere - large green sphere
+    middle.sp = sphere();
+    sphere_set_transform(&middle.sp, matrix_translation(-0.5, 1, 0.5));
+    middle.sp.material.color = color_constructor(0.1, 1, 0.5);
+    middle.sp.material.diffuse = 0.7;
+    middle.sp.material.specular = 0.3;
+    world.objects[world.object_count].object = middle;
+    world.objects[world.object_count++].type = SPHERE;
+
+    // Right sphere - smaller green sphere
+    right.sp = sphere();
+    transform = matrix_multiply(
+        matrix_translation(1.5, 0.5, -0.5),
+        matrix_scale(0.5, 0.5, 0.5)
+    );
+    sphere_set_transform(&right.sp, transform);
+    right.sp.material.color = color_constructor(0.5, 1, 0.1);
+    right.sp.material.diffuse = 0.7;
+    right.sp.material.specular = 0.3;
+    world.objects[world.object_count].object = right;
+    world.objects[world.object_count++].type = SPHERE;
+
+    // Left sphere - smallest sphere (yellow)
+    left.sp = sphere();
+    transform = matrix_multiply(
+        matrix_translation(-1.5, 0.33, -0.75),
+        matrix_scale(0.33, 0.33, 0.33)
+    );
+    sphere_set_transform(&left.sp, transform);
+    left.sp.material.color = color_constructor(1, 0.8, 0.1);
+    left.sp.material.diffuse = 0.7;
+    left.sp.material.specular = 0.3;
+    world.objects[world.object_count].object = left;
+    world.objects[world.object_count++].type = SPHERE;
+
+    // Camera setup
+    camera = camera_constructor(800, 800, M_PI / 3);
+    camera.transform = view_transform(
+        point_constructor(0, 1.5, -5),
+        point_constructor(0, 1, 0),
+        vector_constructor(0, 1, 0)
+    );
+
+    // Render and display
+    printf("\n--- Rendering 800x800 scene (this will take a moment) ---\n");
+    canvas = render(camera, world);
+    win = mlx_new_window(canvas.mlx, canvas.width, canvas.height, "miniRT - Example Scene");
+    mlx_put_image_to_window(canvas.mlx, win, canvas.img.img, 0, 0);
+    mlx_key_hook(win, key_hook, &canvas);
+    mlx_loop(canvas.mlx);
+}
 
 /* ************************************************************************** */
 /* MAIN                                     */
@@ -600,7 +716,8 @@ int main(void)
     test_ray_through_canvas_center();
     test_ray_through_canvas_corner();
     test_ray_with_transformed_camera();
-    /* test_render_world_with_camera(); */
+    test_render_world_with_camera();
+    //test_example_scene();
 
 	printf("\n==========================================\n");
 	if (g_tests_passed == g_tests_run)

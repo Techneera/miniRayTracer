@@ -210,3 +210,27 @@ t_ray	ray_for_pixel(t_camera c, int px, int py)
 	direction = vector_normalization(vector_sub(pixel, origin));
 	return (ray_constructor(origin, direction));
 }
+t_canvas	render(t_camera c, t_world w)
+{
+	t_canvas	image;
+	t_ray		ray;
+	t_vec3		color;
+	int			x;
+	int			y;
+
+	canvas_constructor(c.hsize, c.vsize, &image);
+	y = 0;
+	while (y < c.vsize - 1)
+	{
+		x = 0;
+		while (x < c.hsize)
+		{
+			ray = ray_for_pixel(c, x, y);
+			color = color_at(w, ray);
+			write_pixel(&image, x, y, color);
+			++x;
+		}
+		++y;
+	}
+	return (image);
+}
