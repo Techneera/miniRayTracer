@@ -1,4 +1,5 @@
 #include "canvas.h"
+#include "matrix.h"
 #include "ray.h"
 #include "scene.h"
 #include "shades.h"
@@ -127,4 +128,32 @@ t_vec3	color_at(t_world world, t_ray ray)
 		return (color_constructor(0, 0, 0));
 	comps = prepare_computations(xs.i[hit_index], ray);
 	return (shade_hit(world, comps));
+}
+
+t_mat4	view_transform(t_vec3 from, t_vec3 to, t_vec3 up)
+{
+	t_vec3	forward;
+	t_vec3	up_normalized;
+	t_vec3	left;
+	t_vec3	true_up;
+	t_vec3	from_n;
+	t_mat4	orientation;
+
+	forward = vector_normalization(vector_sub(to, from));
+	up_normalized = vector_normalization(up);
+	left = vector_cross_product(forward, up_normalized);
+	true_up = vector_cross_product(left, forward);
+	forward = vector_scale(forward, -1);
+	orientation = (t_mat4) {
+		.m = {
+			left.x, left.y, left.z, 0,
+			true_up.x, true_up.y, true_up.z, 0,
+			forward.x, forward.y, forward.z, 0,
+			0, 0, 0, 1
+		}
+	};
+	from_n = vector_scale(from, -1);
+	return (matrix_multiply(
+			orientation,
+			matrix_translation(from_n.x, from_n.y, from_n.z)));
 }

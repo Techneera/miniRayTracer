@@ -28,5 +28,6 @@ t_intersect 	intersect_world(t_world *world, t_ray ray);
 t_computation   prepare_computations(t_intersection i, t_ray ray);
 t_vec3			shade_hit(t_world world, t_computation computations);
 t_vec3	        color_at(t_world world, t_ray ray);
+t_mat4	        view_transform(t_vec3 from, t_vec3 to, t_vec3 up);
 
 #endif

@@ -323,6 +323,126 @@ void test_color_with_intersection_behind_ray(void)
                    "Color matches inner object material color");
 }
 
+void test_view_transform_default_orientation(void)
+{
+    t_vec3      from;
+    t_vec3      to;
+    t_vec3      up;
+    t_mat4    t;
+    t_mat4    identity;
+    int         i;
+
+    printf("\n--- The transformation matrix for the default orientation ---\n");
+
+    from = point_constructor(0, 0, 0);
+    to = point_constructor(0, 0, -1);
+    up = vector_constructor(0, 1, 0);
+    t = view_transform(from, to, up);
+    matrix_identity(&identity);
+
+    i = 0;
+    while (i < 16)
+    {
+        assert_float_eq(t.m[i], identity.m[i],
+                        "View transform matches identity matrix");
+        i++;
+    }
+}
+
+void test_view_transform_positive_z(void)
+{
+    t_vec3      from;
+    t_vec3      to;
+    t_vec3      up;
+    t_mat4      t;
+    t_mat4      expected;
+    int         i;
+
+    printf("\n--- A view transformation matrix looking in positive z direction ---\n");
+
+    from = point_constructor(0, 0, 0);
+    to = point_constructor(0, 0, 1);
+    up = vector_constructor(0, 1, 0);
+    t = view_transform(from, to, up);
+    expected = matrix_scale(-1, 1, -1);
+
+    i = 0;
+    while (i < 16)
+    {
+        assert_float_eq(t.m[i], expected.m[i],
+                        "View transform looking in +Z equals scaling(-1, 1, -1)");
+        i++;
+    }
+}
+
+void test_view_transform_moves_world(void)
+{
+    t_vec3      from;
+    t_vec3      to;
+    t_vec3      up;
+    t_mat4      t;
+    t_mat4      expected;
+    int         i;
+
+    printf("\n--- The view transformation moves the world ---\n");
+
+    from = point_constructor(0, 0, 8);
+    to = point_constructor(0, 0, 0);
+    up = vector_constructor(0, 1, 0);
+    t = view_transform(from, to, up);
+    expected = matrix_translation(0, 0, -8);
+
+    i = 0;
+    while (i < 16)
+    {
+        assert_float_eq(t.m[i], expected.m[i],
+                        "View transform equals translation(0, 0, -8)");
+        i++;
+    }
+}
+
+void test_view_transform_arbitrary(void)
+{
+    t_vec3      from;
+    t_vec3      to;
+    t_vec3      up;
+    t_mat4      t;
+    t_mat4      expected;
+
+    printf("\n--- An arbitrary view transformation ---\n");
+
+    from = point_constructor(1, 3, 2);
+    to = point_constructor(4, -2, 8);
+    up = vector_constructor(1, 1, 0);
+    t = view_transform(from, to, up);
+    
+    expected = (t_mat4){
+        .m = {
+            -0.50709f, 0.50709f,  0.67612f, -2.36643f,
+             0.76772f, 0.60609f,  0.12122f, -2.82843f,
+            -0.35857f, 0.59761f, -0.71714f,  0.00000f,
+             0.00000f, 0.00000f,  0.00000f,  1.00000f
+        }
+    };
+
+    assert_float_eq(t.m[0], expected.m[0], "Matrix[0,0] matches");
+    assert_float_eq(t.m[1], expected.m[1], "Matrix[0,1] matches");
+    assert_float_eq(t.m[2], expected.m[2], "Matrix[0,2] matches");
+    assert_float_eq(t.m[3], expected.m[3], "Matrix[0,3] matches");
+    assert_float_eq(t.m[4], expected.m[4], "Matrix[1,0] matches");
+    assert_float_eq(t.m[5], expected.m[5], "Matrix[1,1] matches");
+    assert_float_eq(t.m[6], expected.m[6], "Matrix[1,2] matches");
+    assert_float_eq(t.m[7], expected.m[7], "Matrix[1,3] matches");
+    assert_float_eq(t.m[8], expected.m[8], "Matrix[2,0] matches");
+    assert_float_eq(t.m[9], expected.m[9], "Matrix[2,1] matches");
+    assert_float_eq(t.m[10], expected.m[10], "Matrix[2,2] matches");
+    assert_float_eq(t.m[11], expected.m[11], "Matrix[2,3] matches");
+    assert_float_eq(t.m[12], expected.m[12], "Matrix[3,0] matches");
+    assert_float_eq(t.m[13], expected.m[13], "Matrix[3,1] matches");
+    assert_float_eq(t.m[14], expected.m[14], "Matrix[3,2] matches");
+    assert_float_eq(t.m[15], expected.m[15], "Matrix[3,3] matches");
+}
+
 /* ************************************************************************** */
 /* MAIN                                     */
 /* ************************************************************************** */
@@ -344,6 +464,10 @@ int main(void)
     test_color_when_ray_misses();
     test_color_when_ray_hits();
     test_color_with_intersection_behind_ray();
+    test_view_transform_default_orientation();
+    test_view_transform_positive_z();
+    test_view_transform_moves_world();
+    test_view_transform_arbitrary();
 
 	printf("\n==========================================\n");
 	if (g_tests_passed == g_tests_run)
