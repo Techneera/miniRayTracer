@@ -1,14 +1,9 @@
 #ifndef SHADOWS_H
 # define SHADOWS_H
 
-#include "librt.h"
-#include "shades.h"
+# include "scene.h"
+# include <stdbool.h>
 
-typedef struct s_world
-{
-	t_point_light	light;
-	t_objects		objects[MAX_OBJECTS];
-	int				object_count;
-}	t_world;
+bool    is_shadowed(t_world world, t_vec3 point);
 
 #endif

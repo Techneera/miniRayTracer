@@ -5,6 +5,8 @@
 #include "canvas.h"
 #include "vector.h"
 #include "shades.h"
+#include "scene.h"
+#include "shadows.h"
 
 #define EPSILON 0.00001
 #define GREEN "\033[0;32m"
@@ -26,6 +28,20 @@ static bool assert_float_eq(float actual, float expected, const char *msg)
 	printf("%s[FAIL]%s %s\n", RED, RESET, msg);
 	printf("\tExpected: %.5f\n\tActual: %.5f\n", expected, actual);
 	return (false);
+}
+
+static bool assert_bool_eq(bool actual, bool expected, const char *msg)
+{
+    g_tests_run++;
+    if (actual == expected)
+    {
+        g_tests_passed++;
+        printf("%s[PASS]%s %s\n", GREEN, RESET, msg);
+        return (true);
+    }
+    printf("%s[FAIL]%s %s (Exp: %d, Got: %d)\n",
+        RED, RESET, msg, expected, actual);
+    return (false);
 }
 
 void test_lighting_with_surface_in_shadow(void)
@@ -69,6 +85,70 @@ void test_lighting_with_surface_in_shadow(void)
     assert_float_eq(result.z, 0.1f, "Lighting in shadow - Blue component");
 }
 
+void test_shadow_when_nothing_collinear(void)
+{
+    t_world	w;
+    t_vec3	p;
+    bool	shadowed;
+
+    printf("\n--- There is no shadow when nothing is collinear ---\n");
+
+    w = default_world();
+    p = point_constructor(0, 10, 0);
+    shadowed = is_shadowed(w, p);
+
+    assert_bool_eq(shadowed, false,
+        "No shadow when nothing is collinear with point and light");
+}
+
+void test_shadow_when_object_between_point_and_light(void)
+{
+    t_world	w;
+    t_vec3	p;
+    bool	shadowed;
+
+    printf("\n--- The shadow when an object is between the point and the light ---\n");
+
+    w = default_world();
+    p = point_constructor(10, -10, 10);
+    shadowed = is_shadowed(w, p);
+
+    assert_bool_eq(shadowed, true,
+        "Shadow when object is between point and light");
+}
+
+void test_shadow_when_object_behind_light(void)
+{
+    t_world	w;
+    t_vec3	p;
+    bool	shadowed;
+
+    printf("\n--- There is no shadow when an object is behind the light ---\n");
+
+    w = default_world();
+    p = point_constructor(-20, 20, -20);
+    shadowed = is_shadowed(w, p);
+
+    assert_bool_eq(shadowed, false,
+        "No shadow when object is behind the light");
+}
+
+void test_shadow_when_object_behind_point(void)
+{
+    t_world	w;
+    t_vec3	p;
+    bool	shadowed;
+
+    printf("\n--- There is no shadow when an object is behind the point ---\n");
+
+    w = default_world();
+    p = point_constructor(-2, 2, -2);
+    shadowed = is_shadowed(w, p);
+
+    assert_bool_eq(shadowed, false,
+        "No shadow when object is behind the point");
+}
+
 /* ************************************************************************** */
 /* MAIN                                     */
 /* ************************************************************************** */
@@ -80,6 +160,10 @@ int main(void)
 	printf("===============================================================\n");
 
 	test_lighting_with_surface_in_shadow();
+    test_shadow_when_nothing_collinear();
+    test_shadow_when_object_between_point_and_light();
+    test_shadow_when_object_behind_light();
+    test_shadow_when_object_behind_point();
 
 	printf("\n==========================================\n");
 	if (g_tests_passed == g_tests_run)

@@ -82,7 +82,7 @@ SCENE_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(SCENE_SRCS))
 
 # ------------------------------ SHADOWS -------------------------------- #
 
-_SHADOWS_SRCS = 
+_SHADOWS_SRCS = shadows.c
 
 SHADOWS_SRCS = $(patsubst %.c, $(SHADOWSDIR)/%.c, $(_SHADOWS_SRCS))
 SHADOWS_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(SHADOWS_SRCS))
@@ -127,7 +127,9 @@ SRCFILES = $(SDIR)main.c \
 		   $(RAY_SRCS) \
 		   $(MATRIX_SRCS) \
 		   $(PARSE_SRCS) \
-		   $(SHADES_SRCS)
+		   $(SHADES_SRCS) \
+		   $(SCENE_SRCS) \
+		   $(SHADOWS_SRCS)
 
 # ------------------------------ RULES -------------------------------- #
 
@@ -165,7 +167,9 @@ $(ODIR)$(SDIR)%.o: $(SDIR)%.c
 	@mkdir -p $(ODIR)$(MATDIR)
 	@mkdir -p $(ODIR)$(PARSEDIR)
 	@mkdir -p $(ODIR)$(SHADESDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -I $(IDIR) -I$(MLXDIR)
+	@mkdir -p $(ODIR)$(SHADOWSDIR)
+	@mkdir -p $(ODIR)$(SCENEDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -I $(IDIR) -I$(MLXDIR) -I$(LFTDIR)
 
 $(ODIR)$(TDIR)%.o: $(TDIR)%.c
 	@mkdir -p $(BDIR)
