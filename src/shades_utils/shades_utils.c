@@ -81,6 +81,7 @@ t_vec3			lighting(t_material m, t_point_light light, t_vec3 point, t_vec3 eyev, 
 	return (vector_add(vector_add(ambient, diffuse), specular));
 }
 
+<<<<<<< HEAD
 t_vec3	reflected_color(t_world *world, t_computations computations)
 {
 
@@ -89,4 +90,9 @@ t_vec3	reflected_color(t_world *world, t_computations computations)
 t_material	material_default(void)
 {
 	return (new_material(0.1f, 0.9f, 0.9f, 200.0f));
+}
+
+t_vec3	reflected_color(t_world *world, t_computations computations)
+{
+
 }
