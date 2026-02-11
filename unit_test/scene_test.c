@@ -122,22 +122,22 @@ void test_default_world(void)
     // And: First sphere (s1) has correct properties
     assert_int_eq(w.objects[0].type, SPHERE, "First object is a sphere");
     expected_color = color_constructor(0.8, 1.0, 0.6);
-    assert_vec3_eq(w.objects[0].object.sp.material.color, expected_color,
+    assert_vec3_eq(w.objects[0].object.sp.shape.material.color, expected_color,
                    "First sphere color is (0.8, 1.0, 0.6)");
-    assert_float_eq(w.objects[0].object.sp.material.diffuse, 0.7f,
+    assert_float_eq(w.objects[0].object.sp.shape.material.diffuse, 0.7f,
                     "First sphere diffuse is 0.7");
-    assert_float_eq(w.objects[0].object.sp.material.specular, 0.2f,
+    assert_float_eq(w.objects[0].object.sp.shape.material.specular, 0.2f,
                     "First sphere specular is 0.2");
     
     // And: Second sphere (s2) exists and has scaling transform
     assert_int_eq(w.objects[1].type, SPHERE, "Second object is a sphere");
     // Check that transform is a scaling matrix
     // A scaled sphere will have transform.m[0] = 0.5, m[5] = 0.5, m[10] = 0.5
-    assert_float_eq(w.objects[1].object.sp.transform.m[0], 0.5f,
+    assert_float_eq(w.objects[1].object.sp.shape.transform.m[0], 0.5f,
                     "Second sphere has scale 0.5 on X");
-    assert_float_eq(w.objects[1].object.sp.transform.m[5], 0.5f,
+    assert_float_eq(w.objects[1].object.sp.shape.transform.m[5], 0.5f,
                     "Second sphere has scale 0.5 on Y");
-    assert_float_eq(w.objects[1].object.sp.transform.m[10], 0.5f,
+    assert_float_eq(w.objects[1].object.sp.shape.transform.m[10], 0.5f,
                     "Second sphere has scale 0.5 on Z");
 }
 
@@ -177,7 +177,7 @@ void test_prepare_computations(void)
     comps = prepare_computations(i, r);
 
     assert_float_eq(comps.t, i.t, "comps.t equals intersection t");
-    assert_int_eq(comps.object.sp.id, i.object.sp.id,
+    assert_int_eq(comps.object.sp.shape.id, i.object.sp.shape.id,
                   "comps.object matches intersection object");
     assert_vec3_eq(comps.point, point_constructor(0, 0, -1),
                    "comps.point is correct");
@@ -324,13 +324,13 @@ void test_color_with_intersection_behind_ray(void)
     printf("\n--- The color with an intersection behind the ray ---\n");
 
     w = default_world();
-    w.objects[0].object.sp.material.ambient = 1.0f;
-    w.objects[1].object.sp.material.ambient = 1.0f;
+    w.objects[0].object.sp.shape.material.ambient = 1.0f;
+    w.objects[1].object.sp.shape.material.ambient = 1.0f;
     r = ray_constructor(point_constructor(0, 0, 0.75),
                         vector_constructor(0, 0, -1));
     c = color_at(w, r);
 
-    assert_vec3_eq(c, w.objects[1].object.sp.material.color,
+    assert_vec3_eq(c, w.objects[1].object.sp.shape.material.color,
                    "Color matches inner object material color");
 }
 
@@ -594,8 +594,8 @@ void    test_example_scene(void) {
     // Floor - flattened sphere
     floor.sp = sphere();
     sphere_set_transform(&floor.sp, matrix_scale(10, 0.01, 10));
-    floor.sp.material.color = color_constructor(1, 0.9, 0.9);
-    floor.sp.material.specular = 0;
+    floor.sp.shape.material.color = color_constructor(1, 0.9, 0.9);
+    floor.sp.shape.material.specular = 0;
     world.objects[world.object_count].object = floor;
     world.objects[world.object_count++].type = SPHERE;
 
@@ -612,7 +612,7 @@ void    test_example_scene(void) {
         )
     );
     sphere_set_transform(&left_wall.sp, transform);
-    left_wall.sp.material = floor.sp.material;
+    left_wall.sp.shape.material = floor.sp.shape.material;
     world.objects[world.object_count].object = left_wall;
     world.objects[world.object_count++].type = SPHERE;
 
@@ -629,16 +629,16 @@ void    test_example_scene(void) {
         )
     );
     sphere_set_transform(&right_wall.sp, transform);
-    right_wall.sp.material = floor.sp.material;
+    right_wall.sp.shape.material = floor.sp.shape.material;
     world.objects[world.object_count].object = right_wall;
     world.objects[world.object_count++].type = SPHERE;
 
     // Middle sphere - large green sphere
     middle.sp = sphere();
     sphere_set_transform(&middle.sp, matrix_translation(-0.5, 1, 0.5));
-    middle.sp.material.color = color_constructor(0.1, 1, 0.5);
-    middle.sp.material.diffuse = 0.7;
-    middle.sp.material.specular = 0.3;
+    middle.sp.shape.material.color = color_constructor(0.1, 1, 0.5);
+    middle.sp.shape.material.diffuse = 0.7;
+    middle.sp.shape.material.specular = 0.3;
     world.objects[world.object_count].object = middle;
     world.objects[world.object_count++].type = SPHERE;
 
@@ -649,9 +649,9 @@ void    test_example_scene(void) {
         matrix_scale(0.5, 0.5, 0.5)
     );
     sphere_set_transform(&right.sp, transform);
-    right.sp.material.color = color_constructor(0.5, 1, 0.1);
-    right.sp.material.diffuse = 0.7;
-    right.sp.material.specular = 0.3;
+    right.sp.shape.material.color = color_constructor(0.5, 1, 0.1);
+    right.sp.shape.material.diffuse = 0.7;
+    right.sp.shape.material.specular = 0.3;
     world.objects[world.object_count].object = right;
     world.objects[world.object_count++].type = SPHERE;
 
@@ -662,9 +662,9 @@ void    test_example_scene(void) {
         matrix_scale(0.33, 0.33, 0.33)
     );
     sphere_set_transform(&left.sp, transform);
-    left.sp.material.color = color_constructor(1, 0.8, 0.1);
-    left.sp.material.diffuse = 0.7;
-    left.sp.material.specular = 0.3;
+    left.sp.shape.material.color = color_constructor(1, 0.8, 0.1);
+    left.sp.shape.material.diffuse = 0.7;
+    left.sp.shape.material.specular = 0.3;
     world.objects[world.object_count].object = left;
     world.objects[world.object_count++].type = SPHERE;
 

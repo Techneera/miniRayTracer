@@ -48,6 +48,7 @@ MATRIX_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(MATRIX_SRCS))
 
 _RAY_SRCS = ray_constructor.c \
 			sphere.c \
+			shape.c \
 			intersection.c \
 			ray_transform.c
 RAY_SRCS = $(patsubst %.c, $(RAYDIR)/%.c, $(_RAY_SRCS))

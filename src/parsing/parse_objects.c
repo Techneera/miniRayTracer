@@ -18,10 +18,10 @@ int	parse_sphere(char *line, t_scene *scene)
 	if (parse_float(&line, &scene->objects->object.sp.radius) != 0)
 		return (1);
 	line = skip_to_next(line);
-	if (parse_vec3(&line, &scene->objects->object.sp.color) != 0
-		|| is_valid_color(scene->objects->object.sp.color) == false)
+	if (parse_vec3(&line, &scene->objects->object.sp.shape.material.color) != 0
+		|| is_valid_color(scene->objects->object.sp.shape.material.color) == false)
 		return (1);
-	color_normalize(&scene->objects->object.sp.color);
+	color_normalize(&scene->objects->object.sp.shape.material.color);
 	++scene->object_count;
 	return (0);
 }
