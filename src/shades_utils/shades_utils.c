@@ -1,6 +1,7 @@
 #include "shades.h"
 #include "ray.h"
 #include "canvas.h"
+#include "scene.h"
 #include <math.h>
 
 t_vec3	reflect(t_vec3 in, t_vec3 normal)
@@ -81,12 +82,15 @@ t_vec3			lighting(t_material m, t_point_light light, t_vec3 point, t_vec3 eyev, 
 	return (vector_add(vector_add(ambient, diffuse), specular));
 }
 
-t_material	material_default(void)
+t_vec3	reflected_color(t_world *world, t_computation computations)
 {
-	return (new_material(0.1f, 0.9f, 0.9f, 200.0f));
+	(void)world;
+	(void)computations;
+
+	return (color_constructor(0.0, 0.0, 0.0));
 }
 
-t_vec3	reflected_color(t_world *world, t_computations computations)
+t_material	material_default(void)
 {
-
+	return (new_material(0.1f, 0.9f, 0.9f, 200.0f, 0.0f));
 }
