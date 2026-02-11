@@ -56,8 +56,23 @@ t_vec3	normal_at(t_shape *s, t_vec3 world_point)
 	}
 	else
 	{
-		local_normal = vector_constructor(0, 1, 0);
+		local_normal = vector_constructor(local_point.x, local_point.y, local_point.z);
+		local_normal.w = 0.0f;
+		local_normal = vector_normalization(local_normal);
+		transpose_inverse = matrix_transpose(s->transform_inv);
+		world_normal = matrix_vector_multiply(transpose_inverse, local_normal);
+		world_normal.w = 0.0f;
+		if (s->transform.m[0] == 1.0f && s->transform.m[5] == 1.0f && s->transform.m[10] == 1.0f &&
+			s->transform.m[1] == 0.0f && s->transform.m[2] == 0.0f && s->transform.m[4] == 0.0f &&
+			s->transform.m[6] == 0.0f && s->transform.m[8] == 0.0f && s->transform.m[9] == 0.0f)
+		{
+			return (local_normal);
+		}
 	}
+	transpose_inverse = matrix_transpose(s->transform_inv);
+	world_normal = matrix_vector_multiply(transpose_inverse, local_normal);
+	world_normal.w = 0.0f;
+	return (vector_normalization(world_normal));
 	transpose_inverse = matrix_transpose(s->transform_inv);
 	world_normal = matrix_vector_multiply(transpose_inverse, local_normal);
 	world_normal.w = 0.0f;
