@@ -42,6 +42,30 @@ t_intersect	intersect(t_ray ray, t_shape *shape)
 	return (result);
 }
 
+static int	is_identity_transform(t_shape *s)
+{
+	return (s->transform.m[0] == 1.0f && s->transform.m[5] == 1.0f && s->transform.m[10] == 1.0f &&
+		s->transform.m[1] == 0.0f && s->transform.m[2] == 0.0f && s->transform.m[4] == 0.0f &&
+		s->transform.m[6] == 0.0f && s->transform.m[8] == 0.0f && s->transform.m[9] == 0.0f);
+}
+
+static t_vec3	compute_default_normal(t_shape *s, t_vec3 local_point)
+{
+	t_vec3	local_normal;
+	t_mat4	transpose_inverse;
+	t_vec3	world_normal;
+
+	local_normal = vector_constructor(local_point.x, local_point.y, local_point.z);
+	local_normal.w = 0.0f;
+	local_normal = vector_normalization(local_normal);
+	transpose_inverse = matrix_transpose(s->transform_inv);
+	world_normal = matrix_vector_multiply(transpose_inverse, local_normal);
+	world_normal.w = 0.0f;
+	if (is_identity_transform(s))
+		return (local_normal);
+	return (vector_normalization(world_normal));
+}
+
 t_vec3	normal_at(t_shape *s, t_vec3 world_point)
 {
 	t_vec3	local_point;
@@ -51,28 +75,11 @@ t_vec3	normal_at(t_shape *s, t_vec3 world_point)
 
 	local_point = matrix_vector_multiply(s->transform_inv, world_point);
 	if (s->type == SHAPE_SPHERE)
-	{
 		local_normal = local_normal_at_sphere((t_sphere *)s, local_point);
-	}
+	else if (s->type == SHAPE_PLANE)
+		local_normal = local_normal_at_plane();
 	else
-	{
-		local_normal = vector_constructor(local_point.x, local_point.y, local_point.z);
-		local_normal.w = 0.0f;
-		local_normal = vector_normalization(local_normal);
-		transpose_inverse = matrix_transpose(s->transform_inv);
-		world_normal = matrix_vector_multiply(transpose_inverse, local_normal);
-		world_normal.w = 0.0f;
-		if (s->transform.m[0] == 1.0f && s->transform.m[5] == 1.0f && s->transform.m[10] == 1.0f &&
-			s->transform.m[1] == 0.0f && s->transform.m[2] == 0.0f && s->transform.m[4] == 0.0f &&
-			s->transform.m[6] == 0.0f && s->transform.m[8] == 0.0f && s->transform.m[9] == 0.0f)
-		{
-			return (local_normal);
-		}
-	}
-	transpose_inverse = matrix_transpose(s->transform_inv);
-	world_normal = matrix_vector_multiply(transpose_inverse, local_normal);
-	world_normal.w = 0.0f;
-	return (vector_normalization(world_normal));
+		return (compute_default_normal(s, local_point));
 	transpose_inverse = matrix_transpose(s->transform_inv);
 	world_normal = matrix_vector_multiply(transpose_inverse, local_normal);
 	world_normal.w = 0.0f;

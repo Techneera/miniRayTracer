@@ -40,25 +40,70 @@ static bool	assert_vec3_eq(t_vec3 actual, t_vec3 expected, const char *msg)
 	return (false);
 }
 
+static bool	assert_intersect_empty(t_intersect actual, const char *msg)
+{
+	g_tests_run++;
+	if (actual.count == 0)
+	{
+		g_tests_passed++;
+		printf("%s[PASS]%s %s\n", GREEN, RESET, msg);
+		return (true);
+	}
+	printf("%s[FAIL]%s %s\n", RED, RESET, msg);
+	printf("\tExpected: empty intersection\n");
+	printf("\tActual:   %d intersections\n", actual.count);
+	return (false);
+}
+
 /* ************************************************************************** */
 /* PLANE TESTS                                                              */
 /* ************************************************************************** */
 
 void	test_plane_normal_is_constant_everywhere(void)
 {
-	t_plane	p;
 	t_vec3	n1, n2, n3;
+	t_vec3	normal;
 
 	printf("\n--- The normal of a plane is constant everywhere ---\n");
 
-	p = plane();
-	n1 = local_normal_at(&p, point(0, 0, 0));
-	n2 = local_normal_at(&p, point(10, 0, -10));
-	n3 = local_normal_at(&p, point(-5, 0, 150));
+	n1 = local_normal_at_plane();
+	n2 = local_normal_at_plane();
+	n3 = local_normal_at_plane();
 	
-	assert_vec3_eq(n1, vector(0, 1, 0), "Normal at origin");
-	assert_vec3_eq(n2, vector(0, 1, 0), "Normal at (10, 0, -10)");
-	assert_vec3_eq(n3, vector(0, 1, 0), "Normal at (-5, 0, 150)");
+	normal = vector_constructor(0, 1, 0);
+	assert_vec3_eq(n1, normal, "Normal at origin");
+	assert_vec3_eq(n2, normal, "Normal at (10, 0, -10)");
+	assert_vec3_eq(n3, normal, "Normal at (-5, 0, 150)");
+}
+
+void	test_intersect_ray_parallel_to_plane(void)
+{
+	t_plane		p;
+	t_ray		r;
+	t_intersect	xs;
+
+	printf("\n--- Intersect with a ray parallel to the plane ---\n");
+
+	p = plane();
+	r = ray_constructor(point_constructor(0, 10, 0), vector_constructor(0, 0, 1));
+	xs = local_intersect(p, r);
+	
+	assert_intersect_empty(xs, "Ray parallel to plane has no intersections");
+}
+
+void	test_intersect_coplanar_ray(void)
+{
+	t_plane		p;
+	t_ray		r;
+	t_intersect	xs;
+
+	printf("\n--- Intersect with a coplanar ray ---\n");
+
+	p = plane();
+	r = ray_constructor(point_constructor(0, 0, 0), vector_constructor(0, 0, 1));
+	xs = local_intersect(p, r);
+	
+	assert_intersect_empty(xs, "Coplanar ray has no intersections");
 }
 
 /* ************************************************************************** */
@@ -91,6 +136,8 @@ int	main(void)
 
 	/* Plane tests */
 	test_plane_normal_is_constant_everywhere();
+	test_intersect_ray_parallel_to_plane();
+	test_intersect_coplanar_ray();
 
 	print_test_summary();
 	return (g_tests_passed == g_tests_run ? 0 : 1);

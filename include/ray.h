@@ -12,6 +12,7 @@
 typedef enum e_shape_type
 {
 	SHAPE_SPHERE,
+	SHAPE_PLANE,
 	SHAPE_TEST
 }	t_shape_type;
 
@@ -37,10 +38,15 @@ typedef struct s_sphere
 	float	radius;
 }	t_sphere;
 
-typedef union u_object
+typedef struct s_plane
 {
 	t_shape		shape;
+}	t_plane;
+
+typedef union u_object
+{
 	t_sphere	sp;
+	t_plane		plane;
 }	t_object;
 
 typedef struct s_intersection
@@ -75,6 +81,9 @@ int				get_shape_id(void);
 t_sphere		sphere(void);
 t_intersect		local_intersect_sphere(t_sphere *sphere, t_ray local_ray);
 t_vec3			local_normal_at_sphere(t_sphere *sphere, t_vec3 local_point);
+
+t_plane 		plane(void);
+t_vec3  		local_normal_at_plane(void);
 
 void			sphere_set_transform(t_sphere *s, t_mat4 t);
 t_intersect		sphere_intersect(t_ray ray, t_sphere sphere);
