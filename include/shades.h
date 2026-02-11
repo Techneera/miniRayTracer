@@ -23,6 +23,7 @@ t_vec3			reflect(t_vec3 in, t_vec3 normal);
 t_vec3			lighting(t_material m, t_point_light light, t_vec3 point, t_vec3 eyev, t_vec3 normalv, bool in_shadow);
 
 t_material		new_material(float ambient, float diffuse, float specular, float shininess);
+t_material		material_default(void);
 
 t_point_light	point_light(t_vec3 position, t_vec3 intensity);
 

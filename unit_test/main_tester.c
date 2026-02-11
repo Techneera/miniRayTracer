@@ -324,7 +324,7 @@ void	test_intersection(void)
 	i = intersection(3.5, o);
 
 	assert_float_eq(i.t, 3.5, "Intersection t value");
-	assert_int_eq(i.object.sp.id, o.sp.id, "Intersection object ID");
+	assert_int_eq(i.object.sp.shape.id, o.sp.shape.id, "Intersection object ID");
 }
 
 bool	helper_test_hit(t_intersection *items, int items_size, t_intersection *expected)
@@ -339,7 +339,7 @@ bool	helper_test_hit(t_intersection *items, int items_size, t_intersection *expe
 		return (true);
 	else if (ret_val == NULL && expected != NULL)
 		return (false);
-	if (result.t != expected->t || result.object.sp.id != expected->object.sp.id)
+	if (result.t != expected->t || result.object.sp.shape.id != expected->object.sp.shape.id)
 		return (false);
 	return (true);
 }

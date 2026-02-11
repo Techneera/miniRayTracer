@@ -464,11 +464,11 @@ void	test_sphere_transform_assignment(void)
 	t_mat4		m_identity;
 
 	matrix_identity(&m_identity);
-	assert_mat4_eq(s.transform, m_identity, "Sphere construction default Identity Transform");
+	assert_mat4_eq(s.shape.transform, m_identity, "Sphere construction default Identity Transform");
 
 	t_mat4	t = matrix_translation(2, 3, 4);
 	sphere_set_transform(&s, t);
-	assert_mat4_eq(s.transform, t, "Sphere transform custom assign");
+	assert_mat4_eq(s.shape.transform, t, "Sphere transform custom assign");
 }
 
 void	test_intersect_scaled_sphere(void)
@@ -478,9 +478,8 @@ void	test_intersect_scaled_sphere(void)
 	t_ray		r = ray_constructor(point_constructor(0, 0, -5), vector_constructor(0, 0, 1));
 
 	sphere_set_transform(&s, t);
-	t_ray		transformed_ray = ray_transform(r, s.transform_inv);
 
-	t_intersect	xs = sphere_intersect(transformed_ray, s);
+	t_intersect	xs = sphere_intersect(r, s);
 	assert_int_eq(xs.count, 2, "Intersecting scaled sphere yields 2 hits");
 
 	// And t[0] = 3
@@ -500,9 +499,8 @@ void	test_intersect_translated_sphere(void)
 	t_ray		ray = ray_constructor(point_constructor(0, 0, -5), vector_constructor(0,0, 1));
 
 	sphere_set_transform(&s, t);
-	t_ray		transformed_ray = ray_transform(ray, s.transform_inv);
 
-	t_intersect	xs = sphere_intersect(transformed_ray, s);
+	t_intersect	xs = sphere_intersect(ray, s);
 	assert_int_eq(xs.count, 0, "Ray missed translated sphere");
 }
 
