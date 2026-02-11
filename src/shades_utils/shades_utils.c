@@ -11,7 +11,7 @@ t_vec3	reflect(t_vec3 in, t_vec3 normal)
 	return (vector_sub(in, vector_scale(normal, 2.0f * dot)));
 }
 
-t_material	new_material(float ambient, float diffuse, float specular, float shininess)
+t_material	new_material(float ambient, float diffuse, float specular, float shininess, float reflective)
 {
 	t_material	result;
 
@@ -20,6 +20,7 @@ t_material	new_material(float ambient, float diffuse, float specular, float shin
 	result.diffuse = diffuse; // STANDARD VALUE 0.9
 	result.specular = specular; // STANDARD VALUE 0.9
 	result.shininess = shininess; // STANDARD VALUE 200.0
+	result.reflective = reflective; // STANDARD VALUE 0.0
 	return (result);
 }
 
@@ -83,4 +84,9 @@ t_vec3			lighting(t_material m, t_point_light light, t_vec3 point, t_vec3 eyev, 
 t_material	material_default(void)
 {
 	return (new_material(0.1f, 0.9f, 0.9f, 200.0f));
+}
+
+t_vec3	reflected_color(t_world *world, t_computations computations)
+{
+
 }

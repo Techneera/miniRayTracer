@@ -88,6 +88,7 @@ t_computation	prepare_computations(t_intersection i, t_ray ray)
 	this.point = ray_position(ray, this.t);
 	this.eyev = vector_scale(ray.direction, -1.0);
 	this.normalv = normal_at(&i.object.sp.shape, this.point);
+	this.reflectv = reflect(ray.direction, this.normalv);
 	this.inside = false;
 	if (vector_dot_product(this.normalv, this.eyev) < 0)
 	{
