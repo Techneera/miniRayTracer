@@ -112,6 +112,9 @@ TESTER6OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER6SRCS))
 TESTER7SRCS = $(TDIR)refactor_test.c
 TESTER7OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER7SRCS))
 
+TESTER8SRCS = $(TDIR)test_plane.c
+TESTER8OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER8SRCS))
+
 # ------------------------------ LIBRARIES -------------------------------- #
 
 MLX = $(MLXDIR)libmlx_Linux.a
@@ -163,6 +166,9 @@ test_shadows: $(MLX) $(LFT) $(TESTER6OBJS) $(TESTOBJ)
 test_refactor: $(MLX) $(LFT) $(TESTER7OBJS) $(TESTOBJ)
 	$(CC) $(CFLAGS) -g $(TESTER7OBJS) $(TESTOBJ) -o $(BDIR)tester_refactor -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
 
+test_plane: $(MLX) $(LFT) $(TESTER8OBJS) $(TESTOBJ)
+	$(CC) $(CFLAGS) -g $(TESTER8OBJS) $(TESTOBJ) -o $(BDIR)tester_plane -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
+
 $(NAME): $(OBJ) $(MLX)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
@@ -199,4 +205,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re debug test test_v2 test_draw test_parsing test_scene test_shadows test_refactor
+.PHONY: all clean fclean re debug test test_v2 test_draw test_parsing test_scene test_shadows test_refactor test_plane
