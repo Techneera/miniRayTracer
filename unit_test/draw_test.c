@@ -99,8 +99,8 @@ int	main(void)
 	sphere_set_transform(&shape, transform);
 	
 	// Assign Material
-	shape.material = new_material(0.1, 0.8, 0.9, 200.0);
-	shape.material.color = color_constructor(1.0f, 0.0f, 1.0f);
+	shape.shape.material = new_material(0.1, 0.8, 0.9, 200.0);
+	shape.shape.material.color = color_constructor(1.0f, 0.0f, 1.0f);
 
 	// 3. LIGHT SETUP
 	t_vec3			light_position = point_constructor(-10, 10, -10);
@@ -144,10 +144,10 @@ int	main(void)
             {
                 // Calculate point, normal, eye, and lighting
                 t_vec3 point = ray_position(r, hit_record->t);
-                t_vec3 normal = normal_at(shape, point);
+                t_vec3 normal = normal_at(&shape.shape, point);
                 t_vec3 eye = vector_scale(r.direction, -1.0f);
                 
-                t_vec3 color = lighting(shape.material, light, point, eye, normal);
+                t_vec3 color = lighting(shape.shape.material, light, point, eye, normal, false);
                 
                 write_pixel(&canvas, x, y, color);
             }
