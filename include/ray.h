@@ -46,7 +46,7 @@ typedef struct s_plane
 typedef union u_object
 {
 	t_sphere	sp;
-	t_plane		plane;
+	t_plane		pl;
 }	t_object;
 
 typedef struct s_intersection

@@ -22,13 +22,12 @@ t_vec3  local_normal_at_plane(void)
 t_intersect local_intersect_plane(t_plane *plane, t_ray ray)
 {
     t_intersect this;
+    float       t;
 
+    this.count = 0;
     if (fabsf(ray.direction.y) < EPSILON)
-    {
-        this.count = 0;
         return (this);
-    }
-    (void)plane;
-    this.count = 1;
+    t = -ray.origin.y / ray.direction.y;
+    this.i[this.count++] = intersection(t, (t_object) {.pl = *plane});
     return (this);
 }

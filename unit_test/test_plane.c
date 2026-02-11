@@ -55,6 +55,36 @@ static bool	assert_intersect_empty(t_intersect actual, const char *msg)
 	return (false);
 }
 
+static bool	assert_intersect_count(t_intersect actual, int expected, const char *msg)
+{
+	g_tests_run++;
+	if (actual.count == expected)
+	{
+		g_tests_passed++;
+		printf("%s[PASS]%s %s\n", GREEN, RESET, msg);
+		return (true);
+	}
+	printf("%s[FAIL]%s %s\n", RED, RESET, msg);
+	printf("\tExpected: %d intersections\n", expected);
+	printf("\tActual:   %d intersections\n", actual.count);
+	return (false);
+}
+
+static bool	assert_float_eq(float actual, float expected, const char *msg)
+{
+	g_tests_run++;
+	if (fabs(actual - expected) < EPSILON)
+	{
+		g_tests_passed++;
+		printf("%s[PASS]%s %s\n", GREEN, RESET, msg);
+		return (true);
+	}
+	printf("%s[FAIL]%s %s\n", RED, RESET, msg);
+	printf("\tExpected: %.5f\n", expected);
+	printf("\tActual:   %.5f\n", actual);
+	return (false);
+}
+
 /* ************************************************************************** */
 /* PLANE TESTS                                                              */
 /* ************************************************************************** */
@@ -106,6 +136,40 @@ void	test_intersect_coplanar_ray(void)
 	assert_intersect_empty(xs, "Coplanar ray has no intersections");
 }
 
+void	test_intersect_plane_from_above(void)
+{
+	t_plane		p;
+	t_ray		r;
+	t_intersect	xs;
+
+	printf("\n--- A ray intersecting a plane from above ---\n");
+
+	p = plane();
+	r = ray_constructor(point_constructor(0, 1, 0), vector_constructor(0, -1, 0));
+	xs = local_intersect_plane(&p, r);
+	
+	assert_intersect_count(xs, 1, "Intersection count is 1");
+	assert_float_eq(xs.i[0].t, 1.0f, "Intersection t value is 1");
+	// Note: object comparison would require more complex assertion
+}
+
+void	test_intersect_plane_from_below(void)
+{
+	t_plane		p;
+	t_ray		r;
+	t_intersect	xs;
+
+	printf("\n--- A ray intersecting a plane from below ---\n");
+
+	p = plane();
+	r = ray_constructor(point_constructor(0, -1, 0), vector_constructor(0, 1, 0));
+	xs = local_intersect_plane(&p, r);
+	
+	assert_intersect_count(xs, 1, "Intersection count is 1");
+	assert_float_eq(xs.i[0].t, 1.0f, "Intersection t value is 1");
+	// Note: object comparison would require more complex assertion
+}
+
 /* ************************************************************************** */
 /* TEST SUMMARY                                                             */
 /* ************************************************************************** */
@@ -138,6 +202,8 @@ int	main(void)
 	test_plane_normal_is_constant_everywhere();
 	test_intersect_ray_parallel_to_plane();
 	test_intersect_coplanar_ray();
+	test_intersect_plane_from_above();
+	test_intersect_plane_from_below();
 
 	print_test_summary();
 	return (g_tests_passed == g_tests_run ? 0 : 1);
