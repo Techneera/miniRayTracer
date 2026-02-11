@@ -4,6 +4,7 @@
 # include "ray.h"
 
 # define MAX_OBJECTS 50
+# define EPSILON 0.00001
 
 typedef enum e_type
 {
@@ -26,10 +27,14 @@ typedef struct s_ambient_light
 
 typedef struct s_camera
 {
-	t_vec3	position;
-	t_vec3	direction;
-	float	fov;
-} t_camera;
+	int			hsize;
+	int			vsize;
+	float		field_of_view;
+	t_mat4		transform;
+	float		pixel_size;
+	float		half_width;
+	float		half_height;
+}	t_camera;
 
 typedef struct s_light
 {
