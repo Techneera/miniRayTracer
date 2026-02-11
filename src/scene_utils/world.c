@@ -19,11 +19,11 @@ t_world	default_world(void)
 			point_constructor(-10, 10, -10),
 			color_constructor(1, 1, 1));
 	o1.sp = sphere();
-	o1.sp.material.color = color_constructor(0.8, 1.0, 0.6);
-	o1.sp.material.diffuse = 0.7;
-	o1.sp.material.specular = 0.2;
+	o1.sp.shape.material.color = color_constructor(0.8, 1.0, 0.6);
+	o1.sp.shape.material.diffuse = 0.7;
+	o1.sp.shape.material.specular = 0.2;
 	o2.sp = sphere();
-	sphere_set_transform(&o2.sp, matrix_scale(0.5, 0.5, 0.5));
+	set_transform(&o2.sp.shape, matrix_scale(0.5, 0.5, 0.5));
 	world.object_count = 0;
 	world.light = light;
 	world.objects[world.object_count].object = o1;
@@ -69,7 +69,7 @@ t_intersect	intersect_world(t_world *world, t_ray ray)
 	while (i < world->object_count)
 	{
 		if (world->objects[i].type == SPHERE)
-			current = sphere_intersect(ray, world->objects[i].object.sp);
+			current = intersect(ray, &world->objects[i].object.sp.shape);
 		j = 0;
 		while (j < current.count)
 			this.i[this.count++] = current.i[j++];
@@ -87,7 +87,7 @@ t_computation	prepare_computations(t_intersection i, t_ray ray)
 	this.object = i.object;
 	this.point = ray_position(ray, this.t);
 	this.eyev = vector_scale(ray.direction, -1.0);
-	this.normalv = normal_at(i.object.sp, this.point);
+	this.normalv = normal_at(&i.object.sp.shape, this.point);
 	this.reflectv = reflect(ray.direction, this.normalv);
 	this.inside = false;
 	if (vector_dot_product(this.normalv, this.eyev) < 0)
@@ -105,7 +105,7 @@ t_computation	prepare_computations(t_intersection i, t_ray ray)
 t_vec3	shade_hit(t_world world, t_computation computations)
 {
 	return (lighting(
-			computations.object.sp.material,
+			computations.object.sp.shape.material,
 			world.light,
 			computations.over_point,
 			computations.eyev,
@@ -227,7 +227,7 @@ t_canvas	render(t_camera c, t_world w)
 
 	canvas_constructor(c.hsize, c.vsize, &image);
 	y = 0;
-	while (y < c.vsize - 1)
+	while (y < c.vsize)
 	{
 		x = 0;
 		while (x < c.hsize)
