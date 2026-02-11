@@ -86,7 +86,7 @@ void	test_intersect_ray_parallel_to_plane(void)
 
 	p = plane();
 	r = ray_constructor(point_constructor(0, 10, 0), vector_constructor(0, 0, 1));
-	xs = local_intersect(p, r);
+	xs = local_intersect_plane(&p, r);
 	
 	assert_intersect_empty(xs, "Ray parallel to plane has no intersections");
 }
@@ -101,7 +101,7 @@ void	test_intersect_coplanar_ray(void)
 
 	p = plane();
 	r = ray_constructor(point_constructor(0, 0, 0), vector_constructor(0, 0, 1));
-	xs = local_intersect(p, r);
+	xs = local_intersect_plane(&p, r);
 	
 	assert_intersect_empty(xs, "Coplanar ray has no intersections");
 }

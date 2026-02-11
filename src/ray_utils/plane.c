@@ -1,5 +1,7 @@
+#include "librt.h"
 #include "ray.h"
 #include "vector.h"
+#include <math.h>
 
 t_plane plane(void)
 {
@@ -15,4 +17,18 @@ t_vec3  local_normal_at_plane(void)
     return (
         vector_constructor(0, 1, 0)
     );
+}
+
+t_intersect local_intersect_plane(t_plane *plane, t_ray ray)
+{
+    t_intersect this;
+
+    if (fabsf(ray.direction.y) < EPSILON)
+    {
+        this.count = 0;
+        return (this);
+    }
+    (void)plane;
+    this.count = 1;
+    return (this);
 }

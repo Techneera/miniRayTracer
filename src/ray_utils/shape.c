@@ -32,13 +32,11 @@ t_intersect	intersect(t_ray ray, t_shape *shape)
 
 	local_ray = ray_transform(ray, shape->transform_inv);
 	if (shape->type == SHAPE_SPHERE)
-	{
 		result = local_intersect_sphere((t_sphere *)shape, local_ray);
-	}
+	else if (shape->type == SHAPE_PLANE)
+		result = local_intersect_plane((t_plane *)shape, local_ray);
 	else
-	{
 		result.count = 0;
-	}
 	return (result);
 }
 

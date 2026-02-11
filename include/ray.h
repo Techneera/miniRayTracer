@@ -84,6 +84,7 @@ t_vec3			local_normal_at_sphere(t_sphere *sphere, t_vec3 local_point);
 
 t_plane 		plane(void);
 t_vec3  		local_normal_at_plane(void);
+t_intersect		local_intersect_plane(t_plane *plane, t_ray ray);
 
 void			sphere_set_transform(t_sphere *s, t_mat4 t);
 t_intersect		sphere_intersect(t_ray ray, t_sphere sphere);
