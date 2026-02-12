@@ -19,6 +19,12 @@ t_vec3 pattern_at(t_pattern pattern, t_vec3 point)
 {
 	if (pattern.type == PATTERN_STRIPE)
 		return (stripe_at(pattern, point));
+	else if (pattern.type == PATTERN_GRADIENT)
+		return (gradient_at(pattern, point));
+	else if (pattern.type == PATTERN_RING)
+		return (ring_at(pattern, point));
+	else if (pattern.type == PATTERN_CHECKER)
+		return (checker_at(pattern, point));
 	return (color_constructor(point.x, point.y, point.z));
 }
 
