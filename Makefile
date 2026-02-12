@@ -51,6 +51,7 @@ _RAY_SRCS = ray_constructor.c \
 			sphere.c \
 			plane.c \
 			shape.c \
+			object.c \
 			intersection.c \
 			ray_transform.c
 RAY_SRCS = $(patsubst %.c, $(RAYDIR)/%.c, $(_RAY_SRCS))

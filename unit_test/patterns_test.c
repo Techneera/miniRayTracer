@@ -195,7 +195,7 @@ void test_lighting_with_pattern_applied(void)
     printf("\n--- Lighting with a pattern applied ---\n");
 
     t_object object = {0};
-    object.sp = sphere();
+    object = object_constructor(SHAPE_SPHERE);
 
     // Given m.pattern ← stripe_pattern(color(1, 1, 1), color(0, 0, 0))
     m = material_default();
@@ -241,7 +241,7 @@ void test_stripes_with_object_transformation(void)
     printf("\n--- Stripes with an object transformation ---\n");
 
     // Given object ← sphere()
-    object.sp = sphere();
+    object = object_constructor(SHAPE_SPHERE);
     
     // And set_transform(object, scaling(2, 2, 2))
     set_transform(&object.sp.shape, matrix_scale(2, 2, 2));
@@ -265,7 +265,7 @@ void test_stripes_with_pattern_transformation(void)
     printf("\n--- Stripes with a pattern transformation ---\n");
 
     // Given object ← sphere()
-    object.sp = sphere();
+    object = object_constructor(SHAPE_SPHERE);
     
     // And pattern ← stripe_pattern(white, black)
     pattern = pattern_stripe(white, black);
@@ -289,7 +289,7 @@ void test_stripes_with_both_transformations(void)
     printf("\n--- Stripes with both an object and a pattern transformation ---\n");
 
     // Given object ← sphere()
-    object.sp = sphere();
+    object = object_constructor(SHAPE_SPHERE);
     
     // And set_transform(object, scaling(2, 2, 2))
     set_transform(&object.sp.shape, matrix_scale(2, 2, 2));
@@ -351,7 +351,7 @@ void test_pattern_with_object_transformation(void)
     printf("\n--- A pattern with an object transformation ---\n");
 
     // Given shape ← sphere()
-    shape = sphere().shape;
+    shape = object_constructor(SHAPE_SPHERE).sp.shape;
     
     // And set_transform(shape, scaling(2, 2, 2))
     set_transform(&shape, matrix_scale(2, 2, 2));
@@ -375,7 +375,7 @@ void test_pattern_with_pattern_transformation(void)
     printf("\n--- A pattern with a pattern transformation ---\n");
 
     // Given shape ← sphere()
-    shape = sphere().shape;
+    shape = object_constructor(SHAPE_SPHERE).sp.shape;
     
     // And pattern ← test_pattern()
     pattern = test_pattern();
@@ -399,7 +399,7 @@ void test_pattern_with_both_transformations(void)
     printf("\n--- A pattern with both an object and a pattern transformation ---\n");
 
     // Given shape ← sphere()
-    shape = sphere().shape;
+    shape = object_constructor(SHAPE_SPHERE).sp.shape;
     
     // And set_transform(shape, scaling(2, 2, 2))
     set_transform(&shape, matrix_scale(2, 2, 2));

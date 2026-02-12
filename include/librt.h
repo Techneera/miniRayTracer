@@ -46,9 +46,9 @@ typedef struct s_plane
 
 typedef union u_object
 {
-	t_type		type;
-	t_sphere	sp;
-	t_plane		pl;
+	t_shape_type	type;
+	t_sphere		sp;
+	t_plane			pl;
 }	t_object;
 
 typedef struct s_objects
