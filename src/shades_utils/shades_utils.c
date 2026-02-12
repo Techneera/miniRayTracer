@@ -46,7 +46,7 @@ t_point_light	point_light(t_vec3 position, t_vec3 intensity)
 ** @param eyev: The vector from the point to the camera (normalized).
 ** @param normalv: The surface normal at the point (normalized).
 */
-t_vec3			lighting(t_material m, t_point_light light, t_vec3 point, t_vec3 eyev, t_vec3 normalv, bool in_shadow)
+t_vec3			lighting(t_material m, t_point_light light, t_vec3 point, t_vec3 eyev, t_vec3 normalv, bool in_shadow, t_shape shape)
 {
 	t_vec3	effective_color;
 	t_vec3	lightv;
@@ -60,7 +60,7 @@ t_vec3			lighting(t_material m, t_point_light light, t_vec3 point, t_vec3 eyev, 
 	float	factor;
 
 	if (m.pattern.type != PATTERN_SOLID)
-		color = pattern_at(m.pattern, point);
+		color = pattern_at_object(m.pattern, shape, point);
 	else
 		color = m.color;
 	effective_color = vector_multiply(color, light.intensity);

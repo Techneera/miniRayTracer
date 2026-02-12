@@ -1,4 +1,6 @@
+#include "patterns.h"
 #include "ray.h"
+#include "vector.h"
 
 int get_shape_id(void)
 {
@@ -15,7 +17,10 @@ t_shape	test_shape(void)
 	s.id = get_shape_id();
 	matrix_identity(&s.transform);
 	matrix_identity(&s.transform_inv);
-	s.material = new_material(0.1f, 0.9f, 0.9f, 200.0f, 0.0f);
+	s.material = new_material(0.1f, 0.9f, 0.9f, 200.0f, 0.0f,
+		pattern_constructor(PATTERN_SOLID,
+			vector_constructor(0, 0, 0),
+			vector_constructor(1, 1, 1)));
 	return (s);
 }
 

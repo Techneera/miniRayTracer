@@ -10,7 +10,7 @@ t_sphere	sphere(void)
 	s.radius = 1.0f;
 	matrix_identity(&s.shape.transform);
 	matrix_identity(&s.shape.transform_inv);
-	s.shape.material = new_material(0.1f, 0.9f, 0.9f, 200.0f, 0.0f);
+	s.shape.material = material_default();
 	return (s);
 }
 
