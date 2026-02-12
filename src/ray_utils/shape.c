@@ -1,12 +1,25 @@
+#include "librt.h"
 #include "patterns.h"
 #include "ray.h"
 #include "vector.h"
+#include <stdbool.h>
 
 int get_shape_id(void)
 {
     static int id;
 
     return (id++);
+}
+
+bool	get_shape(t_object object, t_shape *shape)
+{
+	if (object.type == SHAPE_SPHERE)
+		*shape = object.sp.shape;
+	else if (object.type == SHAPE_PLANE)
+		*shape = object.pl.shape;
+	else
+		return (false);
+	return (true);
 }
 
 t_shape	test_shape(void)

@@ -43,12 +43,14 @@ void			set_transform(t_shape *s, t_mat4 t);
 t_intersect		intersect(t_ray ray, t_shape *shape);
 t_vec3			normal_at(t_shape *s, t_vec3 world_point);
 int				get_shape_id(void);
+bool			get_shape(t_object object, t_shape *shape);
 
 t_sphere		sphere(void);
 t_intersect		local_intersect_sphere(t_sphere *sphere, t_ray local_ray);
 t_vec3			local_normal_at_sphere(t_sphere *sphere, t_vec3 local_point);
 
 t_plane 		plane(void);
+t_object		object_constructor(t_shape_type type);
 t_vec3  		local_normal_at_plane(void);
 t_intersect		local_intersect_plane(t_plane *plane, t_ray ray);
 
