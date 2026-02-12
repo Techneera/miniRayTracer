@@ -1,7 +1,9 @@
+#include "patterns.h"
 #include "shades.h"
 #include "ray.h"
 #include "canvas.h"
 #include "scene.h"
+#include "vector.h"
 #include <math.h>
 
 t_vec3	reflect(t_vec3 in, t_vec3 normal)
@@ -12,7 +14,7 @@ t_vec3	reflect(t_vec3 in, t_vec3 normal)
 	return (vector_sub(in, vector_scale(normal, 2.0f * dot)));
 }
 
-t_material	new_material(float ambient, float diffuse, float specular, float shininess, float reflective)
+t_material	new_material(float ambient, float diffuse, float specular, float shininess, float reflective, t_pattern pattern)
 {
 	t_material	result;
 
@@ -22,6 +24,7 @@ t_material	new_material(float ambient, float diffuse, float specular, float shin
 	result.specular = specular; // STANDARD VALUE 0.9
 	result.shininess = shininess; // STANDARD VALUE 200.0
 	result.reflective = reflective; // STANDARD VALUE 0.0
+	result.pattern = pattern;
 	return (result);
 }
 
@@ -51,11 +54,16 @@ t_vec3			lighting(t_material m, t_point_light light, t_vec3 point, t_vec3 eyev, 
 	t_vec3	reflectv;
 	t_vec3	diffuse;
 	t_vec3	specular;
+	t_vec3	color;
 	float	light_dot_normal;
 	float	reflect_dot_eye;
 	float	factor;
 
-	effective_color = vector_multiply(m.color, light.intensity);
+	if (m.pattern.type != PATTERN_SOLID)
+		color = pattern_at(m.pattern, point);
+	else
+		color = m.color;
+	effective_color = vector_multiply(color, light.intensity);
 	lightv = vector_normalization(vector_sub(light.position, point));
 	ambient = vector_scale(effective_color, m.ambient);
 	if (in_shadow == true)
@@ -92,5 +100,12 @@ t_vec3	reflected_color(t_world *world, t_computation computations)
 
 t_material	material_default(void)
 {
-	return (new_material(0.1f, 0.9f, 0.9f, 200.0f, 0.0f));
+	t_pattern	pattern;
+
+	pattern = pattern_constructor(
+		PATTERN_SOLID,
+		color_constructor(0, 0, 0),
+		color_constructor(1, 1, 1)
+	);
+	return (new_material(0.1f, 0.9f, 0.9f, 200.0f, 0.0f, pattern));
 }
