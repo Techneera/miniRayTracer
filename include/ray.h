@@ -3,51 +3,17 @@
 
 # include "vector.h"
 # include "matrix.h"
-# include "shades.h"
+# include "librt.h"
 
 # ifndef MAX_INTERSECTION
 #  define MAX_INTERSECTION 10
 # endif
-
-typedef enum e_shape_type
-{
-	SHAPE_SPHERE,
-	SHAPE_PLANE,
-	SHAPE_TEST
-}	t_shape_type;
 
 typedef struct s_ray
 {
 	t_vec3	origin;
 	t_vec3	direction;
 }	t_ray;
-
-typedef struct s_shape
-{
-	t_shape_type	type;
-	int				id;
-	t_mat4			transform;
-	t_mat4			transform_inv;
-	t_material		material;
-}	t_shape;
-
-typedef struct s_sphere
-{
-	t_shape	shape;
-	t_vec3	center;
-	float	radius;
-}	t_sphere;
-
-typedef struct s_plane
-{
-	t_shape		shape;
-}	t_plane;
-
-typedef union u_object
-{
-	t_sphere	sp;
-	t_plane		pl;
-}	t_object;
 
 typedef struct s_intersection
 {

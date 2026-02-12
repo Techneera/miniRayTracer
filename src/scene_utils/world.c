@@ -110,7 +110,8 @@ t_vec3	shade_hit(t_world world, t_computation computations)
 			computations.over_point,
 			computations.eyev,
 			computations.normalv,
-			is_shadowed(world, computations.over_point))
+			is_shadowed(world, computations.over_point),
+			computations.object.sp.shape)
 	);
 }
 

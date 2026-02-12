@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include "canvas.h"
+#include "patterns.h"
 #include "vector.h"
 #include "shades.h"
 #include "scene.h"
@@ -76,7 +77,7 @@ void test_lighting_with_surface_in_shadow(void)
     printf("\n--- Lighting with the surface in shadow ---\n");
 
     // Setup: Material with default values
-    m = new_material(0.1, 0.9, 0.9, 200.0, 0);
+    m = new_material(0.1, 0.9, 0.9, 200.0, 0, pattern_default());
     m.color = color_constructor(1, 1, 1);
     
     // Position at origin
@@ -96,7 +97,7 @@ void test_lighting_with_surface_in_shadow(void)
     in_shadow = true;
     
     // When: Calculate lighting
-    result = lighting(m, light, position, eyev, normalv, in_shadow);
+    result = lighting(m, light, position, eyev, normalv, in_shadow, sphere().shape);
     
     // Then: Result should be only ambient component (0.1, 0.1, 0.1)
     assert_float_eq(result.x, 0.1f, "Lighting in shadow - Red component");

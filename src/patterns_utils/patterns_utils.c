@@ -48,3 +48,12 @@ void set_pattern_transform(t_pattern *pattern, t_mat4 transform)
 {
 	pattern->transform = transform;
 }
+
+t_pattern	pattern_default(void)
+{
+	return (pattern_constructor(
+		PATTERN_SOLID,
+		color_constructor(0, 0, 0),
+		color_constructor(1, 1, 1)
+	));
+}
