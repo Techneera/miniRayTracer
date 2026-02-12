@@ -417,6 +417,129 @@ void test_pattern_with_both_transformations(void)
     assert_vec3_eq(c, color_constructor(0.75, 0.5, 0.25), "pattern_at_shape should return correct color with both transformations");
 }
 
+void test_gradient_linear_interpolation(void)
+{
+    t_pattern pattern;
+    t_vec3 result;
+
+    printf("\n--- A gradient linearly interpolates between colors ---\n");
+
+    // Given pattern ← gradient_pattern(white, black)
+    pattern = pattern_gradient(white, black);
+    
+    // Then pattern_at(pattern, point(0, 0, 0)) = white
+    result = gradient_at(pattern, point_constructor(0, 0, 0));
+    assert_vec3_eq(result, white, "gradient_at(pattern, point(0, 0, 0)) should equal white");
+    
+    // And pattern_at(pattern, point(0.25, 0, 0)) = color(0.75, 0.75, 0.75)
+    result = gradient_at(pattern, point_constructor(0.25, 0, 0));
+    assert_vec3_eq(result, color_constructor(0.75, 0.75, 0.75), "gradient_at(pattern, point(0.25, 0, 0)) should equal color(0.75, 0.75, 0.75)");
+    
+    // And pattern_at(pattern, point(0.5, 0, 0)) = color(0.5, 0.5, 0.5)
+    result = gradient_at(pattern, point_constructor(0.5, 0, 0));
+    assert_vec3_eq(result, color_constructor(0.5, 0.5, 0.5), "gradient_at(pattern, point(0.5, 0, 0)) should equal color(0.5, 0.5, 0.5)");
+    
+    // And pattern_at(pattern, point(0.75, 0, 0)) = color(0.25, 0.25, 0.25)
+    result = gradient_at(pattern, point_constructor(0.75, 0, 0));
+    assert_vec3_eq(result, color_constructor(0.25, 0.25, 0.25), "gradient_at(pattern, point(0.75, 0, 0)) should equal color(0.25, 0.25, 0.25)");
+}
+
+void test_ring_extends_in_x_and_z(void)
+{
+    t_pattern pattern;
+    t_vec3 result;
+
+    printf("\n--- A ring should extend in both x and z ---\n");
+
+    // Given pattern ← ring_pattern(white, black)
+    pattern = pattern_ring(white, black);
+    
+    // Then pattern_at(pattern, point(0, 0, 0)) = white
+    result = ring_at(pattern, point_constructor(0, 0, 0));
+    assert_vec3_eq(result, white, "ring_at(pattern, point(0, 0, 0)) should equal white");
+    
+    // And pattern_at(pattern, point(1, 0, 0)) = black
+    result = ring_at(pattern, point_constructor(1, 0, 0));
+    assert_vec3_eq(result, black, "ring_at(pattern, point(1, 0, 0)) should equal black");
+    
+    // And pattern_at(pattern, point(0, 0, 1)) = black
+    result = ring_at(pattern, point_constructor(0, 0, 1));
+    assert_vec3_eq(result, black, "ring_at(pattern, point(0, 0, 1)) should equal black");
+    
+    // And pattern_at(pattern, point(0.708, 0, 0.708)) = black (0.708 = just slightly more than √2/2)
+    result = ring_at(pattern, point_constructor(0.708, 0, 0.708));
+    assert_vec3_eq(result, black, "ring_at(pattern, point(0.708, 0, 0.708)) should equal black");
+}
+
+void test_checkers_repeat_in_x(void)
+{
+    t_pattern pattern;
+    t_vec3 result;
+
+    printf("\n--- Checkers should repeat in x ---\n");
+
+    // Given pattern ← checkers_pattern(white, black)
+    pattern = pattern_checker(white, black);
+    
+    // Then pattern_at(pattern, point(0, 0, 0)) = white
+    result = checker_at(pattern, point_constructor(0, 0, 0));
+    assert_vec3_eq(result, white, "checker_at(pattern, point(0, 0, 0)) should equal white");
+    
+    // And pattern_at(pattern, point(0.99, 0, 0)) = white
+    result = checker_at(pattern, point_constructor(0.99, 0, 0));
+    assert_vec3_eq(result, white, "checker_at(pattern, point(0.99, 0, 0)) should equal white");
+    
+    // And pattern_at(pattern, point(1.01, 0, 0)) = black
+    result = checker_at(pattern, point_constructor(1.01, 0, 0));
+    assert_vec3_eq(result, black, "checker_at(pattern, point(1.01, 0, 0)) should equal black");
+}
+
+void test_checkers_repeat_in_y(void)
+{
+    t_pattern pattern;
+    t_vec3 result;
+
+    printf("\n--- Checkers should repeat in y ---\n");
+
+    // Given pattern ← checkers_pattern(white, black)
+    pattern = pattern_checker(white, black);
+    
+    // Then pattern_at(pattern, point(0, 0, 0)) = white
+    result = checker_at(pattern, point_constructor(0, 0, 0));
+    assert_vec3_eq(result, white, "checker_at(pattern, point(0, 0, 0)) should equal white");
+    
+    // And pattern_at(pattern, point(0, 0.99, 0)) = white
+    result = checker_at(pattern, point_constructor(0, 0.99, 0));
+    assert_vec3_eq(result, white, "checker_at(pattern, point(0, 0.99, 0)) should equal white");
+    
+    // And pattern_at(pattern, point(0, 1.01, 0)) = black
+    result = checker_at(pattern, point_constructor(0, 1.01, 0));
+    assert_vec3_eq(result, black, "checker_at(pattern, point(0, 1.01, 0)) should equal black");
+}
+
+void test_checkers_repeat_in_z(void)
+{
+    t_pattern pattern;
+    t_vec3 result;
+
+    printf("\n--- Checkers should repeat in z ---\n");
+
+    // Given pattern ← checkers_pattern(white, black)
+    pattern = pattern_checker(white, black);
+    
+    // Then pattern_at(pattern, point(0, 0, 0)) = white
+    result = checker_at(pattern, point_constructor(0, 0, 0));
+    assert_vec3_eq(result, white, "checker_at(pattern, point(0, 0, 0)) should equal white");
+    
+    // And pattern_at(pattern, point(0, 0, 0.99)) = white
+    result = checker_at(pattern, point_constructor(0, 0, 0.99));
+    assert_vec3_eq(result, white, "checker_at(pattern, point(0, 0, 0.99)) should equal white");
+    
+    // And pattern_at(pattern, point(0, 0, 1.01)) = black
+    result = checker_at(pattern, point_constructor(0, 0, 1.01));
+    assert_vec3_eq(result, black, "checker_at(pattern, point(0, 0, 1.01)) should equal black");
+}
+
 int main(void)
 {
     printf("==========================================\n");
@@ -441,6 +564,11 @@ int main(void)
     test_pattern_with_object_transformation();
     test_pattern_with_pattern_transformation();
     test_pattern_with_both_transformations();
+    test_gradient_linear_interpolation();
+    test_ring_extends_in_x_and_z();
+    test_checkers_repeat_in_x();
+    test_checkers_repeat_in_y();
+    test_checkers_repeat_in_z();
 
     printf("\n==========================================\n");
     if (g_tests_passed == g_tests_run)
