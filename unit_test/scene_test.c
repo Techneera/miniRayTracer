@@ -172,7 +172,7 @@ void test_prepare_computations(void)
 
     r = ray_constructor(point_constructor(0, 0, -5),
                         vector_constructor(0, 0, 1));
-    shape.sp = sphere();
+    shape = object_constructor(SHAPE_SPHERE);
     i = intersection(4.0f, shape);
     comps = prepare_computations(i, r);
 
@@ -198,7 +198,7 @@ void test_prepare_computations_outside(void)
 
     r = ray_constructor(point_constructor(0, 0, -5),
                         vector_constructor(0, 0, 1));
-    shape.sp = sphere();
+    shape = object_constructor(SHAPE_SPHERE);
     i = intersection(4.0f, shape);
     comps = prepare_computations(i, r);
 
@@ -216,7 +216,7 @@ void test_prepare_computations_inside(void)
 
     r = ray_constructor(point_constructor(0, 0, 0),
                         vector_constructor(0, 0, 1));
-    shape.sp = sphere();
+    shape = object_constructor(SHAPE_SPHERE);
     i = intersection(1.0f, shape);
     comps = prepare_computations(i, r);
 
