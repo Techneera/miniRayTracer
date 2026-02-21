@@ -18,11 +18,11 @@ t_world	default_world(void)
 	light = point_light(
 			point_constructor(-10, 10, -10),
 			color_constructor(1, 1, 1));
-	o1.sp = sphere();
+	o1 = object_constructor(SHAPE_SPHERE);
 	o1.sp.shape.material.color = color_constructor(0.8, 1.0, 0.6);
 	o1.sp.shape.material.diffuse = 0.7;
 	o1.sp.shape.material.specular = 0.2;
-	o2.sp = sphere();
+	o2 = object_constructor(SHAPE_SPHERE);
 	set_transform(&o2.sp.shape, matrix_scale(0.5, 0.5, 0.5));
 	world.object_count = 0;
 	world.light = light;
@@ -104,13 +104,18 @@ t_computation	prepare_computations(t_intersection i, t_ray ray)
 
 t_vec3	shade_hit(t_world world, t_computation computations)
 {
+	t_shape	shape;
+
+	if (get_shape(computations.object, &shape) != true)
+		shape = test_shape();
 	return (lighting(
-			computations.object.sp.shape.material,
+			shape.material,
 			world.light,
 			computations.over_point,
 			computations.eyev,
 			computations.normalv,
-			is_shadowed(world, computations.over_point))
+			is_shadowed(world, computations.over_point),
+			shape)
 	);
 }
 

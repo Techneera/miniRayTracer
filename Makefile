@@ -23,6 +23,7 @@ PARSEDIR = $(SDIR)parsing
 SHADESDIR = $(SDIR)shades_utils
 SCENEDIR = $(SDIR)scene_utils
 SHADOWSDIR = $(SDIR)shadows_utils
+PATTERNSDIR = $(SDIR)patterns_utils
 
 # ------------------------------ VECTORS -------------------------------- #
 
@@ -50,6 +51,7 @@ _RAY_SRCS = ray_constructor.c \
 			sphere.c \
 			plane.c \
 			shape.c \
+			object.c \
 			intersection.c \
 			ray_transform.c
 RAY_SRCS = $(patsubst %.c, $(RAYDIR)/%.c, $(_RAY_SRCS))
@@ -90,6 +92,18 @@ SHADOWS_SRCS = $(patsubst %.c, $(SHADOWSDIR)/%.c, $(_SHADOWS_SRCS))
 SHADOWS_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(SHADOWS_SRCS))
 
 
+# ------------------------------ PATTERNS -------------------------------- #
+
+_PATTERNS_SRCS = patterns_utils.c \
+				 stripe_pattern.c \
+				 checker_pattern.c \
+				 gradient_pattern.c \
+				 ring_pattern.c
+
+PATTERNS_SRCS = $(patsubst %.c, $(PATTERNSDIR)/%.c, $(_PATTERNS_SRCS))
+PATTERNS_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(PATTERNS_SRCS))
+
+
 # ------------------------------ UNIT TESTS-------------------------------- #
 
 TESTERSRCS = $(TDIR)main_tester.c
@@ -116,8 +130,12 @@ TESTER7OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER7SRCS))
 TESTER8SRCS = $(TDIR)test_plane.c
 TESTER8OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER8SRCS))
 
-TESTER9SRCS = $(TDIR)test_reflection.c
+TESTER11SRCS = $(TDIR)test_reflection.c
+TESTER11OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER9SRCS))
+
+TESTER9SRCS = $(TDIR)patterns_test.c
 TESTER9OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER9SRCS))
+
 # ------------------------------ LIBRARIES -------------------------------- #
 
 MLX = $(MLXDIR)libmlx_Linux.a
@@ -139,7 +157,8 @@ SRCFILES = $(SDIR)main.c \
 		   $(PARSE_SRCS) \
 		   $(SHADES_SRCS) \
 		   $(SCENE_SRCS) \
-		   $(SHADOWS_SRCS)
+		   $(SHADOWS_SRCS) \
+		   $(PATTERNS_SRCS)
 
 # ------------------------------ RULES -------------------------------- #
 
@@ -172,8 +191,11 @@ test_refactor: $(MLX) $(LFT) $(TESTER7OBJS) $(TESTOBJ)
 test_plane: $(MLX) $(LFT) $(TESTER8OBJS) $(TESTOBJ)
 	$(CC) $(CFLAGS) -g $(TESTER8OBJS) $(TESTOBJ) -o $(BDIR)tester_plane -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
 
-test_reflection: $(MLX) $(LFT) $(TESTER9OBJS) $(TESTOBJ)
+test_reflection: $(MLX) $(LFT) $(TESTER11OBJS) $(TESTOBJ)
 	$(CC) $(CFLAGS) -g $(TESTER9OBJS) $(TESTOBJ) -o $(BDIR)tester_reflection -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
+
+test_patterns: $(MLX) $(LFT) $(TESTER9OBJS) $(TESTOBJ)
+	$(CC) $(CFLAGS) -g $(TESTER9OBJS) $(TESTOBJ) -o $(BDIR)tester_patterns -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
 
 $(NAME): $(OBJ) $(MLX)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
@@ -188,6 +210,7 @@ $(ODIR)$(SDIR)%.o: $(SDIR)%.c
 	@mkdir -p $(ODIR)$(SHADESDIR)
 	@mkdir -p $(ODIR)$(SHADOWSDIR)
 	@mkdir -p $(ODIR)$(SCENEDIR)
+	@mkdir -p $(ODIR)$(PATTERNSDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -I $(IDIR) -I$(MLXDIR) -I$(LFTDIR)
 
 $(ODIR)$(TDIR)%.o: $(TDIR)%.c
@@ -211,4 +234,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re debug test test_v2 test_draw test_parsing test_scene test_shadows test_refactor test_plane test_reflection
+.PHONY: all clean fclean re debug test test_v2 test_draw test_parsing test_scene test_shadows test_refactor test_plane test_patterns test_reflection
