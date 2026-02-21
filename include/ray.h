@@ -6,7 +6,7 @@
 # include "librt.h"
 
 # ifndef MAX_INTERSECTION
-#  define MAX_INTERSECTION 10
+#  define MAX_INTERSECTION 64
 # endif
 
 typedef struct s_ray

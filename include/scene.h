@@ -7,6 +7,8 @@
 # include "vector.h"
 # include "canvas.h"
 
+# define MAX_BOUNCE 5
+
 typedef struct s_world
 {
     t_point_light   light;
@@ -29,12 +31,13 @@ typedef struct s_computation
 t_world     	default_world(void);
 t_intersect 	intersect_world(t_world *world, t_ray ray);
 t_computation   prepare_computations(t_intersection i, t_ray ray);
-t_vec3			shade_hit(t_world world, t_computation computations);
-t_vec3	        color_at(t_world world, t_ray ray);
+t_vec3			shade_hit(t_world world, t_computation computations, int depth);
+t_vec3	        color_at(t_world world, t_ray ray, int depth);
 t_mat4	        view_transform(t_vec3 from, t_vec3 to, t_vec3 up);
 
 t_camera		camera_constructor(int hsize, int vsize, float field_of_view);
 t_ray			ray_for_pixel(t_camera c, int px, int py);
 t_canvas		render(t_camera c, t_world w);
 
+t_vec3			reflected_color(t_world world, t_computation comps, int depth);
 #endif
