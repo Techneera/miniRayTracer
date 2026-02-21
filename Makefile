@@ -24,6 +24,7 @@ SHADESDIR = $(SDIR)shades_utils
 SCENEDIR = $(SDIR)scene_utils
 SHADOWSDIR = $(SDIR)shadows_utils
 PATTERNSDIR = $(SDIR)patterns_utils
+REFLECTIONDIR = $(SDIR)reflection_utils
 
 # ------------------------------ VECTORS -------------------------------- #
 
@@ -92,6 +93,14 @@ SHADOWS_SRCS = $(patsubst %.c, $(SHADOWSDIR)/%.c, $(_SHADOWS_SRCS))
 SHADOWS_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(SHADOWS_SRCS))
 
 
+# ------------------------------ SHADOWS -------------------------------- #
+
+_REFLECTION_SRCS = reflected_color.c
+
+REFLECTION_SRCS = $(patsubst %.c, $(REFLECTIONDIR)/%.c, $(_REFLECTION_SRCS))
+REFLECTION_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(REFLECTION_SRCS))
+
+
 # ------------------------------ PATTERNS -------------------------------- #
 
 _PATTERNS_SRCS = patterns_utils.c \
@@ -131,7 +140,7 @@ TESTER8SRCS = $(TDIR)test_plane.c
 TESTER8OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER8SRCS))
 
 TESTER11SRCS = $(TDIR)test_reflection.c
-TESTER11OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER9SRCS))
+TESTER11OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER11SRCS))
 
 TESTER9SRCS = $(TDIR)patterns_test.c
 TESTER9OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER9SRCS))
@@ -158,7 +167,8 @@ SRCFILES = $(SDIR)main.c \
 		   $(SHADES_SRCS) \
 		   $(SCENE_SRCS) \
 		   $(SHADOWS_SRCS) \
-		   $(PATTERNS_SRCS)
+		   $(PATTERNS_SRCS) \
+		   $(REFLECTION_SRCS)
 
 # ------------------------------ RULES -------------------------------- #
 
@@ -192,7 +202,7 @@ test_plane: $(MLX) $(LFT) $(TESTER8OBJS) $(TESTOBJ)
 	$(CC) $(CFLAGS) -g $(TESTER8OBJS) $(TESTOBJ) -o $(BDIR)tester_plane -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
 
 test_reflection: $(MLX) $(LFT) $(TESTER11OBJS) $(TESTOBJ)
-	$(CC) $(CFLAGS) -g $(TESTER9OBJS) $(TESTOBJ) -o $(BDIR)tester_reflection -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
+	$(CC) $(CFLAGS) -g $(TESTER11OBJS) $(TESTOBJ) -o $(BDIR)tester_reflection -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
 
 test_patterns: $(MLX) $(LFT) $(TESTER9OBJS) $(TESTOBJ)
 	$(CC) $(CFLAGS) -g $(TESTER9OBJS) $(TESTOBJ) -o $(BDIR)tester_patterns -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
@@ -211,6 +221,7 @@ $(ODIR)$(SDIR)%.o: $(SDIR)%.c
 	@mkdir -p $(ODIR)$(SHADOWSDIR)
 	@mkdir -p $(ODIR)$(SCENEDIR)
 	@mkdir -p $(ODIR)$(PATTERNSDIR)
+	@mkdir -p $(ODIR)$(REFLECTIONDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -I $(IDIR) -I$(MLXDIR) -I$(LFTDIR)
 
 $(ODIR)$(TDIR)%.o: $(TDIR)%.c
