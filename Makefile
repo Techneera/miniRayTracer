@@ -1,6 +1,6 @@
 NAME = $(BDIR)miniRT
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -Wno-psabi -g
+CFLAGS = -Wall -Wextra -Werror -Wno-psabi -g -Wno-incompatible-pointer-types
 LMATH = -lm
 LMLX = -lmlx_Linux -lXext -lX11
 LLFT = -lft
