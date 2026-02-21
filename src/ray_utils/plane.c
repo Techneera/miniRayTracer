@@ -9,6 +9,8 @@ t_plane plane(void)
 
     plane.shape.id = get_shape_id();
     plane.shape.type = SHAPE_PLANE;
+	matrix_identity(&plane.shape.transform);
+	matrix_identity(&plane.shape.transform_inv);
     return (plane);
 }
 
@@ -22,12 +24,11 @@ t_vec3  local_normal_at_plane(void)
 t_intersect local_intersect_plane(t_plane *plane, t_ray ray)
 {
     t_intersect this;
-    float       t;
 
     this.count = 0;
     if (fabsf(ray.direction.y) < EPSILON)
         return (this);
-    t = -ray.origin.y / ray.direction.y;
-    this.i[this.count++] = intersection(t, (t_object) {.pl = *plane});
+    this.i[this.count].t = -ray.origin.y / ray.direction.y;
+    this.i[this.count++] = intersection(this.i[0].t, (t_object) {.pl = *plane});
     return (this);
 }

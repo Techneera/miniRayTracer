@@ -25,21 +25,26 @@ t_intersect	*intersections(t_intersection *items, t_intersect *result, int size)
 
 t_intersection *hit(t_intersect *items, t_intersection *smallest, int size)
 {
-	int				index;
+	int				i;
+	bool			found;
 
-	if (items == NULL || size == 0)
+	if (items == NULL || smallest == NULL || size == 0)
 		return (NULL);
-	index = 0;
-	while (items->i[index].t < 0)
-		++index;
-	if (index >= size)
-		return (NULL);
-	*smallest = items->i[index++];
-	while (index < size)
+	i = 0;
+	found = false;
+	while (i < size)
 	{
-		if (items->i[index].t >= 0 && items->i[index].t < smallest->t)
-			*smallest = items->i[index];
-		++index;
+		if (items->i[i].t >= 0.0f)
+		{
+			if (found == false || items->i[i].t < smallest->t)
+			{
+				*smallest = items->i[i];
+				found = true;
+			}
+		}
+		++i;
 	}
-	return (smallest);
+	if (found == true)
+		return (smallest);
+	return (NULL);
 }
