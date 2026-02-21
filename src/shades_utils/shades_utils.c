@@ -90,14 +90,6 @@ t_vec3			lighting(t_material m, t_point_light light, t_vec3 point, t_vec3 eyev, 
 	return (vector_add(vector_add(ambient, diffuse), specular));
 }
 
-t_vec3	reflected_color(t_world *world, t_computation computations)
-{
-	(void)world;
-	(void)computations;
-
-	return (color_constructor(0.0, 0.0, 0.0));
-}
-
 t_material	material_default(void)
 {
 	t_pattern	pattern;

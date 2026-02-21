@@ -68,11 +68,21 @@ t_intersect	intersect_world(t_world *world, t_ray ray)
 	this.count = 0;
 	while (i < world->object_count)
 	{
+		current.count = 0;
 		if (world->objects[i].type == SPHERE)
 			current = intersect(ray, &world->objects[i].object.sp.shape);
+		else if (world->objects[i].type == PLANE)
+			current = intersect(ray, &world->objects[i].object.pl.shape);
 		j = 0;
 		while (j < current.count)
-			this.i[this.count++] = current.i[j++];
+		{
+			if (this.count < MAX_INTERSECTION)
+			{
+				this.i[this.count] = current.i[j];
+				++this.count;
+			}
+			++j;
+		}
 		++i;
 	}
 	intersect_sort(&this);
@@ -88,13 +98,13 @@ t_computation	prepare_computations(t_intersection i, t_ray ray)
 	this.point = ray_position(ray, this.t);
 	this.eyev = vector_scale(ray.direction, -1.0);
 	this.normalv = normal_at(&i.object.sp.shape, this.point);
-	this.reflectv = reflect(ray.direction, this.normalv);
 	this.inside = false;
 	if (vector_dot_product(this.normalv, this.eyev) < 0)
 	{
 		this.inside = true;
 		this.normalv = vector_scale(this.normalv, -1.0);
 	}
+	this.reflectv = reflect(ray.direction, this.normalv);
 	this.over_point = vector_add(
 		this.point,
 		vector_scale(this.normalv, EPSILON)
@@ -102,24 +112,30 @@ t_computation	prepare_computations(t_intersection i, t_ray ray)
 	return (this);
 }
 
-t_vec3	shade_hit(t_world world, t_computation computations)
+t_vec3	shade_hit(t_world world, t_computation computations, int depth)
 {
 	t_shape	shape;
+	t_vec3	surface_color;
+	t_vec3	reflected;
+	bool	in_shadow;
 
 	if (get_shape(computations.object, &shape) != true)
 		shape = test_shape();
-	return (lighting(
+	in_shadow = is_shadowed(world, computations.over_point);
+	surface_color = lighting(
 			shape.material,
 			world.light,
 			computations.over_point,
 			computations.eyev,
 			computations.normalv,
-			is_shadowed(world, computations.over_point),
-			shape)
+			in_shadow,
+			shape
 	);
+	reflected = reflected_color(world, computations, depth);
+	return (color_add(surface_color, reflected));
 }
 
-t_vec3	color_at(t_world world, t_ray ray)
+t_vec3	color_at(t_world world, t_ray ray, int depth)
 {
 	t_intersect		xs;
 	t_computation	comps;
@@ -141,7 +157,7 @@ t_vec3	color_at(t_world world, t_ray ray)
 	if (hit_index == -1)
 		return (color_constructor(0, 0, 0));
 	comps = prepare_computations(xs.i[hit_index], ray);
-	return (shade_hit(world, comps));
+	return (shade_hit(world, comps, depth));
 }
 
 t_mat4	view_transform(t_vec3 from, t_vec3 to, t_vec3 up)
@@ -238,7 +254,7 @@ t_canvas	render(t_camera c, t_world w)
 		while (x < c.hsize)
 		{
 			ray = ray_for_pixel(c, x, y);
-			color = color_at(w, ray);
+			color = color_at(w, ray, MAX_BOUNCE);
 			write_pixel(&image, x, y, color);
 			++x;
 		}
