@@ -1,6 +1,6 @@
 #include "matrix.h"
 
-t_mat4	matrix_multiply(t_mat4 a, t_mat4 b)
+t_mat4	matrix_multiply(const t_mat4 *a, const t_mat4 *b)
 {
 	t_mat4	result;
 	int		i;
@@ -8,27 +8,27 @@ t_mat4	matrix_multiply(t_mat4 a, t_mat4 b)
 	i = 0;
 	while(i < 4)
 	{
-		result.rows[i] = (b.rows[0] * a.m[i * 4]) + \
-						(b.rows[1] * a.m[i * 4 + 1]) + \
-						(b.rows[2] * a.m[i * 4 + 2]) + \
-						(b.rows[3] * a.m[i * 4 + 3]);
+		result.rows[i] = (b->rows[0] * a->m[i * 4]) + \
+						(b->rows[1] * a->m[i * 4 + 1]) + \
+						(b->rows[2] * a->m[i * 4 + 2]) + \
+						(b->rows[3] * a->m[i * 4 + 3]);
 		i++;
 	}
 	return (result);
 }
 
-t_vec3	matrix_vector_multiply(t_mat4 m, t_vec3 v)
+t_vec3	matrix_vector_multiply(const t_mat4 *m, const t_vec3 *v)
 {
 	t_vec3	result;
 	t_f4	tmp;
 
-	tmp = m.rows[0] * v.v;
+	tmp = m->rows[0] * v->v;
 	result.x = tmp[0] + tmp[1] + tmp[2] + tmp[3];
-	tmp = m.rows[1] * v.v;
+	tmp = m->rows[1] * v->v;
 	result.y = tmp[0] + tmp[1] + tmp[2] + tmp[3];
-	tmp = m.rows[2] * v.v;
+	tmp = m->rows[2] * v->v;
 	result.z = tmp[0] + tmp[1] + tmp[2] + tmp[3];
-	tmp = m.rows[3] * v.v;
+	tmp = m->rows[3] * v->v;
 	result.w = tmp[0] + tmp[1] + tmp[2] + tmp[3];
 	if (result.w != 1.0f && result.w != 0.0)
 		result.v /= result.w;
@@ -43,7 +43,7 @@ void	matrix_identity(t_mat4 *dst)
 	dst->rows[3] = (t_f4){0, 0, 0, 1};
 }
 
-t_mat4	matrix_transpose(t_mat4 m)
+t_mat4	matrix_transpose(const t_mat4 *m)
 {
 	t_mat4	result;
 	int		i;
@@ -55,7 +55,7 @@ t_mat4	matrix_transpose(t_mat4 m)
 		j = 0;
 		while (j < 4)
 		{
-			result.m[j * 4 + i] = m.m[i * 4 + j];
+			result.m[j * 4 + i] = m->m[i * 4 + j];
 			j++;
 		}
 		i++;
@@ -68,7 +68,7 @@ float	matrix_determinant_2x2(float a, float b, float c, float d)
 	return (a * d - b * c);
 }
 
-float	matrix_cofactor_3x3(t_mat4 m, int row, int col)
+float	matrix_cofactor_3x3(const t_mat4 *m, int row, int col)
 {
 	int	idx[3];
 	int	idy[3];
@@ -89,30 +89,30 @@ float	matrix_cofactor_3x3(t_mat4 m, int row, int col)
 		if (k != col)
 			idy[l++] = k;
 	}
-	return (m.m[idx[0] * 4 + idy[0]] * \
-		matrix_determinant_2x2(m.m[idx[1] * 4 + idy[1]], \
-		m.m[idx[1] * 4 + idy[2]], \
-		m.m[idx[2] * 4 + idy[1]], \
-		m.m[idx[2] * 4 + idy[2]]) - \
-		m.m[idx[0] * 4 + idy[1]] * \
-		matrix_determinant_2x2(m.m[idx[1] * 4 + idy[0]], \
-		m.m[idx[1] * 4 + idy[2]], m.m[idx[2] * 4 + idy[0]], \
-		m.m[idx[2] * 4 + idy[2]]) + \
-		m.m[idx[0] * 4 + idy[2]] * \
-		matrix_determinant_2x2(m.m[idx[1] * 4 + idy[0]], \
-		m.m[idx[1] * 4 + idy[1]], m.m[idx[2] * 4 + idy[0]], \
-		m.m[idx[2] * 4 + idy[1]]));
+	return (m->m[idx[0] * 4 + idy[0]] * \
+		matrix_determinant_2x2(m->m[idx[1] * 4 + idy[1]], \
+		m->m[idx[1] * 4 + idy[2]], \
+		m->m[idx[2] * 4 + idy[1]], \
+		m->m[idx[2] * 4 + idy[2]]) - \
+		m->m[idx[0] * 4 + idy[1]] * \
+		matrix_determinant_2x2(m->m[idx[1] * 4 + idy[0]], \
+		m->m[idx[1] * 4 + idy[2]], m->m[idx[2] * 4 + idy[0]], \
+		m->m[idx[2] * 4 + idy[2]]) + \
+		m->m[idx[0] * 4 + idy[2]] * \
+		matrix_determinant_2x2(m->m[idx[1] * 4 + idy[0]], \
+		m->m[idx[1] * 4 + idy[1]], m->m[idx[2] * 4 + idy[0]], \
+		m->m[idx[2] * 4 + idy[1]]));
 }
 
-float	matrix_determinant(t_mat4 m)
+float	matrix_determinant(const t_mat4 *m)
 {
-	return (m.m[0] * matrix_cofactor_3x3(m, 0, 0) - \
-			m.m[1] * matrix_cofactor_3x3(m, 0, 1) + \
-			m.m[2] * matrix_cofactor_3x3(m, 0, 2) - \
-			m.m[3] * matrix_cofactor_3x3(m, 0, 3));
+	return (m->m[0] * matrix_cofactor_3x3(m, 0, 0) - \
+			m->m[1] * matrix_cofactor_3x3(m, 0, 1) + \
+			m->m[2] * matrix_cofactor_3x3(m, 0, 2) - \
+			m->m[3] * matrix_cofactor_3x3(m, 0, 3));
 }
 
-int	matrix_is_invertable(t_mat4 m)
+int	matrix_is_invertable(const t_mat4 *m)
 {
 	float	det;
 
@@ -122,7 +122,7 @@ int	matrix_is_invertable(t_mat4 m)
 	return (1);
 }
 
-t_mat4	matrix_inverse(t_mat4 m)
+t_mat4	matrix_inverse(const t_mat4 *m)
 {
 	t_mat4	result;
 	float	det;

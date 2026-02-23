@@ -4,9 +4,13 @@
 #include "patterns.h"
 #include "vector.h"
 
+typedef struct s_object t_object;
+typedef struct s_light t_light;
+typedef struct s_ambient_light t_ambient_light;
+
 typedef struct s_material
 {
-	t_vec3	color;
+	t_vec3		color;
 	float		ambient;
 	float		diffuse;
 	float		specular;
@@ -15,18 +19,12 @@ typedef struct s_material
 	t_pattern	pattern;
 }	t_material;
 
-typedef struct s_point_light
-{
-	t_vec3	position;
-	t_vec3	intensity;
-}	t_point_light;
-
 t_vec3			reflect(t_vec3 in, t_vec3 normal);
-t_vec3			lighting(t_material m, t_point_light light, t_vec3 point, t_vec3 eyev, t_vec3 normalv, bool in_shadow, t_shape shape);
+t_vec3			lighting(t_material m, const t_object *obj, const t_light *light, const t_ambient_light *a_light, t_vec3 point, t_vec3 eyev, t_vec3 normalv, bool in_shadow);
 
 t_material		new_material(float ambient, float diffuse, float specular, float shininess, float reflective, t_pattern pattern);
-t_material		material_default(void);
 
-t_point_light	point_light(t_vec3 position, t_vec3 intensity);
+t_light	light_constructor(t_vec3 position, t_vec3 color, float brightness);
+t_material		material_default(void);
 
 #endif

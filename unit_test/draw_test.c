@@ -99,7 +99,7 @@ int	main(void)
 	sphere_set_transform(&shape, transform);
 	
 	// Assign Material
-	shape.shape.material = new_material(0.1, 0.8, 0.9, 200.0);
+	shape.shape.material = new_material(0.1, 0.8, 0.9, 200.0, 0.0);
 	shape.shape.material.color = color_constructor(1.0f, 0.0f, 1.0f);
 
 	// 3. LIGHT SETUP

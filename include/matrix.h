@@ -23,15 +23,15 @@ typedef struct s_shear
 }	t_shear;
 
 void	matrix_identity(t_mat4 *dst);
-t_mat4	matrix_multiply(t_mat4 a, t_mat4 b);
-t_vec3	matrix_vector_multiply(t_mat4 m, t_vec3 v);
-t_mat4	matrix_transpose(t_mat4 dst);
+t_mat4	matrix_multiply(const t_mat4 *a, const t_mat4 *b);
+t_vec3	matrix_vector_multiply(const t_mat4 *m, const t_vec3 *v);
+t_mat4	matrix_transpose(const t_mat4 *dst);
 
 float	matrix_determinant_2x2(float a, float b, float c, float d);
-float	matrix_cofactor_3x3(t_mat4 m, int row, int col);
-float	matrix_determinant(t_mat4 m);
-int		matrix_is_invertable(t_mat4 m);
-t_mat4	matrix_inverse(t_mat4 m);
+float	matrix_cofactor_3x3(const t_mat4 *m, int row, int col);
+float	matrix_determinant(const t_mat4 *m);
+int		matrix_is_invertable(const t_mat4 *m);
+t_mat4	matrix_inverse(const t_mat4 *m);
 
 t_mat4	matrix_translation(float x, float y, float z);
 t_mat4	matrix_scale(float x, float y, float z);

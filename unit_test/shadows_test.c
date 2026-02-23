@@ -77,7 +77,11 @@ void test_lighting_with_surface_in_shadow(void)
     printf("\n--- Lighting with the surface in shadow ---\n");
 
     // Setup: Material with default values
+<<<<<<< HEAD
+    m = new_material(0.1, 0.9, 0.9, 200.0, 0.0);
+=======
     m = new_material(0.1, 0.9, 0.9, 200.0, 0, pattern_default());
+>>>>>>> 33402cf443feb41828842549bb0b14f1158e5362
     m.color = color_constructor(1, 1, 1);
     
     // Position at origin

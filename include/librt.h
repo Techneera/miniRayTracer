@@ -8,60 +8,42 @@
 # define MAX_OBJECTS 50
 # define EPSILON 0.00001
 
-typedef enum e_type
+typedef enum e_obj_type
 {
 	SPHERE,
 	PLANE,
 	CYLINDER
-}	t_type;
+}	t_obj_type;
 
-
-typedef enum e_shape_type
+typedef struct s_cylinder
 {
-	SHAPE_SPHERE,
-	SHAPE_PLANE,
-	SHAPE_TEST
-}	t_shape_type;
+	float	min_y;
+	float	max_y;
+	bool	closed;
+}	t_cylinder;
 
-typedef struct s_shape
+typedef struct s_object
 {
-	t_shape_type	type;
-	int				id;
-	t_mat4			transform;
-	t_mat4			transform_inv;
-	t_material		material;
-}	t_shape;
-
-typedef struct s_sphere
-{
-	t_shape	shape;
-	t_vec3	center;
-	float	radius;
-}	t_sphere;
-
-typedef struct s_plane
-{
-	t_shape		shape;
-}	t_plane;
-
-typedef union u_object
-{
-	t_shape_type	type;
-	t_sphere		sp;
-	t_plane			pl;
+	int			id;
+	t_obj_type	type;
+	t_mat4		transform;
+	t_mat4		transform_inv;
+	t_cylinder	cy;
+	t_material	material;
 }	t_object;
-
-typedef struct s_objects
-{
-	t_type	type;
-	t_object object;
-} t_objects;
 
 typedef struct s_ambient_light
 {
 	float	ratio;
 	t_vec3	color;
-} t_ambient_light;
+}	t_ambient_light;
+
+typedef struct s_light
+{
+	t_vec3	position;
+	t_vec3	color;
+	float	brightness;
+}	t_light;
 
 typedef struct s_camera
 {
@@ -74,20 +56,18 @@ typedef struct s_camera
 	float		half_height;
 }	t_camera;
 
-typedef struct s_light
+typedef struct s_world
 {
-	t_vec3	position;
-	t_vec3	color;
-	float	brightness;
-} t_light;
+	t_ambient_light	a_light;
+	t_light			light;
+	t_object		objects[MAX_OBJECTS];
+	int				object_count;
+}	t_world;
 
 typedef struct s_scene
 {
-	t_ambient_light	a_light;
-	t_camera 		camera;
-	t_light 		light;
-	t_objects 		objects[MAX_OBJECTS];
-	int				object_count;
-} t_scene;
+	t_camera	camera;
+	t_world		world;
+}	t_scene;
 
 #endif
