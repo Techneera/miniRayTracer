@@ -1,6 +1,7 @@
 NAME = $(BDIR)miniRT
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -Wno-psabi -g -Wno-incompatible-pointer-types
+CFLAGS = -Wall -Wextra -Werror -Wno-psabi -O3 -ffast-math
+#-Wno-incompatible-pointer-types
 LMATH = -lm
 LMLX = -lmlx_Linux -lXext -lX11
 LLFT = -lft
@@ -52,7 +53,6 @@ _RAY_SRCS = ray_constructor.c \
 			sphere.c \
 			plane.c \
 			shape.c \
-			object.c \
 			intersection.c \
 			ray_transform.c
 RAY_SRCS = $(patsubst %.c, $(RAYDIR)/%.c, $(_RAY_SRCS))
@@ -163,12 +163,13 @@ SRCFILES = $(SDIR)main.c \
 		   $(CANVAS_SRCS) \
 		   $(RAY_SRCS) \
 		   $(MATRIX_SRCS) \
-		   $(PARSE_SRCS) \
 		   $(SHADES_SRCS) \
 		   $(SCENE_SRCS) \
 		   $(SHADOWS_SRCS) \
 		   $(PATTERNS_SRCS) \
 		   $(REFLECTION_SRCS)
+
+# 		   $(PARSE_SRCS) \
 
 # ------------------------------ RULES -------------------------------- #
 

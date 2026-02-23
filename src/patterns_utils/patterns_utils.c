@@ -28,18 +28,22 @@ t_vec3 pattern_at(t_pattern pattern, t_vec3 point)
 	return (color_constructor(point.x, point.y, point.z));
 }
 
-t_vec3 pattern_at_object(t_pattern pattern, t_shape object, t_vec3 world_point)
+t_vec3 pattern_at_object(t_pattern pattern, const t_object *object, t_vec3 world_point)
 {
 	t_vec3	object_point;
 	t_vec3	pattern_point;
+	t_mat4	inv_obj;
+	t_mat4	inv_pat;
 
+	inv_obj = matrix_inverse(&object->transform);
+	inv_pat = matrix_inverse(&pattern.transform);
 	object_point = matrix_vector_multiply(
-		matrix_inverse(object.transform),
-		world_point
+		&inv_obj,
+		&world_point
 	);
 	pattern_point = matrix_vector_multiply(
-		matrix_inverse(pattern.transform),
-		object_point
+		&inv_pat,
+		&object_point
 	);
 	return (pattern_at(pattern, pattern_point));
 }

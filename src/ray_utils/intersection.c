@@ -1,11 +1,11 @@
 #include "ray.h"
 
-t_intersection	intersection(float t, t_object object)
+t_intersection	intersection(float t, const t_object *obj)
 {
 	t_intersection	i;
 
 	i.t = t;
-	i.object = object;
+	i.object = obj;
 	return (i);
 }
 

@@ -22,6 +22,7 @@ typedef struct s_img
 typedef struct s_canvas
 {
 	void	*mlx;
+	void	*win;
 	t_img	img;
 	int		width;
 	int		height;

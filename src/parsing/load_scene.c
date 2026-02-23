@@ -26,6 +26,7 @@ int	load_scene(char *filename, t_scene *scene)
 	r.fd = open(filename, O_RDONLY);
 	if (r.fd < 0)
 		return (1);
+	has_content = false;
 	while (get_line_buf(&r, line, LINE_SIZE))
 	{
 		has_content = true;

@@ -8,31 +8,6 @@
 #include "vector.h"
 #include <math.h>
 
-t_world	default_world(void)
-{
-	t_world			world;
-	t_point_light	light;
-	t_object		o1;
-	t_object		o2;
-
-	light = point_light(
-			point_constructor(-10, 10, -10),
-			color_constructor(1, 1, 1));
-	o1 = object_constructor(SHAPE_SPHERE);
-	o1.sp.shape.material.color = color_constructor(0.8, 1.0, 0.6);
-	o1.sp.shape.material.diffuse = 0.7;
-	o1.sp.shape.material.specular = 0.2;
-	o2 = object_constructor(SHAPE_SPHERE);
-	set_transform(&o2.sp.shape, matrix_scale(0.5, 0.5, 0.5));
-	world.object_count = 0;
-	world.light = light;
-	world.objects[world.object_count].object = o1;
-	world.objects[world.object_count++].type = SPHERE;
-	world.objects[world.object_count].object = o2;
-	world.objects[world.object_count++].type = SPHERE;
-	return (world);
-}
-
 void	intersect_sort(t_intersect *this)
 {
 	t_intersection	temp;
@@ -57,7 +32,7 @@ void	intersect_sort(t_intersect *this)
 	}
 }
 
-t_intersect	intersect_world(t_world *world, t_ray ray)
+t_intersect	intersect_world(t_world *world, t_ray *ray)
 {
 	t_intersect	this;
 	t_intersect	current;
@@ -68,43 +43,36 @@ t_intersect	intersect_world(t_world *world, t_ray ray)
 	this.count = 0;
 	while (i < world->object_count)
 	{
-		current.count = 0;
-		if (world->objects[i].type == SPHERE)
-			current = intersect(ray, &world->objects[i].object.sp.shape);
-		else if (world->objects[i].type == PLANE)
-			current = intersect(ray, &world->objects[i].object.pl.shape);
+		current = intersect(ray, &world->objects[i]);
 		j = 0;
-		while (j < current.count)
+		while (j < current.count && this.count < MAX_INTERSECTION)
 		{
-			if (this.count < MAX_INTERSECTION)
-			{
-				this.i[this.count] = current.i[j];
-				++this.count;
-			}
+			this.i[this.count] = current.i[j];
+			++this.count;
 			++j;
 		}
 		++i;
 	}
-	intersect_sort(&this);
+//	intersect_sort(&this);
 	return (this);
 }
 
-t_computation	prepare_computations(t_intersection i, t_ray ray)
+t_computation	prepare_computations(t_intersection i, t_ray *ray)
 {
 	t_computation	this;
 
 	this.t = i.t;
 	this.object = i.object;
 	this.point = ray_position(ray, this.t);
-	this.eyev = vector_scale(ray.direction, -1.0);
-	this.normalv = normal_at(&i.object.sp.shape, this.point);
+	this.eyev = vector_scale(ray->direction, -1.0);
+	this.normalv = normal_at(i.object, this.point);
 	this.inside = false;
 	if (vector_dot_product(this.normalv, this.eyev) < 0)
 	{
 		this.inside = true;
 		this.normalv = vector_scale(this.normalv, -1.0);
 	}
-	this.reflectv = reflect(ray.direction, this.normalv);
+	this.reflectv = reflect(ray->direction, this.normalv);
 	this.over_point = vector_add(
 		this.point,
 		vector_scale(this.normalv, EPSILON)
@@ -112,52 +80,52 @@ t_computation	prepare_computations(t_intersection i, t_ray ray)
 	return (this);
 }
 
-t_vec3	shade_hit(t_world world, t_computation computations, int depth)
+t_vec3	shade_hit(t_world *world, t_computation *computations, int depth)
 {
-	t_shape	shape;
 	t_vec3	surface_color;
 	t_vec3	reflected;
 	bool	in_shadow;
 
-	if (get_shape(computations.object, &shape) != true)
-		shape = test_shape();
-	in_shadow = is_shadowed(world, computations.over_point);
+	in_shadow = is_shadowed(*world, computations->over_point);
 	surface_color = lighting(
-			shape.material,
-			world.light,
-			computations.over_point,
-			computations.eyev,
-			computations.normalv,
-			in_shadow,
-			shape
+			computations->object->material,
+			computations->object,
+			&world->light,
+			&world->a_light,
+			computations->over_point,
+			computations->eyev,
+			computations->normalv,
+			in_shadow
 	);
 	reflected = reflected_color(world, computations, depth);
 	return (color_add(surface_color, reflected));
 }
 
-t_vec3	color_at(t_world world, t_ray ray, int depth)
+t_vec3	color_at(t_world *world, t_ray *ray, int depth)
 {
 	t_intersect		xs;
 	t_computation	comps;
 	int				hit_index;
 	int				index;
+	float			min_t;
 
-	xs = intersect_world(&world, ray);
+	min_t = 9999999.0f;
+	xs = intersect_world(world, ray);
 	index = 0;
 	hit_index = -1;
 	while (index < xs.count)
 	{
-		if (xs.i[index].t > 0)
+		if (xs.i[index].t > EPSILON && xs.i[index].t < min_t)
 		{
+			min_t = xs.i[index].t;
 			hit_index = index;
-			break ;
 		}
 		++index;
 	}
 	if (hit_index == -1)
-		return (color_constructor(0, 0, 0));
+		return (color_constructor(0.0f, 0.0f, 0.0f));
 	comps = prepare_computations(xs.i[hit_index], ray);
-	return (shade_hit(world, comps, depth));
+	return (shade_hit(world, &comps, depth));
 }
 
 t_mat4	view_transform(t_vec3 from, t_vec3 to, t_vec3 up)
@@ -168,8 +136,11 @@ t_mat4	view_transform(t_vec3 from, t_vec3 to, t_vec3 up)
 	t_vec3	true_up;
 	t_vec3	from_n;
 	t_mat4	orientation;
+	t_mat4	trans;
 
 	forward = vector_normalization(vector_sub(to, from));
+	if (fabs(forward.x) < EPSILON && fabs(forward.z) < EPSILON)
+		up = vector_constructor(0.0f, 0.0f, 1.0f);
 	up_normalized = vector_normalization(up);
 	left = vector_cross_product(forward, up_normalized);
 	true_up = vector_cross_product(left, forward);
@@ -183,21 +154,25 @@ t_mat4	view_transform(t_vec3 from, t_vec3 to, t_vec3 up)
 		}
 	};
 	from_n = vector_scale(from, -1);
+	trans = matrix_translation(from_n.x, from_n.y, from_n.z);
 	return (matrix_multiply(
-			orientation,
-			matrix_translation(from_n.x, from_n.y, from_n.z)));
+			&orientation,
+			&trans));
 }
+
 t_camera	camera_constructor(int hsize, int vsize, float field_of_view)
 {
 	t_camera	this;
 	float		half_view;
 	float		aspect;
+	float		fov_radians;
 
 	this.hsize = hsize;
 	this.vsize = vsize;
 	this.field_of_view = field_of_view;
 	matrix_identity(&this.transform);
-	half_view = tan(this.field_of_view / 2);
+	fov_radians = field_of_view * (M_PI / 180.0f);
+	half_view = tan(fov_radians / 2);
 	aspect = (float) this.hsize / (float) this.vsize;
 	if (aspect >= 1)
 	{
@@ -209,10 +184,10 @@ t_camera	camera_constructor(int hsize, int vsize, float field_of_view)
 		this.half_width = half_view * aspect;
 		this.half_height = half_view;
 	}
-	this.pixel_size = (this.half_width * 2) / this.hsize;
+	this.pixel_size = (this.half_width * 2.0) / this.hsize;
 	return (this);
 }
-t_ray	ray_for_pixel(t_camera c, int px, int py)
+t_ray	ray_for_pixel(t_camera *c, int px, int py)
 {
 	float	x_offset;
 	float	y_offset;
@@ -221,24 +196,31 @@ t_ray	ray_for_pixel(t_camera c, int px, int py)
 	t_vec3	origin;
 	t_vec3	direction;
 	t_vec3	pixel;
+	t_mat4	inv;
+	t_vec3	p_target;
+	t_vec3	p_origin;
 
 
-	x_offset = (px + 0.5) * c.pixel_size;
-	y_offset = (py + 0.5) * c.pixel_size;
-	world_x = c.half_width - x_offset;
-	world_y = c.half_height - y_offset;
+	x_offset = (px + 0.5) * c->pixel_size;
+	y_offset = (py + 0.5) * c->pixel_size;
+	world_x = c->half_width - x_offset;
+	world_y = c->half_height - y_offset;
+	inv = matrix_inverse(&c->transform);
+	p_target = point_constructor(world_x, world_y, -1.0f);
+	p_origin = point_constructor(0.0f, 0.0f, 0.0f);
 	pixel = matrix_vector_multiply(
-		matrix_inverse(c.transform),
-		point_constructor(world_x, world_y, -1)
+		&inv,
+		&p_target
 	);
 	origin = matrix_vector_multiply(
-		matrix_inverse(c.transform),
-		point_constructor(0, 0, 0)
+		&inv,
+		&p_origin
 	);
 	direction = vector_normalization(vector_sub(pixel, origin));
 	return (ray_constructor(origin, direction));
 }
-t_canvas	render(t_camera c, t_world w)
+
+t_canvas	render(void *mlx, t_camera *c, t_world *w)
 {
 	t_canvas	image;
 	t_ray		ray;
@@ -246,15 +228,16 @@ t_canvas	render(t_camera c, t_world w)
 	int			x;
 	int			y;
 
-	canvas_constructor(c.hsize, c.vsize, &image);
+	image.mlx = mlx;
+	canvas_constructor(c->hsize, c->vsize, &image);
 	y = 0;
-	while (y < c.vsize)
+	while (y < c->vsize)
 	{
 		x = 0;
-		while (x < c.hsize)
+		while (x < c->hsize)
 		{
 			ray = ray_for_pixel(c, x, y);
-			color = color_at(w, ray, MAX_BOUNCE);
+			color = color_at(w, &ray, MAX_BOUNCE);
 			write_pixel(&image, x, y, color);
 			++x;
 		}
