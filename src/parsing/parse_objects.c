@@ -1,47 +1,177 @@
 #include "librt.h"
 #include "parser.h"
 #include "vector.h"
+#include "canvas.h"
+#include "patterns.h"
+#include "ray.h"
+
+typedef struct s_helper
+{
+	t_vec3	pos;
+	t_vec3	vec;
+	t_vec3	color;
+	float	diameter;
+	float	height;
+	t_mat4	scale;
+	t_mat4	rot;
+	t_mat4	trans;
+	t_mat4	transform;
+	t_mat4	temp;
+}	t_helper;
+
+static
+t_mat4	align_up_vector(t_vec3 target_up)
+{
+	t_vec3	up;
+	t_vec3	right;
+	t_vec3	forward;
+	t_mat4	result;
+
+	up = vector_constructor(0.0f, 1.0f, 0.0f);
+	target_up = vector_normalization(target_up);
+	if (fabs(target_up.y - 1.0f) < EPSILON)
+	{
+		matrix_identity(&result);
+		return (result);
+	}
+	if (fabs(target_up.y + 1.0f) < EPSILON)
+		return (matrix_rot_x(M_PI));
+	right = vector_normalization(vector_cross_product(up, target_up));
+	forward = vector_cross_product(target_up, right);
+	matrix_identity(&result);
+	result = (t_mat4){
+		.m = {
+			right.x, target_up.x, forward.x, 0.0f,
+			right.y, target_up.y, forward.y, 0.0f,
+			right.z, target_up.z, forward.z, 0.0f,
+			0.0f, 0.0f, 0.0f, 1.0f
+		}
+	};
+	return (result);
+}
+
+static
+int	set_up(char **line, t_helper *h, t_object *obj, t_obj_type type)
+{
+	obj->type = type;
+	obj->id = get_shape_id();
+	*line = skip_to_next(*line);
+	if (parse_vec3(line, &h->pos) != 0)
+		return (1);
+	return (0);
+}
 
 int	parse_sphere(char *line, t_scene *scene)
 {
-	t_vec3	sphere_center;
+	t_helper	h;
+	t_object	*obj;
 
-	if (scene->object_count == MAX_OBJECTS)
+	if (scene->world.object_count >= MAX_OBJECTS)
 		return (1);
-	scene->objects->type = SPHERE;
-	line = skip_to_next(line);
-	if (parse_vec3(&line, &sphere_center) != 0)
-		return (1);
-	sphere_center.w = 1;
-	scene->objects->object.sp.center = sphere_center;
-	line = skip_to_next(line);
-	if (parse_float(&line, &scene->objects->object.sp.radius) != 0)
+	obj = &scene->world.objects[scene->world.object_count];
+	if (set_up(&line, &h, obj, SPHERE) != 0)
 		return (1);
 	line = skip_to_next(line);
-	if (parse_vec3(&line, &scene->objects->object.sp.shape.material.color) != 0
-		|| is_valid_color(scene->objects->object.sp.shape.material.color) == false)
+	if (parse_float(&line, &h.diameter) != 0 || h.diameter <= 0.0f)
 		return (1);
-	color_normalize(&scene->objects->object.sp.shape.material.color);
-	++scene->object_count;
+	line = skip_to_next(line);
+	if (parse_vec3(&line, &h.color) != 0 || is_valid_color(h.color) == false)
+		return (1);
+	color_normalize(&h.color);
+	h.scale = matrix_scale(h.diameter * 0.5f, h.diameter * 0.5f, h.diameter * 0.5f);
+	h.trans = matrix_translation(h.pos.x, h.pos.y, h.pos.z);
+	h.transform = matrix_multiply(&h.trans, &h.scale);
+	set_transform(obj, &h.transform);
+	obj->material = material_default();
+	obj->material.color = h.color;
+	// Hack: If the sphere is almost black, make it a perfect mirror!
+    if (h.color.x < 0.1f && h.color.y < 0.1f && h.color.z < 0.1f)
+    {
+        obj->material.reflective = 0.9f;   // 90% reflective
+        obj->material.diffuse = 0.1f;      // Very little standard color
+        obj->material.shininess = 300.0f;  // Tight, sharp specular highlight
+    }
+    // Hack: Enable the checkerboard pattern on the floor
+    if (obj->type == PLANE && h.vec.y > 0.9f)
+    {
+        obj->material.pattern = pattern_constructor(
+            PATTERN_CHECKER, 
+            color_constructor(1.0f, 1.0f, 1.0f), 
+            color_constructor(0.2f, 0.2f, 0.2f)
+        );
+        obj->material.reflective = 0.3f; // Give the floor a slight glossy shine
+    }
+	++scene->world.object_count;
 	return (0);
 }
 
 int	parse_plane(char *line, t_scene *scene)
 {
-	if (scene->object_count == MAX_OBJECTS)
+	t_helper	h;
+	t_object	*obj;
+
+	if (scene->world.object_count == MAX_OBJECTS)
 		return (1);
-	++scene->object_count;
-	scene->objects->type = PLANE;
+	obj = &scene->world.objects[scene->world.object_count];
+	if (set_up(&line, &h, obj, PLANE) != 0)
+		return (1);
 	line = skip_to_next(line);
+	if (parse_vec3(&line, &h.vec) != 0 || !is_valid_direction(h.vec))
+		return (1);
+	line = skip_to_next(line);
+	if (parse_vec3(&line, &h.color) != 0 || !is_valid_color(h.color))
+		return (1);
+	color_normalize(&h.color);
+	h.rot = align_up_vector(h.vec);
+	h.trans = matrix_translation(h.pos.x, h.pos.y, h.pos.z);
+	h.transform = matrix_multiply(&h.trans, &h.rot);
+	set_transform(obj, &h.transform);
+	obj->material = material_default();
+	obj->material.color = h.color;
+	++scene->world.object_count;
 	return (0);
+}
+
+static
+void	set_cylinder_params(t_object *obj, t_helper *h)
+{
+	obj->cy.min_y = -h->height * 0.5f;
+	obj->cy.max_y = h->height * 0.5f;
+	obj->cy.closed = true;
+	h->scale = matrix_scale(h->diameter * 0.5f, 1.0f, h->diameter * 0.5f);
+	h->rot = align_up_vector(h->vec);
+	h->trans = matrix_translation(h->pos.x, h->pos.y, h->pos.z);
+	h->temp = matrix_multiply(&h->trans, &h->rot);
+	h->transform = matrix_multiply(&h->temp, &h->scale);
+	set_transform(obj, &h->transform);
+	obj->material = material_default();
+	obj->material.color = h->color;
 }
 
 int	parse_cylinder(char *line, t_scene *scene)
 {
-	if (scene->object_count == MAX_OBJECTS)
+	t_helper	h;
+	t_object	*obj;
+
+	if (scene->world.object_count == MAX_OBJECTS)
 		return (1);
-	++scene->object_count;
-	scene->objects->type = CYLINDER;
+	obj = &scene->world.objects[scene->world.object_count];
+	if (set_up(&line, &h, obj, CYLINDER) != 0)
+		return (1);
 	line = skip_to_next(line);
+	if (parse_vec3(&line, &h.vec) != 0 || !is_valid_direction(h.vec))
+		return (1);
+	line = skip_to_next(line);
+	if (parse_float(&line, &h.diameter) != 0 || h.diameter <= 0.0f)
+		return (1);
+	line = skip_to_next(line);
+	if (parse_float(&line, &h.height) != 0 || h.height <= 0.0f)
+		return (1);
+	line = skip_to_next(line);
+	if (parse_vec3(&line, &h.color) != 0 || !is_valid_color(h.color))
+		return (1);
+	color_normalize(&h.color);
+	set_cylinder_params(obj, &h);
+	++scene->world.object_count;
 	return (0);
 }
