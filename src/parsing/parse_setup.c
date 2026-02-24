@@ -1,4 +1,5 @@
 #include "parser.h"
+#include "scene.h"
 #include "vector.h"
 
 int	parse_ambient_light(char *line, t_scene *scene)

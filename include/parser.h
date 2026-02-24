@@ -9,8 +9,14 @@
 # define RGB_FACTOR 0.00392156862745
 # define BUF_SIZE 4096
 # define LINE_SIZE 1024
-# define WIN_WIDTH 960
-# define WIN_HEIGHT 1080
+
+#ifndef WIN_WIDTH
+# define WIN_WIDTH 1080
+#endif
+
+#ifndef WIN_HEIGHT
+# define WIN_HEIGHT 960
+#endif
 
 
 typedef struct e_reader
@@ -27,6 +33,7 @@ int		parse_line(char *line, t_scene *scene);
 int		parse_float(char **line, float *value);
 int		parse_vec3(char **line, t_vec3 *v);
 bool	is_valid_color(t_vec3 color);
+bool	is_valid_direction(t_vec3 v);
 void	color_normalize(t_vec3 *color);
 
 int		parse_ambient_light(char *line, t_scene *scene);

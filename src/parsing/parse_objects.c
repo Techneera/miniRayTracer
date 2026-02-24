@@ -1,6 +1,7 @@
 #include "librt.h"
 #include "parser.h"
 #include "vector.h"
+#include "ray.h"
 
 typedef struct s_helper
 {
@@ -24,7 +25,7 @@ t_mat4	align_up_vector(t_vec3 target_up)
 	t_vec3	forward;
 	t_mat4	result;
 
-	up = vector_contructor(0.0f, 1.0f, 0.0f);
+	up = vector_constructor(0.0f, 1.0f, 0.0f);
 	target_up = vector_normalization(target_up);
 	if (fabs(target_up.y - 1.0f) < EPSILON)
 	{
@@ -63,7 +64,7 @@ int	parse_sphere(char *line, t_scene *scene)
 	t_helper	h;
 	t_object	*obj;
 
-	if (scene->world->object_count >= MAX_OBJECTS)
+	if (scene->world.object_count >= MAX_OBJECTS)
 		return (1);
 	obj = &scene->world.objects[scene->world.object_count];
 	if (set_up(&line, &h, obj, SPHERE) != 0)
@@ -76,12 +77,12 @@ int	parse_sphere(char *line, t_scene *scene)
 		return (1);
 	color_normalize(&h.color);
 	h.scale = matrix_scale(h.diameter * 0.5f, h.diameter * 0.5f, h.diameter * 0.5f);
-	h.trans = matrix_translate(h.pos.x, h.pos.y, h.pos.z);
+	h.trans = matrix_translation(h.pos.x, h.pos.y, h.pos.z);
 	h.transform = matrix_multiply(&h.trans, &h.scale);
 	set_transform(obj, &h.transform);
 	obj->material = material_default();
 	obj->material.color = h.color;
-	++scene->world->object_count;
+	++scene->world.object_count;
 	return (0);
 }
 
@@ -90,7 +91,7 @@ int	parse_plane(char *line, t_scene *scene)
 	t_helper	h;
 	t_object	*obj;
 
-	if (scene->world->object_count == MAX_OBJECTS)
+	if (scene->world.object_count == MAX_OBJECTS)
 		return (1);
 	obj = &scene->world.objects[scene->world.object_count];
 	if (set_up(&line, &h, obj, PLANE) != 0)
@@ -103,9 +104,9 @@ int	parse_plane(char *line, t_scene *scene)
 		return (1);
 	color_normalize(&h.color);
 	h.rot = align_up_vector(h.vec);
-	h.trans = matrix_translate(h.pos.x, h.pos.y, h.pos.z);
+	h.trans = matrix_translation(h.pos.x, h.pos.y, h.pos.z);
 	h.transform = matrix_multiply(&h.trans, &h.rot);
-	set_transform(obj, h.transform);
+	set_transform(obj, &h.transform);
 	obj->material = material_default();
 	obj->material.color = h.color;
 	++scene->world.object_count;
@@ -117,14 +118,14 @@ void	set_cylinder_params(t_object *obj, t_helper *h)
 {
 	obj->cy.min_y = -h->height * 0.5f;
 	obj->cy.max_y = h->height * 0.5f;
-	obj->cy.close = true;
-	h->scale = matrix_scale(h.diameter * 0.5f, 1.0f, h.diameter * 0.5f);
+	obj->cy.closed = true;
+	h->scale = matrix_scale(h->diameter * 0.5f, 1.0f, h->diameter * 0.5f);
 	h->rot = align_up_vector(h->vec);
 	h->trans = matrix_translation(h->pos.x, h->pos.y, h->pos.z);
 	h->temp = matrix_multiply(&h->trans, &h->rot);
 	h->transform = matrix_multiply(&h->temp, &h->scale);
 	set_transform(obj, &h->transform);
-	obj->material = default_material();
+	obj->material = material_default();
 	obj->material.color = h->color;
 }
 
@@ -133,7 +134,7 @@ int	parse_cylinder(char *line, t_scene *scene)
 	t_helper	h;
 	t_object	*obj;
 
-	if (scene->object_count == MAX_OBJECTS)
+	if (scene->world.object_count == MAX_OBJECTS)
 		return (1);
 	obj = &scene->world.objects[scene->world.object_count];
 	if (set_up(&line, &h, obj, CYLINDER) != 0)
