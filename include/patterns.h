@@ -21,6 +21,7 @@ typedef struct s_pattern
 	t_vec3			a;
 	t_vec3			b;
 	t_mat4			transform;
+	t_mat4			transform_inv;
 }	t_pattern;
 
 t_pattern		pattern_constructor(t_pattern_type type, t_vec3 color_a, t_vec3 color_b);

@@ -9,7 +9,7 @@ t_intersect	local_intersect_sphere(const t_object *sphere, const t_ray *local_ra
 	t_vec3				local_origin;
 
 	result.count = 0;
-	local_origin = (t_vec3){0.0f, 0.0f, 0.0f, 1.0f};
+	local_origin = (t_vec3){{{0.0f, 0.0f, 0.0f, 1.0f}}};
 	sphere_to_ray = vector_sub(local_ray->origin, local_origin);
 	q.a = vector_dot_product(local_ray->direction, local_ray->direction);
 	q.b = 2 * vector_dot_product(local_ray->direction, sphere_to_ray);

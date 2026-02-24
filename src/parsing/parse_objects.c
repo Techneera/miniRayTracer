@@ -1,6 +1,8 @@
 #include "librt.h"
 #include "parser.h"
 #include "vector.h"
+#include "canvas.h"
+#include "patterns.h"
 #include "ray.h"
 
 typedef struct s_helper
@@ -82,6 +84,23 @@ int	parse_sphere(char *line, t_scene *scene)
 	set_transform(obj, &h.transform);
 	obj->material = material_default();
 	obj->material.color = h.color;
+	// Hack: If the sphere is almost black, make it a perfect mirror!
+    if (h.color.x < 0.1f && h.color.y < 0.1f && h.color.z < 0.1f)
+    {
+        obj->material.reflective = 0.9f;   // 90% reflective
+        obj->material.diffuse = 0.1f;      // Very little standard color
+        obj->material.shininess = 300.0f;  // Tight, sharp specular highlight
+    }
+    // Hack: Enable the checkerboard pattern on the floor
+    if (obj->type == PLANE && h.vec.y > 0.9f)
+    {
+        obj->material.pattern = pattern_constructor(
+            PATTERN_CHECKER, 
+            color_constructor(1.0f, 1.0f, 1.0f), 
+            color_constructor(0.2f, 0.2f, 0.2f)
+        );
+        obj->material.reflective = 0.3f; // Give the floor a slight glossy shine
+    }
 	++scene->world.object_count;
 	return (0);
 }
