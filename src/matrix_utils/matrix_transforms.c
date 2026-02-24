@@ -89,5 +89,5 @@ t_vec3	matrix_shearing(t_shear p, t_vec3 target)
 	t_mat4	shear_matrix;
 
 	shear_matrix = matrix_shear(p);
-	return (matrix_vector_multiply(shear_matrix, target));
+	return (matrix_vector_multiply(&shear_matrix, &target));
 }
