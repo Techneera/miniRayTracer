@@ -9,6 +9,9 @@
 # define RGB_FACTOR 0.00392156862745
 # define BUF_SIZE 4096
 # define LINE_SIZE 1024
+# define WIN_WIDTH 960
+# define WIN_HEIGHT 1080
+
 
 typedef struct e_reader
 {
