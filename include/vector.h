@@ -9,15 +9,15 @@ typedef float t_f4 __attribute__((vector_size(16)));
 
 typedef struct __attribute__((aligned(16))) s_vec3
 {
-	union // Union for improved redability
+	union
 	{
-		t_f4	v; // Array access for fast computation
+		t_f4	v;
 		struct
 		{
-			float	x; // X-axis
-			float	y; // Y-axis
-			float	z; // Z-axis
-			float	w; // 1 for points \ 0 for vector
+			float	x;
+			float	y;
+			float	z;
+			float	w;
 		};
 	};
 }	t_vec3;

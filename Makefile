@@ -1,6 +1,6 @@
 NAME = $(BDIR)miniRT
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -Wno-psabi -g -Wno-incompatible-pointer-types
+CFLAGS = -Wall -Wextra -Werror -Wno-psabi -O3 -ffast-math
 #-O3 -ffast-math
 #-Wno-incompatible-pointer-types
 LMATH = -lm
@@ -146,6 +146,9 @@ TESTER11OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER11SRCS))
 TESTER9SRCS = $(TDIR)patterns_test.c
 TESTER9OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER9SRCS))
 
+TESTER12SRCS = $(TDIR)standard_forms.c
+TESTER12OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER12SRCS))
+
 # ------------------------------ LIBRARIES -------------------------------- #
 
 MLX = $(MLXDIR)libmlx_Linux.a
@@ -208,6 +211,9 @@ test_reflection: $(MLX) $(LFT) $(TESTER11OBJS) $(TESTOBJ)
 test_patterns: $(MLX) $(LFT) $(TESTER9OBJS) $(TESTOBJ)
 	$(CC) $(CFLAGS) -g $(TESTER9OBJS) $(TESTOBJ) -o $(BDIR)tester_patterns -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
 
+std_forms: $(MLX) $(LFT) $(TESTER12OBJS) $(TESTOBJ)
+	$(CC) $(CFLAGS) -g $(TESTER12OBJS) $(TESTOBJ) -o $(BDIR)$@ -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
+
 $(NAME): $(MLX) $(LFT) $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME) -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
 
@@ -246,4 +252,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re debug test test_v2 test_draw test_parsing test_scene test_shadows test_refactor test_plane test_patterns test_reflection
+.PHONY: all clean fclean re debug test test_v2 test_draw test_parsing test_scene test_shadows test_refactor test_plane test_patterns test_reflection std_forms
