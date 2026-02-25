@@ -1,6 +1,7 @@
 NAME = $(BDIR)miniRT
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -Wno-psabi -O3 -ffast-math
+CFLAGS = -Wall -Wextra -Werror -Wno-psabi -g -Wno-incompatible-pointer-types
+#-O3 -ffast-math
 #-Wno-incompatible-pointer-types
 LMATH = -lm
 LMLX = -lmlx_Linux -lXext -lX11
@@ -93,7 +94,7 @@ SHADOWS_SRCS = $(patsubst %.c, $(SHADOWSDIR)/%.c, $(_SHADOWS_SRCS))
 SHADOWS_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(SHADOWS_SRCS))
 
 
-# ------------------------------ SHADOWS -------------------------------- #
+# ------------------------------ REFLECTION -------------------------------- #
 
 _REFLECTION_SRCS = reflected_color.c
 
@@ -166,10 +167,9 @@ SRCFILES = $(SDIR)main.c \
 		   $(SHADES_SRCS) \
 		   $(SCENE_SRCS) \
 		   $(SHADOWS_SRCS) \
+		   $(PARSE_SRCS) \
 		   $(PATTERNS_SRCS) \
 		   $(REFLECTION_SRCS)
-
-# 		   $(PARSE_SRCS) \
 
 # ------------------------------ RULES -------------------------------- #
 
@@ -208,8 +208,8 @@ test_reflection: $(MLX) $(LFT) $(TESTER11OBJS) $(TESTOBJ)
 test_patterns: $(MLX) $(LFT) $(TESTER9OBJS) $(TESTOBJ)
 	$(CC) $(CFLAGS) -g $(TESTER9OBJS) $(TESTOBJ) -o $(BDIR)tester_patterns -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
 
-$(NAME): $(OBJ) $(MLX)
-	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
+$(NAME): $(MLX) $(LFT) $(OBJ)
+	$(CC) $(CFLAGS) $(OBJ) -o $(NAME) -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
 
 $(ODIR)$(SDIR)%.o: $(SDIR)%.c
 	@mkdir -p $(BDIR)

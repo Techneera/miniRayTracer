@@ -27,7 +27,6 @@ void	canvas_destructor(t_canvas *c)
 		return ;
 	mlx_destroy_image(c->mlx, c->img.img);
 	mlx_destroy_display(c->mlx);
-	free(c->mlx);
 }
 
 void	write_pixel(t_canvas *c, int x, int y, t_vec3 color)
@@ -40,12 +39,18 @@ void	write_pixel(t_canvas *c, int x, int y, t_vec3 color)
 	*(t_uint *)dest = (t_uint) color_to_int(color);
 }
 
-int	key_hook(int keycode, t_canvas *vars)
+int	key_hook(int keycode, t_canvas *canvas)
 {
 	if (keycode == 65307)
-	{
-		canvas_destructor(vars);
-		exit(0);
-	}
+		close_program(canvas);
+	return (0);
+}
+
+int	close_program(t_canvas *canvas)
+{
+	if (canvas->win && canvas->mlx)
+		mlx_destroy_window(canvas->mlx, canvas->win);
+	canvas_destructor(canvas);
+	exit(0);
 	return (0);
 }
