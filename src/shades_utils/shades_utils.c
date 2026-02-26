@@ -14,7 +14,7 @@ t_vec3	reflect(t_vec3 in, t_vec3 normal)
 	return (vector_sub(in, vector_scale(normal, 2.0f * dot)));
 }
 
-t_material	new_material(float ambient, float diffuse, float specular, float shininess, float reflective, t_pattern pattern)
+t_material	new_material(float ambient, float diffuse, float specular, float shininess, float reflective, float transparency, float refraction_index, t_pattern pattern)
 {
 	t_material	result;
 
@@ -24,6 +24,8 @@ t_material	new_material(float ambient, float diffuse, float specular, float shin
 	result.specular = specular; // STANDARD VALUE 0.9
 	result.shininess = shininess; // STANDARD VALUE 200.0
 	result.reflective = reflective; // STANDARD VALUE 0.0
+	result.transparency = transparency; // STANDARD VALUE 1.0
+	result.refraction_index = refraction_index; // STANDARD VALUE 0.0
 	result.pattern = pattern;
 	return (result);
 }
@@ -106,5 +108,5 @@ t_material	material_default(void)
 		color_constructor(0, 0, 0),
 		color_constructor(1, 1, 1)
 	);
-	return (new_material(0.1f, 0.9f, 0.9f, 200.0f, 0.0f, pattern));
+	return (new_material(0.1f, 0.9f, 0.9f, 200.0f, 0.0f, 1.0f, 0.0f, pattern));
 }
