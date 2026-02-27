@@ -135,6 +135,9 @@ TESTER11OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER11SRCS))
 TESTER12SRCS = $(TDIR)standard_forms.c
 TESTER12OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER12SRCS))
 
+TESTER12SRCS = $(TDIR)standard_forms.c
+TESTER12OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER12SRCS))
+
 # ------------------------------ LIBRARIES -------------------------------- #
 
 MLX = $(MLXDIR)libmlx_Linux.a
@@ -173,6 +176,9 @@ test_parsing: $(MLX) $(LFT) $(TESTER4OBJS) $(TESTOBJ)
 
 test_reflection: $(MLX) $(LFT) $(TESTER11OBJS) $(TESTOBJ)
 	$(CC) $(CFLAGS) -g $(TESTER11OBJS) $(TESTOBJ) -o $(BDIR)tester_reflection -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
+
+std_forms: $(MLX) $(LFT) $(TESTER12OBJS) $(TESTOBJ)
+	$(CC) $(CFLAGS) -g $(TESTER12OBJS) $(TESTOBJ) -o $(BDIR)$@ -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
 
 std_forms: $(MLX) $(LFT) $(TESTER12OBJS) $(TESTOBJ)
 	$(CC) $(CFLAGS) -g $(TESTER12OBJS) $(TESTOBJ) -o $(BDIR)$@ -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
