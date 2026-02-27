@@ -1,177 +1,115 @@
-#include "vector.h"
-#include "matrix.h"
-#include "shades.h"
-#include "librt.h"
-#include "ray.h"
 #include "scene.h"
+#include "canvas.h"
+#include "scene_api.h"
 #include <mlx.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 
 #ifndef M_PI
 # define M_PI 3.14159265358979323846
 #endif
 
-/*
-static
-void	ft_error(char *msg)
+// -----------------------------------------------------------------------------
+// Scene Construction
+// -----------------------------------------------------------------------------
+
+static void build_room_scene(t_scene *scene)
 {
-	printf("Error\n%s\n", msg);
-	exit(1);
-}
-*/
-
-static
-void	std_world(t_world *world)
-{
-	world->object_count = 0;
-	world->a_light.ratio = 0.1f;
-	world->a_light.color = color_constructor(1.0f, 1.0f, 1.0f);
-
-	world->light.position = point_constructor(-10.0f, 10.0f, -10.0f);
-	world->light.color = color_constructor(1.0f, 1.0f, 1.0f);
-	world->light.brightness = 1.0f;
-}
-
-static
-void	glass_sphere(t_world *world)
-{
-	t_object	*sp;
-	t_mat4		trans, scale, rot;
-	t_pattern	pat;
-
-	sp = &world->objects[world->object_count++];
-	sp->type = SPHERE;
-	sp->id = get_shape_id();
-	trans = matrix_translation(-0.5f, 1.0f, 0.5f);
-	set_transform(sp, &trans);
+	t_object *floor;
+	t_object *left_wall;
+	t_object *right_wall;
+	t_object *middle_sphere;
+	t_object *right_sphere;
+	t_object *left_sphere;
 	
-	pat = pattern_constructor(PATTERN_STRIPE,
-			color_constructor(0.6f, 0.1f, 0.4f),
-			color_constructor(0.8f, 0.9f, 0.2f));
+	scene->world.object_count = 0;
 	
-	// Scale the stripes down, then rotate them diagonally
-	scale = matrix_scale(0.2f, 0.2f, 0.2f);
-	rot = matrix_rot_z(M_PI / 2.3f);
-	pat.transform = matrix_multiply(&rot, &scale);
-	pat.transform_inv = matrix_inverse(&pat.transform);
-	// new_material(
-	//		ambient,
-	//		diffuse,
-	//		specular,
-	//		shininess,
-	//		reflective,
-	//		transparency,
-	//		refraction_index,
-	//		pattern
-	// )
-	sp->material = new_material(0.4f, 0.5f, 0.9f, 100.0f, 0.9f, 1.0f, 0.0f, pat);
+	// Lighting setup
+	scene->world.a_light.ratio = 0.1f;
+	scene->world.a_light.color = color_constructor(1.0f, 1.0f, 1.0f);
+	scene->world.light.position = point_constructor(-10.0f, 10.0f, -10.0f);
+	scene->world.light.color = color_constructor(1.0f, 1.0f, 1.0f);
+	scene->world.light.brightness = 1.0f;
+	
+	// 1. Floor
+	floor = spawn_plane(&scene->world);
+	set_pattern(floor, PATTERN_CHECKER, 
+	            color_constructor(0.8f, 0.8f, 0.8f),
+	            color_constructor(0.2f, 0.2f, 0.2f), 0.25f);
+	set_optics(floor, 0.7f, 0.3f, 0.2f, 0.0f, 1.0f);
+	
+	// 2. Left Wall
+	left_wall = spawn_plane(&scene->world);
+	apply_rot_x(left_wall, M_PI / 2.0f);      // Stand it up
+	apply_rot_y(left_wall, -M_PI / 4.0f);     // Angle it inwards (-45 deg)
+	apply_translation(left_wall, 0.0f, 0.0f, 5.0f); // Push it back
+	set_color(left_wall, color_constructor(0.6f, 0.4f, 0.5f)); // Muted mauve
+	set_optics(left_wall, 0.9f, 0.1f, 0.0f, 0.0f, 1.0f);
+	
+	// 3. Right Wall
+	right_wall = spawn_plane(&scene->world);
+	apply_rot_x(right_wall, M_PI / 2.0f);     // Stand it up
+	apply_rot_y(right_wall, M_PI / 4.0f);      // Angle it inwards (+45 deg)
+	apply_translation(right_wall, 0.0f, 0.0f, 5.0f); // Push it back
+	set_color(right_wall, color_constructor(0.4f, 0.5f, 0.6f)); // Muted slate blue
+	set_optics(right_wall, 0.9f, 0.1f, 0.0f, 0.0f, 1.0f);
+	
+	// --- Objects (3 Spheres) ---
+	
+	// 1. Middle Sphere (Glass / Perfect Mirror)
+	middle_sphere = spawn_sphere(&scene->world);
+	apply_translation(middle_sphere, -0.5f, 1.0f, 0.5f);
+	set_color(middle_sphere, color_constructor(0.0f, 0.0f, 0.0f));
+	set_optics(middle_sphere, 0.1f, 0.9f, 0.9f, 1.0f, 1.5f); // High reflection, Glass RI
+	
+	// 2. Right Sphere (Gradient)
+	right_sphere = spawn_sphere(&scene->world);
+	apply_scale(right_sphere, 0.5f, 0.5f, 0.5f);
+	apply_translation(right_sphere, 1.5f, 0.5f, -0.5f);
+	set_pattern(right_sphere, PATTERN_GRADIENT, 
+	            color_constructor(1.0f, 0.0f, 0.0f), 
+	            color_constructor(0.0f, 0.0f, 1.0f), 1.0f);
+	set_optics(right_sphere, 0.7f, 0.3f, 0.1f, 0.0f, 1.0f);
+	
+	// 3. Left Sphere (Solid/Matte)
+	left_sphere = spawn_sphere(&scene->world);
+	apply_scale(left_sphere, 0.33f, 0.33f, 0.33f);
+	apply_translation(left_sphere, -1.5f, 0.33f, -0.75f);
+	set_color(left_sphere, color_constructor(0.2f, 0.8f, 0.2f)); // Bright green
+	set_optics(left_sphere, 0.9f, 0.1f, 0.0f, 0.0f, 1.0f);
+	
+	// --- Camera Setup ---
+	scene->camera = camera_constructor(WIN_WIDTH, WIN_HEIGHT, 60.0f);
+	scene->camera.transform = view_transform(
+	    point_constructor(0.0f, 1.5f, -5.0f),  // Position (Looking from front-center)
+	    point_constructor(0.0f, 1.0f, 0.0f),   // Target (Looking at center)
+	    vector_constructor(0.0f, 1.0f, 0.0f)   // Up Vector
+	);
 }
+
+// -----------------------------------------------------------------------------
+// Main Execution
+// -----------------------------------------------------------------------------
 
 int main(void)
 {
-	t_world		world;
-	t_camera	camera;
-	t_canvas	canvas;
-	t_object	*obj;
-	t_mat4		ident, trans, scale, combo;
-	t_pattern	pat;
+	t_scene     scene;
+	t_canvas    canvas;
 	
-	std_world(&world);
-
-	matrix_identity(&ident);
+	build_room_scene(&scene);
 	
-	// --- 1. The Floor (Checkerboard) ---
-	obj = &world.objects[world.object_count++];
-	obj->type = PLANE;
-	obj->id = get_shape_id();
-	set_transform(obj, &ident);
+	canvas.mlx = mlx_init();
+	if (canvas.mlx == NULL)
+		return (ft_error("Unable to initialize MLX\n"), 1);
+	render(&canvas, &scene.camera, &scene.world);
 	
-	// Create checkers and scale them down so they repeat
-	pat = pattern_constructor(PATTERN_CHECKER,
-			color_constructor(0.8f, 0.8f, 0.8f),
-			color_constructor(0.2f, 0.2f, 0.2f));
-	pat.transform = matrix_scale(0.25f, 0.25f, 0.25f);
-	pat.transform_inv = matrix_inverse(&pat.transform);
-	
-	// Give it a slightly glossy finish
-	obj->material = new_material(0.1f, 0.7f, 0.3f, 200.0f, 0.2f, 1.0f, 0.0f, pat);
-	
-	// --- 2. Middle Sphere (Diagonal Stripes & Semi-Reflective) ---
-	/*
-	obj = &world.objects[world.object_count++];
-	obj->type = SPHERE;
-	obj->id = get_shape_id();
-	trans = matrix_translation(-0.5f, 1.0f, 0.5f);
-	set_transform(obj, &trans);
-	
-	pat = pattern_constructor(PATTERN_STRIPE, color_constructor(0.2f, 0.3f, 0.6f), color_constructor(0.8f, 0.9f, 0.2f));
-	// Scale the stripes down, then rotate them diagonally
-	scale = matrix_scale(0.2f, 0.2f, 0.2f);
-	rot = matrix_rot_z(M_PI / 4.0f); // 45 degrees
-	pat.transform = matrix_multiply(&rot, &scale);
-	pat.transform_inv = matrix_inverse(&pat.transform);
-	
-	// Mix diffuse and reflective so we see both the pattern and the reflection
-	obj->material = new_material(0.1f, 0.5f, 0.9f, 300.0f, 0.5f, 1.0f, 0.0f, pat);
-	*/
-	
-	glass_sphere(&world);
-
-	// --- 3. Right Sphere (Smooth Gradient) ---
-	obj = &world.objects[world.object_count++];
-	obj->type = SPHERE;
-	obj->id = get_shape_id();
-	trans = matrix_translation(1.5f, 0.5f, -0.5f);
-	scale = matrix_scale(0.5f, 0.5f, 0.5f);
-	combo = matrix_multiply(&trans, &scale);
-	set_transform(obj, &combo);
-	
-	// Gradients interpolate between color A and B based on the X coordinate
-	pat = pattern_constructor(PATTERN_GRADIENT, color_constructor(1.0f, 0.0f, 0.0f), color_constructor(0.0f, 0.0f, 1.0f));
-	// Translate the pattern slightly so the gradient blends beautifully across the sphere's surface
-	pat.transform = matrix_translation(1.0f, 0.0f, 0.0f);
-	pat.transform_inv = matrix_inverse(&pat.transform);
-	
-	obj->material = new_material(0.1f, 0.7f, 0.3f, 200.0f, 0.1f, 1.0f, 0.0f, pat);
-	
-	// --- 4. Left Sphere (Bullseye Rings) ---
-	obj = &world.objects[world.object_count++];
-	obj->type = SPHERE;
-	obj->id = get_shape_id();
-	trans = matrix_translation(-1.5f, 0.33f, -0.75f);
-	scale = matrix_scale(0.33f, 0.33f, 0.33f);
-	combo = matrix_multiply(&trans, &scale);
-	set_transform(obj, &combo);
-	
-	pat = pattern_constructor(PATTERN_RING, color_constructor(1.0f, 0.2f, 0.1f), color_constructor(1.0f, 1.0f, 1.0f));
-	// Scale rings down to create a tight bullseye
-	pat.transform = matrix_scale(0.2f, 0.2f, 0.2f);
-	pat.transform_inv = matrix_inverse(&pat.transform);
-	
-	obj->material = new_material(0.1f, 0.9f, 0.1f, 10.0f, 0.0f, 1.0f, 0.0f, pat);
-	
-	// --- 5. Setup Camera ---
-	camera = camera_constructor(800, 600, 60.0f); 
-	camera.transform = view_transform(
-	    point_constructor(0.0f, 1.5f, -5.0f), 
-	    point_constructor(0.0f, 1.0f, 0.0f),  
-	    vector_constructor(0.0f, 1.0f, 0.0f)  
-	);
-	
-	// --- 6. Render ---
-	printf("Rendering scene...\n");
-	// Pass the properly initialized mlx pointer!
-	canvas = render(canvas.mlx, &camera, &world); 
-	
-	// --- 7. Display ---
-	canvas.win = mlx_new_window(canvas.mlx, canvas.width, canvas.height, "Sandbox");
+	canvas.win = mlx_new_window(canvas.mlx, WIN_WIDTH, WIN_HEIGHT, "Show Room");
 	mlx_put_image_to_window(canvas.mlx, canvas.win, canvas.img.img, 0, 0);
-	
 	mlx_hook(canvas.win, 2, 1L << 0, key_hook, &canvas);
 	mlx_hook(canvas.win, 17, 0L, close_program, &canvas);
 	
-	printf("Done! Press ESC to exit.\n");
+	printf("Render complete! Press ESC to exit.\n");
 	mlx_loop(canvas.mlx);
 	
 	return (0);
