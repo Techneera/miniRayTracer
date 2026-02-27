@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include "canvas.h"
+#include "libft.h"
 
 bool	canvas_constructor(int width, int height, t_canvas *canvas)
 {
-	canvas->mlx = mlx_init();
 	if (canvas->mlx == NULL)
 		return (false);
 	canvas->img.img = mlx_new_image(canvas->mlx, width, height);
@@ -15,18 +15,31 @@ bool	canvas_constructor(int width, int height, t_canvas *canvas)
 		&canvas->img.line_len,
 		&canvas->img.endian
 	);
+	if (canvas->img.addr == NULL)
+		return (false);
 	canvas->width = width;
 	canvas->height = height;
-	canvas->bg_color = color_constructor(0, 0, 0);
+	canvas->bg_color = color_constructor(0.0f, 0.0f, 0.0f);
 	return (true);
 }
 
 void	canvas_destructor(t_canvas *c)
 {
-	if (c->mlx == NULL)
+	if (c == NULL || c->mlx == NULL)
 		return ;
-	mlx_destroy_image(c->mlx, c->img.img);
+	if (c->img.img)
+	{
+		mlx_destroy_image(c->mlx, c->img.img);
+		c->img.img = NULL;
+	}
+	if (c->win)
+	{
+		mlx_destroy_window(c->mlx, c->win);
+		c->win = NULL;
+	}
 	mlx_destroy_display(c->mlx);
+	free(c->mlx);
+	c->mlx = NULL;
 }
 
 void	write_pixel(t_canvas *c, int x, int y, t_vec3 color)
@@ -48,9 +61,13 @@ int	key_hook(int keycode, t_canvas *canvas)
 
 int	close_program(t_canvas *canvas)
 {
-	if (canvas->win && canvas->mlx)
-		mlx_destroy_window(canvas->mlx, canvas->win);
 	canvas_destructor(canvas);
 	exit(0);
 	return (0);
+}
+
+void	ft_error(char *msg)
+{
+	ft_putstr("Error\n");
+	ft_putstr(msg);
 }
