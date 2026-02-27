@@ -30,7 +30,7 @@ t_mat4	        view_transform(t_vec3 from, t_vec3 to, t_vec3 up);
 
 t_camera		camera_constructor(int hsize, int vsize, float field_of_view);
 t_ray			ray_for_pixel(t_camera *c, int px, int py);
-t_canvas		render(void *mlx, t_camera *c, t_world *w);
+void			render(t_canvas *canvas, t_camera *c, t_world *w);
 
 t_vec3			reflected_color(t_world *world, t_computation *comps, int depth);
 #endif
