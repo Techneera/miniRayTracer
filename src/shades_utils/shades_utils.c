@@ -108,5 +108,5 @@ t_material	material_default(void)
 		color_constructor(0, 0, 0),
 		color_constructor(1, 1, 1)
 	);
-	return (new_material(0.1f, 0.9f, 0.9f, 200.0f, 0.0f, 1.0f, 0.0f, pattern));
+	return (new_material(0.1f, 0.9f, 0.9f, 200.0f, 0.0f, 1.0f, 1.57f, pattern));
 }
