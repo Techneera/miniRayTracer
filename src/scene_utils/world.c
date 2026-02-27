@@ -53,11 +53,11 @@ t_intersect	intersect_world(t_world *world, t_ray *ray)
 		}
 		++i;
 	}
-//	intersect_sort(&this);
+	intersect_sort(&this);
 	return (this);
 }
 
-t_computation	prepare_computations(t_intersection i, t_ray *ray)
+t_computation	prepare_computations(t_intersection i, t_ray *ray, t_intersect *xs)
 {
 	t_computation	this;
 
@@ -74,6 +74,10 @@ t_computation	prepare_computations(t_intersection i, t_ray *ray)
 	}
 	this.reflectv = reflect(ray->direction, this.normalv);
 	this.over_point = vector_add(
+		this.point,
+		vector_scale(this.normalv, EPSILON)
+	);
+	this.under_point = vector_sub(
 		this.point,
 		vector_scale(this.normalv, EPSILON)
 	);
