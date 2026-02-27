@@ -51,13 +51,14 @@ t_vec3 pattern_at_object(t_pattern pattern, const t_object *object, t_vec3 world
 void set_pattern_transform(t_pattern *pattern, t_mat4 transform)
 {
 	pattern->transform = transform;
+	pattern->transform_inv = matrix_inverse(&pattern->transform);
 }
 
 t_pattern	pattern_default(void)
 {
 	return (pattern_constructor(
 		PATTERN_SOLID,
-		color_constructor(0, 0, 0),
-		color_constructor(1, 1, 1)
+		color_constructor(0.0f, 0.0f, 0.0f),
+		color_constructor(1.0f, 1.0f, 1.0f)
 	));
 }
