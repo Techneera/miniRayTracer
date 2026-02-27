@@ -10,15 +10,6 @@
 # define BUF_SIZE 4096
 # define LINE_SIZE 1024
 
-#ifndef WIN_WIDTH
-# define WIN_WIDTH 1080
-#endif
-
-#ifndef WIN_HEIGHT
-# define WIN_HEIGHT 960
-#endif
-
-
 typedef struct e_reader
 {
 	int		fd;
