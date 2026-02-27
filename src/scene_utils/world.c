@@ -61,6 +61,7 @@ t_computation	prepare_computations(t_intersection i, t_ray *ray, t_intersect *xs
 {
 	t_computation	this;
 
+	(void)xs;
 	this.t = i.t;
 	this.object = i.object;
 	this.point = ray_position(ray, this.t);
@@ -128,7 +129,7 @@ t_vec3	color_at(t_world *world, t_ray *ray, int depth)
 	}
 	if (hit_index == -1)
 		return (color_constructor(0.0f, 0.0f, 0.0f));
-	comps = prepare_computations(xs.i[hit_index], ray);
+	comps = prepare_computations(xs.i[hit_index], ray, &xs);
 	return (shade_hit(world, &comps, depth));
 }
 
@@ -224,16 +225,18 @@ t_ray	ray_for_pixel(t_camera *c, int px, int py)
 	return (ray_constructor(origin, direction));
 }
 
-t_canvas	render(void *mlx, t_camera *c, t_world *w)
+void	render(t_canvas *canvas, t_camera *c, t_world *w)
 {
-	t_canvas	image;
 	t_ray		ray;
 	t_vec3		color;
 	int			x;
 	int			y;
 
-	image.mlx = mlx;
-	canvas_constructor(c->hsize, c->vsize, &image);
+	if (canvas_constructor(c->hsize, c->vsize, canvas) == false)
+	{
+		ft_error("Failed to lauch canvas\n");
+		close_program(canvas);
+	}
 	y = 0;
 	while (y < c->vsize)
 	{
@@ -242,10 +245,9 @@ t_canvas	render(void *mlx, t_camera *c, t_world *w)
 		{
 			ray = ray_for_pixel(c, x, y);
 			color = color_at(w, &ray, MAX_BOUNCE);
-			write_pixel(&image, x, y, color);
+			write_pixel(canvas, x, y, color);
 			++x;
 		}
 		++y;
 	}
-	return (image);
 }
