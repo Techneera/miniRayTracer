@@ -1,6 +1,6 @@
 NAME = $(BDIR)miniRT
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -Wno-psabi -g
+CFLAGS = -Wall -Wextra -Werror -Wno-psabi -O3 -ffast-math
 #-O3 -ffast-math
 #-Wno-incompatible-pointer-types
 LMATH = -lm
@@ -114,7 +114,7 @@ REFLECTION_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(REFLECTION_SRCS))
 
 # ------------------------------ REFRACTION -------------------------------- #
 
-_REFRACTION_SRCS = manage_containers.c
+_REFRACTION_SRCS = manage_containers.c refracted_colors.c
 
 REFRACTION_SRCS = $(patsubst %.c, $(REFRACTIONDIR)/%.c, $(_REFRACTION_SRCS))
 REFRACTION_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(REFRACTION_SRCS))
@@ -144,6 +144,9 @@ TESTER12OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER12SRCS))
 
 TESTER12SRCS = $(TDIR)standard_forms.c
 TESTER12OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER12SRCS))
+
+TESTER13SRCS = $(TDIR)transparency_test.c
+TESTER13OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER13SRCS))
 
 # ------------------------------ LIBRARIES -------------------------------- #
 
@@ -188,9 +191,11 @@ test_reflection: $(MLX) $(LFT) $(TESTER11OBJS) $(TESTOBJ)
 
 std_forms: $(MLX) $(LFT) $(TESTER12OBJS) $(TESTOBJ)
 	$(CC) $(CFLAGS) -g $(TESTER12OBJS) $(TESTOBJ) -o $(BDIR)$@ -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
+	./build/std_forms
 
-std_forms: $(MLX) $(LFT) $(TESTER12OBJS) $(TESTOBJ)
-	$(CC) $(CFLAGS) -g $(TESTER12OBJS) $(TESTOBJ) -o $(BDIR)$@ -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
+std_trans: $(MLX) $(LFT) $(TESTER13OBJS) $(TESTOBJ)
+	$(CC) $(CFLAGS) -g $(TESTER13OBJS) $(TESTOBJ) -o $(BDIR)$@ -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
+	./build/std_trans
 
 $(NAME): $(MLX) $(LFT) $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME) -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
@@ -232,4 +237,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re debug test_parsing test_reflection std_forms
+.PHONY: all clean fclean re debug test_parsing test_reflection std_forms std_trans

@@ -14,80 +14,78 @@
 // Scene Construction
 // -----------------------------------------------------------------------------
 
-static void build_room_scene(t_scene *scene)
+static void build_glass_showcase(t_scene *scene)
 {
-	t_object *floor;
-	t_object *left_wall;
-	t_object *right_wall;
-	t_object *middle_sphere;
-	t_object *right_sphere;
-	t_object *left_sphere;
-	
-	scene->world.object_count = 0;
-	
-	// Lighting setup
-	scene->world.a_light.ratio = 0.1f;
-	scene->world.a_light.color = color_constructor(1.0f, 1.0f, 1.0f);
-	scene->world.light.position = point_constructor(-10.0f, 10.0f, -10.0f);
-	scene->world.light.color = color_constructor(1.0f, 1.0f, 1.0f);
-	scene->world.light.brightness = 1.0f;
-	
-	// 1. Floor
-	floor = spawn_plane(&scene->world);
-	set_pattern(floor, PATTERN_CHECKER, 
-	            color_constructor(0.8f, 0.8f, 0.8f),
-	            color_constructor(0.2f, 0.2f, 0.2f), 0.25f);
-	set_optics(floor, 0.7f, 0.3f, 0.2f, 0.0f, 1.0f);
-	
-	// 2. Left Wall
-	left_wall = spawn_plane(&scene->world);
-	apply_rot_x(left_wall, M_PI / 2.0f);      // Stand it up
-	apply_rot_y(left_wall, -M_PI / 4.0f);     // Angle it inwards (-45 deg)
-	apply_translation(left_wall, 0.0f, 0.0f, 5.0f); // Push it back
-	set_color(left_wall, color_constructor(0.6f, 0.4f, 0.5f)); // Muted mauve
-	set_optics(left_wall, 0.9f, 0.1f, 0.0f, 0.0f, 1.0f);
-	
-	// 3. Right Wall
-	right_wall = spawn_plane(&scene->world);
-	apply_rot_x(right_wall, M_PI / 2.0f);     // Stand it up
-	apply_rot_y(right_wall, M_PI / 4.0f);      // Angle it inwards (+45 deg)
-	apply_translation(right_wall, 0.0f, 0.0f, 5.0f); // Push it back
-	set_color(right_wall, color_constructor(0.4f, 0.5f, 0.6f)); // Muted slate blue
-	set_optics(right_wall, 0.9f, 0.1f, 0.0f, 0.0f, 1.0f);
-	
-	// --- Objects (3 Spheres) ---
-	
-	// 1. Middle Sphere (Glass / Perfect Mirror)
-	middle_sphere = spawn_sphere(&scene->world);
-	apply_translation(middle_sphere, -0.5f, 1.0f, 0.5f);
-	set_color(middle_sphere, color_constructor(0.0f, 0.0f, 0.0f));
-	set_optics(middle_sphere, 0.1f, 0.9f, 0.9f, 1.0f, 1.5f); // High reflection, Glass RI
-	
-	// 2. Right Sphere (Gradient)
-	right_sphere = spawn_sphere(&scene->world);
-	apply_scale(right_sphere, 0.5f, 0.5f, 0.5f);
-	apply_translation(right_sphere, 1.5f, 0.5f, -0.5f);
-	set_pattern(right_sphere, PATTERN_GRADIENT, 
-	            color_constructor(1.0f, 0.0f, 0.0f), 
-	            color_constructor(0.0f, 0.0f, 1.0f), 1.0f);
-	set_optics(right_sphere, 0.7f, 0.3f, 0.1f, 0.0f, 1.0f);
-	
-	// 3. Left Sphere (Solid/Matte)
-	left_sphere = spawn_sphere(&scene->world);
-	apply_scale(left_sphere, 0.33f, 0.33f, 0.33f);
-	apply_translation(left_sphere, -1.5f, 0.33f, -0.75f);
-	set_color(left_sphere, color_constructor(0.2f, 0.8f, 0.2f)); // Bright green
-	set_optics(left_sphere, 0.9f, 0.1f, 0.0f, 0.0f, 1.0f);
-	
-	// --- Camera Setup ---
-	scene->camera = camera_constructor(WIN_WIDTH, WIN_HEIGHT, 60.0f);
-	scene->camera.transform = view_transform(
-	    point_constructor(0.0f, 1.5f, -5.0f),  // Position (Looking from front-center)
-	    point_constructor(0.0f, 1.0f, 0.0f),   // Target (Looking at center)
-	    vector_constructor(0.0f, 1.0f, 0.0f)   // Up Vector
-	);
-}
+    t_object *floor;
+    t_object *wall;
+    t_object *clear_glass;
+    t_object *tinted_glass;
+    t_object *anchor_sphere;
+    
+    scene->world.object_count = 0;
+    
+    // Lighting: Placed specifically to catch tight specular highlights on the glass
+    scene->world.a_light.ratio = 0.1f;
+    scene->world.a_light.color = color_constructor(1.0f, 1.0f, 1.0f);
+    scene->world.light.position = point_constructor(-10.0f, 10.0f, -10.0f);
+    scene->world.light.color = color_constructor(1.0f, 1.0f, 1.0f);
+    scene->world.light.brightness = 1.0f;
+    
+    // --- The Environment ---
+    
+    // The Floor (Checkered so we can see the refraction bend the straight lines)
+    floor = spawn_plane(&scene->world);
+    set_pattern(floor, PATTERN_CHECKER, 
+                color_constructor(0.8f, 0.8f, 0.8f),
+                color_constructor(0.2f, 0.2f, 0.2f), 0.25f);
+    set_optics(floor, 0.7f, 0.3f, 0.2f, 0.0f, 1.0f);
+    
+    // Back Wall (Dark grey to contrast the bright highlights)
+    wall = spawn_plane(&scene->world);
+    apply_rot_x(wall, M_PI / 2.0f); 
+    apply_translation(wall, 0.0f, 0.0f, 5.0f);
+    set_color(wall, color_constructor(0.2f, 0.2f, 0.2f));
+    set_optics(wall, 0.9f, 0.1f, 0.0f, 0.0f, 1.0f);
+    
+    // --- The Test Objects ---
 
+    // 1. Clear Glass Sphere (Rules 1, 2, and 4)
+    // Clear glass: High reflection/transparency, ZERO diffuse/ambient, tight highlight
+    clear_glass = spawn_sphere(&scene->world);
+    apply_translation(clear_glass, -1.2f, 1.0f, 0.0f);
+    set_color(clear_glass, color_constructor(0.0f, 0.0f, 0.0f)); // Black base
+    set_optics(clear_glass, 0.0f, 1.0f, 0.9f, 0.9f, 1.5f); // Diffuse 0.0, Spec 1.0
+    clear_glass->material.ambient = 0.0f;       // Rule 2
+    clear_glass->material.shininess = 300.0f;   // Rule 4
+    
+    // 2. Tinted Red Glass Mirror (Rules 3 and 4)
+    // Tinted glass: Dark base color, low diffuse, high reflection, tight highlight
+    tinted_glass = spawn_sphere(&scene->world);
+    apply_translation(tinted_glass, 1.2f, 1.0f, 0.0f);
+    set_color(tinted_glass, color_constructor(0.2f, 0.0f, 0.0f)); // Very dark red (Rule 3)
+    set_optics(tinted_glass, 0.1f, 1.0f, 0.8f, 0.8f, 1.5f); // Slight diffuse to show color
+    tinted_glass->material.ambient = 0.05f;     // Very low ambient (Rule 3)
+    tinted_glass->material.shininess = 300.0f;  // Rule 4
+
+    // 3. Anchor Object (Behind the glass)
+    // A solid, brightly colored sphere placed in the background so the glass has
+    // something obvious to refract and reflect.
+    anchor_sphere = spawn_sphere(&scene->world);
+    apply_scale(anchor_sphere, 1.5f, 1.5f, 1.5f);
+    apply_translation(anchor_sphere, 0.0f, 1.5f, 3.0f);
+    set_pattern(anchor_sphere, PATTERN_GRADIENT, 
+                color_constructor(0.0f, 0.0f, 1.0f),  // Blue
+                color_constructor(0.0f, 1.0f, 0.0f), 1.0f); // Green
+    set_optics(anchor_sphere, 0.8f, 0.2f, 0.0f, 0.0f, 1.0f); // Matte
+
+    // --- Camera Setup ---
+    scene->camera = camera_constructor(WIN_WIDTH, WIN_HEIGHT, 60.0f);
+    scene->camera.transform = view_transform(
+        point_constructor(0.0f, 1.5f, -5.0f),  
+        point_constructor(0.0f, 1.0f, 0.0f),   
+        vector_constructor(0.0f, 1.0f, 0.0f)   
+    );
+}
 // -----------------------------------------------------------------------------
 // Main Execution
 // -----------------------------------------------------------------------------
@@ -97,7 +95,7 @@ int main(void)
 	t_scene     scene;
 	t_canvas    canvas;
 	
-	build_room_scene(&scene);
+	build_glass_showcase(&scene);
 	
 	canvas.mlx = mlx_init();
 	if (canvas.mlx == NULL)

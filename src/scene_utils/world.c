@@ -114,9 +114,9 @@ t_vec3	shade_hit(t_world *world, t_computation *computations, int depth)
 {
 	t_vec3	surface_color;
 	t_vec3	reflected;
-	bool	in_shadow;
+	t_vec3	refracted;
+	float	reflectance;
 
-	in_shadow = is_shadowed(*world, computations->over_point);
 	surface_color = lighting(
 			computations->object->material,
 			computations->object,
@@ -125,10 +125,17 @@ t_vec3	shade_hit(t_world *world, t_computation *computations, int depth)
 			computations->over_point,
 			computations->eyev,
 			computations->normalv,
-			in_shadow
+			is_shadowed(*world, computations->over_point)
 	);
 	reflected = reflected_color(world, computations, depth);
-	return (color_add(surface_color, reflected));
+	refracted = refracted_color(world, computations, depth);
+	if (computations->object->material.reflective > 0.0f && computations->object->material.transparency > 0.0f)
+	{
+		reflectance = schlick(computations);
+		reflected = vector_scale(reflected, reflectance);
+		refracted = vector_scale(refracted, 1.0f - reflectance);
+	}
+	return (vector_add(surface_color, vector_add(reflected, refracted)));
 }
 
 t_vec3	color_at(t_world *world, t_ray *ray, int depth)
