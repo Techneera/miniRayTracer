@@ -6,6 +6,7 @@
 # include "canvas.h"
 
 # define MAX_BOUNCE 5
+# define MAX_CONTAINERS 36
 
 typedef struct s_computation
 {

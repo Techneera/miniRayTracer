@@ -27,6 +27,7 @@ SCENEDIR = $(SDIR)scene_utils
 SHADOWSDIR = $(SDIR)shadows_utils
 PATTERNSDIR = $(SDIR)patterns_utils
 REFLECTIONDIR = $(SDIR)reflection_utils
+REFRACTIONDIR = $(SDIR)refraction_utils
 APIDIR = $(SDIR)scene_api
 
 # ------------------------------ VECTORS -------------------------------- #
@@ -111,6 +112,12 @@ _REFLECTION_SRCS = reflected_color.c
 REFLECTION_SRCS = $(patsubst %.c, $(REFLECTIONDIR)/%.c, $(_REFLECTION_SRCS))
 REFLECTION_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(REFLECTION_SRCS))
 
+# ------------------------------ REFRACTION -------------------------------- #
+
+_REFRACTION_SRCS = manage_containers.c
+
+REFRACTION_SRCS = $(patsubst %.c, $(REFRACTIONDIR)/%.c, $(_REFRACTION_SRCS))
+REFRACTION_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(REFRACTION_SRCS))
 
 # ------------------------------ PATTERNS -------------------------------- #
 
@@ -162,7 +169,9 @@ SRCFILES = $(SDIR)main.c \
 		   $(PARSE_SRCS) \
 		   $(PATTERNS_SRCS) \
 		   $(REFLECTION_SRCS) \
-		   $(SCENE_API_SRCS)
+		   $(SCENE_API_SRCS) \
+		   $(REFRACTION_SRCS)
+
 
 # ------------------------------ RULES -------------------------------- #
 
@@ -198,6 +207,7 @@ $(ODIR)$(SDIR)%.o: $(SDIR)%.c
 	@mkdir -p $(ODIR)$(SCENEDIR)
 	@mkdir -p $(ODIR)$(PATTERNSDIR)
 	@mkdir -p $(ODIR)$(REFLECTIONDIR)
+	@mkdir -p $(ODIR)$(REFRACTIONDIR)
 	@mkdir -p $(ODIR)$(APIDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -I $(IDIR) -I$(MLXDIR) -I$(LFTDIR)
 
