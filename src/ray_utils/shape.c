@@ -28,6 +28,8 @@ t_intersect	intersect(const t_ray *ray, const t_object *obj)
 		result = local_intersect_sphere(obj, &local_ray);
 	else if (obj->type == PLANE)
 		result = local_intersect_plane(obj, &local_ray);
+	else if (obj->type == CUBE)
+		result = local_intersect_cube(obj, &local_ray);
 	return (result);
 }
 
