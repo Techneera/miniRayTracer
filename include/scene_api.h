@@ -6,6 +6,7 @@
 /*			OBJECT SPWAN				*/
 t_object	*spawn_sphere(t_world *world);
 t_object	*spawn_plane(t_world *world);
+t_object	*spawn_cube(t_world *world);
 t_object	*spawn_cylinder(t_world *world, float min_y, float max_y, bool closed);
 
 /*			TRANSFORMATIONS				*/

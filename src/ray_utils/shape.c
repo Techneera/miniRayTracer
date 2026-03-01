@@ -11,21 +11,6 @@ int get_shape_id(void)
 	return (id++);
 }
 
-t_object	test_object(void)
-{
-	t_object	s;
-
-	s.type = SPHERE;
-	s.id = get_shape_id();
-	matrix_identity(&s.transform);
-	matrix_identity(&s.transform_inv);
-	s.material = new_material(0.1f, 0.9f, 0.9f, 200.0f, 0.0f, 1.0f, 0.0f,
-		pattern_constructor(PATTERN_SOLID,
-			vector_constructor(0, 0, 0),
-			vector_constructor(1, 1, 1)));
-	return (s);
-}
-
 void	set_transform(t_object *obj, const t_mat4 *t)
 {
 	obj->transform = *t;
@@ -77,16 +62,13 @@ t_vec3	normal_at(const t_object *obj, t_vec3 world_point)
 	t_vec3	world_normal;
 	t_mat4	transpose_inverse;
 
-	if (!obj)
-	{
-		printf("FATAL ERROR: Null object pointer reached normal_at!\n");
-		exit(1);
-	}
 	local_point = matrix_vector_multiply(&obj->transform_inv, &world_point);
 	if (obj->type == SPHERE)
 		local_normal = local_normal_at_sphere(local_point);
 	else if (obj->type == PLANE)
 		local_normal = local_normal_at_plane();
+	else if (obj->type == CUBE)
+		local_normal = local_normal_at_cube(local_point);
 	else
 		return (compute_default_normal(obj, local_point));
 	transpose_inverse = matrix_transpose(&obj->transform_inv);

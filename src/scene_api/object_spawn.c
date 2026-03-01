@@ -31,6 +31,11 @@ t_object	*spawn_sphere(t_world *world)
 	return (init_base_object(world, SPHERE));
 }
 
+t_object	*spawn_cube(t_world *world)
+{
+	return (init_base_object(world, CUBE));
+}
+
 t_object	*spawn_plane(t_world *world)
 {
 	return (init_base_object(world, PLANE));
