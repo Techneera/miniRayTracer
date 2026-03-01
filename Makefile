@@ -57,7 +57,8 @@ _RAY_SRCS = ray_constructor.c \
 			plane.c \
 			shape.c \
 			intersection.c \
-			ray_transform.c
+			ray_transform.c \
+			cube.c
 RAY_SRCS = $(patsubst %.c, $(RAYDIR)/%.c, $(_RAY_SRCS))
 RAY_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(RAY_SRCS))
 
@@ -148,6 +149,8 @@ TESTER12OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER12SRCS))
 TESTER13SRCS = $(TDIR)transparency_test.c
 TESTER13OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER13SRCS))
 
+TESTER14SRCS = $(TDIR)glass_box.c
+TESTER14OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER14SRCS))
 # ------------------------------ LIBRARIES -------------------------------- #
 
 MLX = $(MLXDIR)libmlx_Linux.a
@@ -197,6 +200,10 @@ std_trans: $(MLX) $(LFT) $(TESTER13OBJS) $(TESTOBJ)
 	$(CC) $(CFLAGS) -g $(TESTER13OBJS) $(TESTOBJ) -o $(BDIR)$@ -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
 	./build/std_trans
 
+glassbox: $(MLX) $(LFT) $(TESTER14OBJS) $(TESTOBJ)
+	$(CC) $(CFLAGS) -g $(TESTER14OBJS) $(TESTOBJ) -o $(BDIR)$@ -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
+	./build/glassbox
+
 $(NAME): $(MLX) $(LFT) $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME) -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
 
@@ -237,4 +244,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re debug test_parsing test_reflection std_forms std_trans
+.PHONY: all clean fclean re debug test_parsing test_reflection std_forms std_trans glassbox

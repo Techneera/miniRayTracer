@@ -21,7 +21,7 @@ void	check_axis(float origin, float direction, float *t_min, float *t_max)
 		*t_min = tmin_num * INFINITY;
 		*t_max = tmax_num * INFINITY;
 	}
-	if (*tmin > *tmax)
+	if (*t_min > *t_max)
 	{
 		tmp = *t_min;
 		*t_min = *t_max;

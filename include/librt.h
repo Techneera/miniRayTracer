@@ -20,7 +20,8 @@ typedef enum e_obj_type
 {
 	SPHERE,
 	PLANE,
-	CYLINDER
+	CYLINDER,
+	CUBE
 }	t_obj_type;
 
 typedef struct s_cylinder
