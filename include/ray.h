@@ -35,6 +35,18 @@ typedef struct s_quadratic
 	float	discriminant;
 }	t_quadratic;
 
+typedef	struct s_helper_cube
+{
+	float	tmin;
+	float	tmax;
+	float	x_tmin;
+	float	x_tmax;
+	float	y_tmin;
+	float	y_tmax;
+	float	z_tmin;
+	float	z_tmax;
+}	t_helper_cube;
+
 t_ray			ray_constructor(t_vec3 origin, t_vec3 direction);
 t_vec3			ray_position(const t_ray *ray, float t);
 t_ray			ray_transform(const t_ray *r, const t_mat4 *m);
@@ -56,4 +68,6 @@ t_vec3			local_normal_at_sphere(t_vec3 local_point);
 t_vec3  		local_normal_at_plane(void);
 t_intersect		local_intersect_plane(const t_object *plane, const t_ray *ray);
 
+t_vec3  		local_normal_at_cube(t_vec3 local_point);
+t_intersect		local_intersect_cube(const t_object *cube, const t_ray *ray);
 #endif
