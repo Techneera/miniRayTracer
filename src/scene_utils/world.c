@@ -146,7 +146,7 @@ t_vec3	color_at(t_world *world, t_ray *ray, int depth)
 	int				index;
 	float			min_t;
 
-	min_t = 9999999.0f;
+	min_t = INFINITY;
 	xs = intersect_world(world, ray);
 	index = 0;
 	hit_index = -1;
