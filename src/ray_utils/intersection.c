@@ -11,7 +11,7 @@ t_intersection	intersection(float t, const t_object *obj)
 
 t_intersect	*intersections(t_intersection *items, t_intersect *result, int size)
 {
-	int			index;
+	int	index;
 
 	index = 0;
 	result->count = size;
@@ -25,8 +25,8 @@ t_intersect	*intersections(t_intersection *items, t_intersect *result, int size)
 
 t_intersection *hit(t_intersect *items, t_intersection *smallest, int size)
 {
-	int				i;
-	bool			found;
+	int		i;
+	bool	found;
 
 	if (items == NULL || smallest == NULL || size == 0)
 		return (NULL);

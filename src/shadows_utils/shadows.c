@@ -6,14 +6,14 @@
 
 bool    is_shadowed(t_world world, t_vec3 point)
 {
-    t_vec3  vector;
-    float  distance;
+	t_vec3  vector;
+	float  distance;
 	t_ray	ray;
 	t_intersect xs;
 	t_intersection h;
 
-    vector = vector_sub(world.light.position, point);
-    distance = vector_length(vector);
+	vector = vector_sub(world.light.position, point);
+	distance = vector_length(vector);
 	ray = ray_constructor(
 		point,
 		vector_normalization(vector)
