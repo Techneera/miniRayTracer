@@ -30,6 +30,8 @@ t_intersect	intersect(const t_ray *ray, const t_object *obj)
 		result = local_intersect_plane(obj, &local_ray);
 	else if (obj->type == CUBE)
 		result = local_intersect_cube(obj, &local_ray);
+	else if (obj->type == CYLINDER)
+		result = local_intersect_cylinder(obj, &local_ray);
 	return (result);
 }
 
@@ -71,6 +73,8 @@ t_vec3	normal_at(const t_object *obj, t_vec3 world_point)
 		local_normal = local_normal_at_plane();
 	else if (obj->type == CUBE)
 		local_normal = local_normal_at_cube(local_point);
+	else if (obj->type == CYLINDER)
+		local_normal = local_normal_at_cylinder(obj, local_point);
 	else
 		return (compute_default_normal(obj, local_point));
 	transpose_inverse = matrix_transpose(&obj->transform_inv);

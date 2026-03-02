@@ -58,12 +58,15 @@ void			set_transform(t_object *obj, const t_mat4 *t);
 t_object		test_object(void);
 int				get_shape_id(void);
 
-t_intersect		local_intersect_sphere(const t_object *sphere, const t_ray *ray);
 t_vec3			local_normal_at_sphere(t_vec3 local_point);
+t_intersect		local_intersect_sphere(const t_object *sphere, const t_ray *ray);
 
 t_vec3  		local_normal_at_plane(void);
 t_intersect		local_intersect_plane(const t_object *plane, const t_ray *ray);
 
 t_vec3  		local_normal_at_cube(t_vec3 local_point);
 t_intersect		local_intersect_cube(const t_object *cube, const t_ray *ray);
+
+t_vec3  		local_normal_at_cylinder(const t_object *obj, t_vec3 local_point);
+t_intersect		local_intersect_cylinder(const t_object *cube, const t_ray *ray);
 #endif
