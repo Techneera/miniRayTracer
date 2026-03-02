@@ -50,7 +50,7 @@ void			set_transform(t_object *obj, const t_mat4 *t);
 t_object		test_object(void);
 int				get_shape_id(void);
 
-t_intersect		local_intersect_sphere(const t_object *sphere, const t_ray *local_ray);
+t_intersect		local_intersect_sphere(const t_object *sphere, const t_ray *ray);
 t_vec3			local_normal_at_sphere(t_vec3 local_point);
 
 t_vec3  		local_normal_at_plane(void);
