@@ -6,7 +6,7 @@
 # include "shades.h"
 
 # define MAX_OBJECTS 50
-# define EPSILON 0.00001
+# define EPSILON 0.001
 
 #ifndef WIN_WIDTH
 # define WIN_WIDTH 1080
