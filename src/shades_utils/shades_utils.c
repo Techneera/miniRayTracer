@@ -14,7 +14,7 @@ t_vec3	reflect(t_vec3 in, t_vec3 normal)
 	return (vector_sub(in, vector_scale(normal, 2.0f * dot)));
 }
 
-t_material	new_material(float ambient, float diffuse, float specular, float shininess, float reflective, t_pattern pattern)
+t_material	new_material(float ambient, float diffuse, float specular, float shininess, float reflective, float transparency, float refractive_index, t_pattern pattern)
 {
 	t_material	result;
 
@@ -24,6 +24,8 @@ t_material	new_material(float ambient, float diffuse, float specular, float shin
 	result.specular = specular; // STANDARD VALUE 0.9
 	result.shininess = shininess; // STANDARD VALUE 200.0
 	result.reflective = reflective; // STANDARD VALUE 0.0
+	result.transparency = transparency; // STANDARD VALUE 1.0
+	result.refractive_index = refractive_index; // STANDARD VALUE 1.5
 	result.pattern = pattern;
 	return (result);
 }
@@ -65,9 +67,9 @@ t_vec3 lighting(t_material m, const t_object *obj, const t_light *light, const t
 	float   factor;
 	
 	if (m.pattern.type != PATTERN_SOLID)
-	    color = pattern_at_object(m.pattern, obj, point);
+		color = pattern_at_object(m.pattern, obj, point);
 	else
-	    color = m.color;
+		color = m.color;
 	
 	light_intensity = vector_scale(light->color, light->brightness);
 	effective_color = vector_multiply(color, light_intensity);
@@ -106,5 +108,5 @@ t_material	material_default(void)
 		color_constructor(0, 0, 0),
 		color_constructor(1, 1, 1)
 	);
-	return (new_material(0.1f, 0.9f, 0.9f, 200.0f, 0.0f, pattern));
+	return (new_material(0.1f, 0.9f, 0.9f, 200.0f, 0.0f, 1.0f, 1.57f, pattern));
 }

@@ -25,7 +25,6 @@ typedef struct s_pattern
 }	t_pattern;
 
 t_pattern		pattern_constructor(t_pattern_type type, t_vec3 color_a, t_vec3 color_b);
-t_pattern		pattern_default(void);
 t_pattern		pattern_stripe(t_vec3 color_a, t_vec3 color_b);
 t_pattern		pattern_checker(t_vec3 color_a, t_vec3 color_b);
 t_pattern		pattern_gradient(t_vec3 color_a, t_vec3 color_b);

@@ -1,6 +1,6 @@
 NAME = $(BDIR)miniRT
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -Wno-psabi -g -Wno-incompatible-pointer-types
+CFLAGS = -Wall -Wextra -Werror -Wno-psabi -O3 -ffast-math
 #-O3 -ffast-math
 #-Wno-incompatible-pointer-types
 LMATH = -lm
@@ -27,6 +27,8 @@ SCENEDIR = $(SDIR)scene_utils
 SHADOWSDIR = $(SDIR)shadows_utils
 PATTERNSDIR = $(SDIR)patterns_utils
 REFLECTIONDIR = $(SDIR)reflection_utils
+REFRACTIONDIR = $(SDIR)refraction_utils
+APIDIR = $(SDIR)scene_api
 
 # ------------------------------ VECTORS -------------------------------- #
 
@@ -55,7 +57,8 @@ _RAY_SRCS = ray_constructor.c \
 			plane.c \
 			shape.c \
 			intersection.c \
-			ray_transform.c
+			ray_transform.c \
+			cube.c
 RAY_SRCS = $(patsubst %.c, $(RAYDIR)/%.c, $(_RAY_SRCS))
 RAY_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(RAY_SRCS))
 
@@ -85,6 +88,15 @@ _SCENE_SRCS = world.c
 SCENE_SRCS = $(patsubst %.c, $(SCENEDIR)/%.c, $(_SCENE_SRCS))
 SCENE_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(SCENE_SRCS))
 
+# ------------------------------ SCENE API -------------------------------- #
+
+_SCENE_API_SRCS = material_setters.c \
+				  object_spawn.c \
+				  rotations.c \
+				  transformations.c
+
+SCENE_API_SRCS = $(patsubst %.c, $(APIDIR)/%.c, $(_SCENE_API_SRCS))
+SCENE_API_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(SCENE_API_SRCS))
 
 # ------------------------------ SHADOWS -------------------------------- #
 
@@ -101,6 +113,12 @@ _REFLECTION_SRCS = reflected_color.c
 REFLECTION_SRCS = $(patsubst %.c, $(REFLECTIONDIR)/%.c, $(_REFLECTION_SRCS))
 REFLECTION_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(REFLECTION_SRCS))
 
+# ------------------------------ REFRACTION -------------------------------- #
+
+_REFRACTION_SRCS = manage_containers.c refracted_colors.c
+
+REFRACTION_SRCS = $(patsubst %.c, $(REFRACTIONDIR)/%.c, $(_REFRACTION_SRCS))
+REFRACTION_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(REFRACTION_SRCS))
 
 # ------------------------------ PATTERNS -------------------------------- #
 
@@ -116,36 +134,23 @@ PATTERNS_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(PATTERNS_SRCS))
 
 # ------------------------------ UNIT TESTS-------------------------------- #
 
-TESTERSRCS = $(TDIR)main_tester.c
-TESTEROBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTERSRCS))
-
-TESTER2SRCS = $(TDIR)tester_v2.c
-TESTER2OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER2SRCS))
-
-TESTER3SRCS = $(TDIR)draw_test.c
-TESTER3OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER3SRCS))
-
 TESTER4SRCS = $(TDIR)parsing_test.c
 TESTER4OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER4SRCS))
-
-TESTER5SRCS = $(TDIR)scene_test.c
-TESTER5OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER5SRCS))
-
-TESTER6SRCS = $(TDIR)shadows_test.c
-TESTER6OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER6SRCS))
-
-TESTER7SRCS = $(TDIR)refactor_test.c
-TESTER7OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER7SRCS))
-
-TESTER8SRCS = $(TDIR)test_plane.c
-TESTER8OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER8SRCS))
 
 TESTER11SRCS = $(TDIR)test_reflection.c
 TESTER11OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER11SRCS))
 
-TESTER9SRCS = $(TDIR)patterns_test.c
-TESTER9OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER9SRCS))
+TESTER12SRCS = $(TDIR)standard_forms.c
+TESTER12OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER12SRCS))
 
+TESTER12SRCS = $(TDIR)standard_forms.c
+TESTER12OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER12SRCS))
+
+TESTER13SRCS = $(TDIR)transparency_test.c
+TESTER13OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER13SRCS))
+
+TESTER14SRCS = $(TDIR)glass_box.c
+TESTER14OBJS = $(patsubst $(TDIR)%.c, $(ODIR)$(TDIR)%.o, $(TESTER14SRCS))
 # ------------------------------ LIBRARIES -------------------------------- #
 
 MLX = $(MLXDIR)libmlx_Linux.a
@@ -169,7 +174,10 @@ SRCFILES = $(SDIR)main.c \
 		   $(SHADOWS_SRCS) \
 		   $(PARSE_SRCS) \
 		   $(PATTERNS_SRCS) \
-		   $(REFLECTION_SRCS)
+		   $(REFLECTION_SRCS) \
+		   $(SCENE_API_SRCS) \
+		   $(REFRACTION_SRCS)
+
 
 # ------------------------------ RULES -------------------------------- #
 
@@ -178,35 +186,23 @@ all: $(NAME)
 debug: CFLAGS += -g
 debug: re
 
-test: $(MLX) $(LFT) $(TESTEROBJS) $(TESTOBJ)
-	$(CC) $(CFLAGS) -g $(TESTEROBJS) $(TESTOBJ) -o $(BDIR)tester -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
-
-test_v2: $(MLX) $(LFT) $(TESTER2OBJS) $(TESTOBJ)
-	$(CC) $(CFLAGS) -g $(TESTER2OBJS) $(TESTOBJ) -o $(BDIR)tester_v2 -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
-
-test_draw: $(MLX) $(LFT) $(TESTER3OBJS) $(TESTOBJ)
-	$(CC) $(CFLAGS) -g $(TESTER3OBJS) $(TESTOBJ) -o $(BDIR)tester_draw -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
-
 test_parsing: $(MLX) $(LFT) $(TESTER4OBJS) $(TESTOBJ)
 	$(CC) $(CFLAGS) -g $(TESTER4OBJS) $(TESTOBJ) -o $(BDIR)tester_parsing -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
-
-test_scene: $(MLX) $(LFT) $(TESTER5OBJS) $(TESTOBJ)
-	$(CC) $(CFLAGS) -g $(TESTER5OBJS) $(TESTOBJ) -o $(BDIR)tester_scene -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
-
-test_shadows: $(MLX) $(LFT) $(TESTER6OBJS) $(TESTOBJ)
-	$(CC) $(CFLAGS) -g $(TESTER6OBJS) $(TESTOBJ) -o $(BDIR)tester_shadows -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
-
-test_refactor: $(MLX) $(LFT) $(TESTER7OBJS) $(TESTOBJ)
-	$(CC) $(CFLAGS) -g $(TESTER7OBJS) $(TESTOBJ) -o $(BDIR)tester_refactor -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
-
-test_plane: $(MLX) $(LFT) $(TESTER8OBJS) $(TESTOBJ)
-	$(CC) $(CFLAGS) -g $(TESTER8OBJS) $(TESTOBJ) -o $(BDIR)tester_plane -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
 
 test_reflection: $(MLX) $(LFT) $(TESTER11OBJS) $(TESTOBJ)
 	$(CC) $(CFLAGS) -g $(TESTER11OBJS) $(TESTOBJ) -o $(BDIR)tester_reflection -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
 
-test_patterns: $(MLX) $(LFT) $(TESTER9OBJS) $(TESTOBJ)
-	$(CC) $(CFLAGS) -g $(TESTER9OBJS) $(TESTOBJ) -o $(BDIR)tester_patterns -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
+std_forms: $(MLX) $(LFT) $(TESTER12OBJS) $(TESTOBJ)
+	$(CC) $(CFLAGS) -g $(TESTER12OBJS) $(TESTOBJ) -o $(BDIR)$@ -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
+	./build/std_forms
+
+std_trans: $(MLX) $(LFT) $(TESTER13OBJS) $(TESTOBJ)
+	$(CC) $(CFLAGS) -g $(TESTER13OBJS) $(TESTOBJ) -o $(BDIR)$@ -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
+	./build/std_trans
+
+glassbox: $(MLX) $(LFT) $(TESTER14OBJS) $(TESTOBJ)
+	$(CC) $(CFLAGS) -g $(TESTER14OBJS) $(TESTOBJ) -o $(BDIR)$@ -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
+	./build/glassbox
 
 $(NAME): $(MLX) $(LFT) $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME) -I$(IDIR) -I$(MLXDIR) $(LMATH) -L$(MLXDIR) $(LMLX) -L$(LFTDIR) $(LLFT)
@@ -223,6 +219,8 @@ $(ODIR)$(SDIR)%.o: $(SDIR)%.c
 	@mkdir -p $(ODIR)$(SCENEDIR)
 	@mkdir -p $(ODIR)$(PATTERNSDIR)
 	@mkdir -p $(ODIR)$(REFLECTIONDIR)
+	@mkdir -p $(ODIR)$(REFRACTIONDIR)
+	@mkdir -p $(ODIR)$(APIDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -I $(IDIR) -I$(MLXDIR) -I$(LFTDIR)
 
 $(ODIR)$(TDIR)%.o: $(TDIR)%.c
@@ -246,4 +244,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re debug test test_v2 test_draw test_parsing test_scene test_shadows test_refactor test_plane test_patterns test_reflection
+.PHONY: all clean fclean re debug test_parsing test_reflection std_forms std_trans glassbox

@@ -42,5 +42,6 @@ void	canvas_destructor(t_canvas *c);
 void	write_pixel(t_canvas *c, int x, int y, t_vec3 color);
 int		key_hook(int keycode, t_canvas *canvas);
 int		close_program(t_canvas *canvas);
+void	ft_error(char *msg);
 
 #endif

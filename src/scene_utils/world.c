@@ -6,6 +6,7 @@
 #include "shades.h"
 #include "shadows.h"
 #include "vector.h"
+#include "refraction.h"
 #include <math.h>
 
 void	intersect_sort(t_intersect *this)
@@ -15,16 +16,16 @@ void	intersect_sort(t_intersect *this)
 	int				j;
 
 	i = 0;
-	while (i < this->count)
+	while (i < this->count - 1)
 	{
-		j = i + 1;
-		while (j < this->count)
+		j = 0;
+		while (j < this->count - i - 1)
 		{
-			if (this->i[i].t > this->i[j].t)
+			if (this->i[j].t > this->i[j + 1].t)
 			{
-				temp = this->i[i];
-				this->i[i] = this->i[j];
-				this->i[j] = temp;
+				temp = this->i[j];
+				this->i[j] = this->i[j + 1];
+				this->i[j + 1] = temp;
 			}
 			++j;
 		}
@@ -53,19 +54,22 @@ t_intersect	intersect_world(t_world *world, t_ray *ray)
 		}
 		++i;
 	}
-//	intersect_sort(&this);
+	intersect_sort(&this);
 	return (this);
 }
 
-t_computation	prepare_computations(t_intersection i, t_ray *ray)
+t_computation	prepare_computations(t_intersection hit, t_ray *ray, t_intersect *xs)
 {
 	t_computation	this;
+	const t_object	*containers[MAX_CONTAINERS] = {NULL};
+	int				container_count;
+	int				i;
 
-	this.t = i.t;
-	this.object = i.object;
+	this.t = hit.t;
+	this.object = hit.object;
 	this.point = ray_position(ray, this.t);
 	this.eyev = vector_scale(ray->direction, -1.0);
-	this.normalv = normal_at(i.object, this.point);
+	this.normalv = normal_at(this.object, this.point);
 	this.inside = false;
 	if (vector_dot_product(this.normalv, this.eyev) < 0)
 	{
@@ -77,6 +81,32 @@ t_computation	prepare_computations(t_intersection i, t_ray *ray)
 		this.point,
 		vector_scale(this.normalv, EPSILON)
 	);
+	this.under_point = vector_sub(
+		this.point,
+		vector_scale(this.normalv, EPSILON)
+	);
+	i = 0;
+	container_count = 0;
+	while (i < xs->count)
+	{
+		if (xs->i[i].t == hit.t && xs->i[i].object == hit.object)
+		{
+			if (container_count == 0)
+				this.n1 = 1.0f;
+			else
+				this.n1 = containers[container_count - 1]->material.refractive_index;
+		}
+		manage_containers(containers, &container_count, xs->i[i].object);
+		if (xs->i[i].t == hit.t && xs->i[i].object == hit.object)
+		{
+			if (container_count == 0)
+				this.n2 = 1.0f;
+			else
+				this.n2 = containers[container_count - 1]->material.refractive_index;
+			break;
+		}
+		i++;
+	}
 	return (this);
 }
 
@@ -84,9 +114,9 @@ t_vec3	shade_hit(t_world *world, t_computation *computations, int depth)
 {
 	t_vec3	surface_color;
 	t_vec3	reflected;
-	bool	in_shadow;
+	t_vec3	refracted;
+	float	reflectance;
 
-	in_shadow = is_shadowed(*world, computations->over_point);
 	surface_color = lighting(
 			computations->object->material,
 			computations->object,
@@ -95,10 +125,17 @@ t_vec3	shade_hit(t_world *world, t_computation *computations, int depth)
 			computations->over_point,
 			computations->eyev,
 			computations->normalv,
-			in_shadow
+			is_shadowed(*world, computations->over_point)
 	);
 	reflected = reflected_color(world, computations, depth);
-	return (color_add(surface_color, reflected));
+	refracted = refracted_color(world, computations, depth);
+	if (computations->object->material.reflective > 0.0f && computations->object->material.transparency > 0.0f)
+	{
+		reflectance = schlick(computations);
+		reflected = vector_scale(reflected, reflectance);
+		refracted = vector_scale(refracted, 1.0f - reflectance);
+	}
+	return (vector_add(surface_color, vector_add(reflected, refracted)));
 }
 
 t_vec3	color_at(t_world *world, t_ray *ray, int depth)
@@ -109,7 +146,7 @@ t_vec3	color_at(t_world *world, t_ray *ray, int depth)
 	int				index;
 	float			min_t;
 
-	min_t = 9999999.0f;
+	min_t = INFINITY;
 	xs = intersect_world(world, ray);
 	index = 0;
 	hit_index = -1;
@@ -124,7 +161,7 @@ t_vec3	color_at(t_world *world, t_ray *ray, int depth)
 	}
 	if (hit_index == -1)
 		return (color_constructor(0.0f, 0.0f, 0.0f));
-	comps = prepare_computations(xs.i[hit_index], ray);
+	comps = prepare_computations(xs.i[hit_index], ray, &xs);
 	return (shade_hit(world, &comps, depth));
 }
 
@@ -220,16 +257,18 @@ t_ray	ray_for_pixel(t_camera *c, int px, int py)
 	return (ray_constructor(origin, direction));
 }
 
-t_canvas	render(void *mlx, t_camera *c, t_world *w)
+void	render(t_canvas *canvas, t_camera *c, t_world *w)
 {
-	t_canvas	image;
 	t_ray		ray;
 	t_vec3		color;
 	int			x;
 	int			y;
 
-	image.mlx = mlx;
-	canvas_constructor(c->hsize, c->vsize, &image);
+	if (canvas_constructor(c->hsize, c->vsize, canvas) == false)
+	{
+		ft_error("Failed to lauch canvas\n");
+		close_program(canvas);
+	}
 	y = 0;
 	while (y < c->vsize)
 	{
@@ -238,10 +277,9 @@ t_canvas	render(void *mlx, t_camera *c, t_world *w)
 		{
 			ray = ray_for_pixel(c, x, y);
 			color = color_at(w, &ray, MAX_BOUNCE);
-			write_pixel(&image, x, y, color);
+			write_pixel(canvas, x, y, color);
 			++x;
 		}
 		++y;
 	}
-	return (image);
 }
