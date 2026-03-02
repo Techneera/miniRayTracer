@@ -21,7 +21,8 @@ typedef enum e_obj_type
 	SPHERE,
 	PLANE,
 	CYLINDER,
-	CUBE
+	CUBE,
+	CONE
 }	t_obj_type;
 
 typedef struct s_cylinder
@@ -38,6 +39,7 @@ typedef struct s_object
 	t_mat4		transform;
 	t_mat4		transform_inv;
 	t_cylinder	cy;
+	t_cylinder	co;
 	t_material	material;
 }	t_object;
 

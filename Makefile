@@ -59,7 +59,8 @@ _RAY_SRCS = ray_constructor.c \
 			intersection.c \
 			ray_transform.c \
 			cube.c \
-			cylinder.c
+			cylinder.c \
+			cone.c
 RAY_SRCS = $(patsubst %.c, $(RAYDIR)/%.c, $(_RAY_SRCS))
 RAY_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(RAY_SRCS))
 
