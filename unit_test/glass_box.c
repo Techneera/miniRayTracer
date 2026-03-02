@@ -33,7 +33,7 @@ void build_glassbox_scene(t_scene *scene)
     set_pattern(floor, PATTERN_CHECKER, 
                 color_constructor(0.9f, 0.9f, 0.9f),
                 color_constructor(0.2f, 0.2f, 0.2f), 0.5f);
-    set_optics(floor, 0.8f, 0.2f, 0.3f, 0.0f, 1.0f); // Slightly reflective
+    set_optics(floor, 0.8f, 0.2f, 0.0f, 0.0f, 1.0f); // Slightly reflective
 
     // Back Wall
     back_wall = spawn_plane(&scene->world);

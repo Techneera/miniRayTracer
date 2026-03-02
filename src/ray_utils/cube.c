@@ -5,21 +5,17 @@
 static
 void	check_axis(float origin, float direction, float *t_min, float *t_max)
 {
-	float	tmin_num;
-	float	tmax_num;
 	float	tmp;
 
-	tmin_num = -1.0 - origin;
-	tmax_num = 1.0 - origin;
 	if (fabsf(direction) >= EPSILON)
 	{
-		*t_min = tmin_num / direction;
-		*t_max = tmax_num / direction;
+		*t_min = (-1.0f - origin) / direction;
+		*t_max = (1.0f - origin) / direction;
 	}
 	else
 	{
-		*t_min = tmin_num * INFINITY;
-		*t_max = tmax_num * INFINITY;
+		*t_min = (-1.0f - origin) * INFINITY;
+		*t_max = (1.0f - origin) * INFINITY;
 	}
 	if (*t_min > *t_max)
 	{
@@ -36,24 +32,26 @@ t_intersect	local_intersect_cube(const t_object *cube, const t_ray *ray)
 
 	result.count = 0;
 
-	check_axis(ray->origin.x, ray->direction.x, &h.x_tmin, &h.x_tmax);
-	check_axis(ray->origin.y, ray->direction.y, &h.y_tmin, &h.y_tmax);
-	check_axis(ray->origin.z, ray->direction.z, &h.z_tmin, &h.z_tmax);
+	check_axis(ray->origin.x, ray->direction.x, &h.tmin, &h.tmax);
+	check_axis(ray->origin.y, ray->direction.y, &h.tmin_curr, &h.tmax_curr);
 
-	h.tmin = h.x_tmin;
-	if (h.y_tmin > h.tmin)
-		h.tmin = h.y_tmin;
-	if (h.z_tmin > h.tmin)
-		h.tmin = h.z_tmin;
-
-	h.tmax = h.x_tmax;
-	if (h.y_tmax < h.tmax)
-		h.tmax = h.y_tmax;
-	if (h.z_tmax < h.tmax)
-		h.tmax = h.z_tmax;
-
-	if (h.tmin > h.tmax)
+	if (h.tmin > h.tmax_curr || h.tmin_curr > h.tmax)
 		return (result);
+
+	if (h.tmin_curr > h.tmin)
+		h.tmin = h.tmin_curr;
+	if (h.tmax_curr < h.tmax)
+		h.tmax = h.tmax_curr;
+
+	check_axis(ray->origin.z, ray->direction.z, &h.tmin_curr, &h.tmax_curr);
+
+	if (h.tmin > h.tmax_curr || h.tmin_curr > h.tmax)
+		return (result);
+	if (h.tmin_curr > h.tmin)
+		h.tmin = h.tmin_curr;
+	if (h.tmax_curr < h.tmax)
+		h.tmax = h.tmax_curr;
+
 	result.count = 2;
 	result.i[0].t = h.tmin;
 	result.i[0].object = cube;

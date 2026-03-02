@@ -39,12 +39,8 @@ typedef	struct s_helper_cube
 {
 	float	tmin;
 	float	tmax;
-	float	x_tmin;
-	float	x_tmax;
-	float	y_tmin;
-	float	y_tmax;
-	float	z_tmin;
-	float	z_tmax;
+	float	tmax_curr;
+	float	tmin_curr;
 }	t_helper_cube;
 
 t_ray			ray_constructor(t_vec3 origin, t_vec3 direction);
