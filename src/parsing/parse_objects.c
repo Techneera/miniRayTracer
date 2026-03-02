@@ -84,6 +84,7 @@ int	parse_sphere(char *line, t_scene *scene)
 	set_transform(obj, &h.transform);
 	obj->material = material_default();
 	obj->material.color = h.color;
+	/*
 	// Hack: If the sphere is almost black, make it a perfect mirror!
     if (h.color.x < 0.1f && h.color.y < 0.1f && h.color.z < 0.1f)
     {
@@ -101,6 +102,7 @@ int	parse_sphere(char *line, t_scene *scene)
         );
         obj->material.reflective = 0.3f; // Give the floor a slight glossy shine
     }
+	*/
 	++scene->world.object_count;
 	return (0);
 }
