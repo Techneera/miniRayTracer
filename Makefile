@@ -40,13 +40,14 @@ VEC_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(VEC_SRCS))
 
 _CANVAS_SRCS = color_operations.c \
 			  color_conversion.c \
-			  canvas_constructor.c
+			  canvas_constructor.c \
+			  canvas_utils.c
 CANVAS_SRCS = $(patsubst %.c, $(CANVASDIR)/%.c, $(_CANVAS_SRCS))
 CANVAS_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)%.o, $(CANVAS_SRCS))
 
 # ------------------------------ MATRIX -------------------------------- #
 
-_MATRIX_SRCS = matrix_ops.c matrix_transforms.c
+_MATRIX_SRCS = matrix_ops.c matrix_transforms.c object_transform_utils.c
 MATRIX_SRCS = $(patsubst %.c, $(MATDIR)/%.c, $(_MATRIX_SRCS))
 MATRIX_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(MATRIX_SRCS))
 
@@ -56,10 +57,12 @@ _RAY_SRCS = ray_constructor.c \
 			sphere.c \
 			plane.c \
 			shape.c \
+			shape_utils.c \
 			intersection.c \
 			ray_transform.c \
 			cube.c \
-			cylinder.c
+			cylinder.c \
+			cylinder_utils.c
 RAY_SRCS = $(patsubst %.c, $(RAYDIR)/%.c, $(_RAY_SRCS))
 RAY_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(RAY_SRCS))
 
@@ -67,6 +70,7 @@ RAY_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(RAY_SRCS))
 
 _PARSE_SRCS = parser.c \
 			  parser_utils.c \
+			  parser_string_utils.c \
 			  parse_setup.c \
 			  parse_objects.c \
 			  get_line_buf.c \
