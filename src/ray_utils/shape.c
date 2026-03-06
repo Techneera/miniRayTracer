@@ -5,13 +5,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-int	get_shape_id(void)
-{
-	static int	id;
-
-	return (id++);
-}
-
 void	set_transform(t_object *obj, const t_mat4 *t)
 {
 	obj->transform = *t;

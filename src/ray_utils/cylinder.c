@@ -1,15 +1,5 @@
 #include "ray.h"
 
-static bool	check_caps(const t_ray *ray, float t)
-{
-	float	x;
-	float	z;
-
-	x = ray->origin.x + ray->direction.x * t;
-	z = ray->origin.z + ray->direction.z * t;
-	return ((x * x + z * z) <= 1.0f + EPSILON);
-}
-
 static void	intersect_caps(const t_object *cy, const t_ray *ray,
 		t_intersect *xs)
 {
@@ -33,51 +23,55 @@ static void	intersect_caps(const t_object *cy, const t_ray *ray,
 	}
 }
 
+static t_quadratic	calc_cylinder_quadratic(const t_ray *ray)
+{
+	t_quadratic	q;
+
+	q.a = ray->direction.x * ray->direction.x + ray->direction.z
+		* ray->direction.z;
+	q.b = 2.0f * ray->origin.x * ray->direction.x + 2.0f * ray->origin.z
+		* ray->direction.z;
+	q.c = ray->origin.x * ray->origin.x + ray->origin.z * ray->origin.z - 1.0f;
+	q.discriminant = q.b * q.b - 4.0f * q.a * q.c;
+	return (q);
+}
+
+static void	add_valid_intersection(t_intersect *res, float t,
+			const t_object *cylinder, const t_ray *ray)
+{
+	float	y;
+
+	y = ray->origin.y + t * ray->direction.y;
+	if (cylinder->cy.min_y < y && y < cylinder->cy.max_y)
+	{
+		res->i[res->count].t = t;
+		res->i[res->count].object = cylinder;
+		res->count++;
+	}
+}
+
 t_intersect	local_intersect_cylinder(const t_object *cylinder, const t_ray *ray)
 {
 	t_intersect	res;
 	t_quadratic	q;
-	float		tmp;
 	float		t0;
 	float		t1;
-	float		y0;
-	float		y1;
+	float		tmp;
 
 	res.count = 0;
-	q.a = ray->direction.x * ray->direction.x + ray->direction.z
-		* ray->direction.z;
-	if (fabsf(q.a) >= EPSILON)
+	q = calc_cylinder_quadratic(ray);
+	if (fabsf(q.a) >= EPSILON && q.discriminant >= 0.0f)
 	{
-		q.b = 2.0f * ray->origin.x * ray->direction.x + 2.0f * ray->origin.z
-			* ray->direction.z;
-		q.c = ray->origin.x * ray->origin.x + ray->origin.z * ray->origin.z
-			- 1.0f;
-		q.discriminant = q.b * q.b - 4.0f * q.a * q.c;
-		if (q.discriminant >= 0.0f)
+		t0 = (-q.b - sqrtf(q.discriminant)) / (2.0f * q.a);
+		t1 = (-q.b + sqrtf(q.discriminant)) / (2.0f * q.a);
+		if (t0 > t1)
 		{
-			t0 = (-q.b - sqrtf(q.discriminant)) / (2.0f * q.a);
-			t1 = (-q.b + sqrtf(q.discriminant)) / (2.0f * q.a);
-			if (t0 > t1)
-			{
-				tmp = t0;
-				t0 = t1;
-				t1 = tmp;
-			}
-			y0 = ray->origin.y + t0 * ray->direction.y;
-			if (cylinder->cy.min_y < y0 && y0 < cylinder->cy.max_y)
-			{
-				res.i[res.count].t = t0;
-				res.i[res.count].object = cylinder;
-				res.count++;
-			}
-			y1 = ray->origin.y + t1 * ray->direction.y;
-			if (cylinder->cy.min_y < y1 && y1 < cylinder->cy.max_y)
-			{
-				res.i[res.count].t = t1;
-				res.i[res.count].object = cylinder;
-				res.count++;
-			}
+			tmp = t0;
+			t0 = t1;
+			t1 = tmp;
 		}
+		add_valid_intersection(&res, t0, cylinder, ray);
+		add_valid_intersection(&res, t1, cylinder, ray);
 	}
 	intersect_caps(cylinder, ray, &res);
 	return (res);
