@@ -27,7 +27,7 @@ float	vector_length_squared(t_vec3 u)
 	return (u.x * u.x + u.y * u.y + u.z * u.z);
 }
 
-float	vector_length( t_vec3 u)
+float	vector_length(t_vec3 u)
 {
 	float	dot;
 

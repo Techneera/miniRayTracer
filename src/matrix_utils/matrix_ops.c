@@ -6,12 +6,11 @@ t_mat4	matrix_multiply(const t_mat4 *a, const t_mat4 *b)
 	int		i;
 
 	i = 0;
-	while(i < 4)
+	while (i < 4)
 	{
-		result.rows[i] = (b->rows[0] * a->m[i * 4]) + \
-						(b->rows[1] * a->m[i * 4 + 1]) + \
-						(b->rows[2] * a->m[i * 4 + 2]) + \
-						(b->rows[3] * a->m[i * 4 + 3]);
+		result.rows[i] = (b->rows[0] * a->m[i * 4]) + (b->rows[1] * a->m[i * 4
+				+ 1]) + (b->rows[2] * a->m[i * 4 + 2]) + (b->rows[3] * a->m[i
+				* 4 + 3]);
 		i++;
 	}
 	return (result);
@@ -89,27 +88,21 @@ float	matrix_cofactor_3x3(const t_mat4 *m, int row, int col)
 		if (k != col)
 			idy[l++] = k;
 	}
-	return (m->m[idx[0] * 4 + idy[0]] * \
-		matrix_determinant_2x2(m->m[idx[1] * 4 + idy[1]], \
-		m->m[idx[1] * 4 + idy[2]], \
-		m->m[idx[2] * 4 + idy[1]], \
-		m->m[idx[2] * 4 + idy[2]]) - \
-		m->m[idx[0] * 4 + idy[1]] * \
-		matrix_determinant_2x2(m->m[idx[1] * 4 + idy[0]], \
-		m->m[idx[1] * 4 + idy[2]], m->m[idx[2] * 4 + idy[0]], \
-		m->m[idx[2] * 4 + idy[2]]) + \
-		m->m[idx[0] * 4 + idy[2]] * \
-		matrix_determinant_2x2(m->m[idx[1] * 4 + idy[0]], \
-		m->m[idx[1] * 4 + idy[1]], m->m[idx[2] * 4 + idy[0]], \
-		m->m[idx[2] * 4 + idy[1]]));
+	return (m->m[idx[0] * 4 + idy[0]] * matrix_determinant_2x2(m->m[idx[1] * 4
+				+ idy[1]], m->m[idx[1] * 4 + idy[2]], m->m[idx[2] * 4 + idy[1]],
+			m->m[idx[2] * 4 + idy[2]]) - m->m[idx[0] * 4 + idy[1]]
+		* matrix_determinant_2x2(m->m[idx[1] * 4 + idy[0]], m->m[idx[1] * 4
+				+ idy[2]], m->m[idx[2] * 4 + idy[0]], m->m[idx[2] * 4 + idy[2]])
+		+ m->m[idx[0] * 4 + idy[2]] * matrix_determinant_2x2(m->m[idx[1] * 4
+				+ idy[0]], m->m[idx[1] * 4 + idy[1]], m->m[idx[2] * 4 + idy[0]],
+			m->m[idx[2] * 4 + idy[1]]));
 }
 
 float	matrix_determinant(const t_mat4 *m)
 {
-	return (m->m[0] * matrix_cofactor_3x3(m, 0, 0) - \
-			m->m[1] * matrix_cofactor_3x3(m, 0, 1) + \
-			m->m[2] * matrix_cofactor_3x3(m, 0, 2) - \
-			m->m[3] * matrix_cofactor_3x3(m, 0, 3));
+	return (m->m[0] * matrix_cofactor_3x3(m, 0, 0) - m->m[1]
+		* matrix_cofactor_3x3(m, 0, 1) + m->m[2] * matrix_cofactor_3x3(m, 0, 2)
+		- m->m[3] * matrix_cofactor_3x3(m, 0, 3));
 }
 
 int	matrix_is_invertable(const t_mat4 *m)

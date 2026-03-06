@@ -1,6 +1,6 @@
-#include "scene_api.h"
 #include "matrix.h"
 #include "patterns.h"
+#include "scene_api.h"
 
 void	set_color(t_object *obj, t_vec3 color)
 {
@@ -8,7 +8,8 @@ void	set_color(t_object *obj, t_vec3 color)
 	obj->material.pattern = pattern_constructor(PATTERN_SOLID, color, color);
 }
 
-void	set_pattern(t_object *obj, t_pattern_type type, t_vec3 color_a, t_vec3 color_b, float scale)
+void	set_pattern(t_object *obj, t_pattern_type type, t_vec3 color_a,
+		t_vec3 color_b, float scale)
 {
 	t_pattern	pat;
 
@@ -18,7 +19,8 @@ void	set_pattern(t_object *obj, t_pattern_type type, t_vec3 color_a, t_vec3 colo
 	obj->material.pattern = pat;
 }
 
-void	set_optics(t_object *obj, float diffuse, float specular, float reflective, float transparency, float refractive_index)
+void	set_optics(t_object *obj, float diffuse, float specular,
+		float reflective, float transparency, float refractive_index)
 {
 	obj->material.diffuse = diffuse;
 	obj->material.specular = specular;

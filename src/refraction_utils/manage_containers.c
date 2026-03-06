@@ -1,7 +1,8 @@
 #include "librt.h"
 #include "refraction.h"
 
-void	manage_containers(const t_object *containers[], int *count, const t_object *obj)
+void	manage_containers(const t_object *containers[], int *count,
+		const t_object *obj)
 {
 	int	i;
 	int	found_idx;
@@ -13,7 +14,7 @@ void	manage_containers(const t_object *containers[], int *count, const t_object 
 		if (containers[i] == obj)
 		{
 			found_idx = i;
-			break;
+			break ;
 		}
 		i++;
 	}

@@ -1,8 +1,8 @@
-#include "patterns.h"
-#include "shades.h"
-#include "ray.h"
 #include "canvas.h"
+#include "patterns.h"
+#include "ray.h"
 #include "scene.h"
+#include "shades.h"
 #include "vector.h"
 #include <math.h>
 
@@ -14,18 +14,20 @@ t_vec3	reflect(t_vec3 in, t_vec3 normal)
 	return (vector_sub(in, vector_scale(normal, 2.0f * dot)));
 }
 
-t_material	new_material(float ambient, float diffuse, float specular, float shininess, float reflective, float transparency, float refractive_index, t_pattern pattern)
+t_material	new_material(float ambient, float diffuse, float specular,
+		float shininess, float reflective, float transparency,
+		float refractive_index, t_pattern pattern)
 {
 	t_material	result;
 
 	result.color = color_constructor(1.0, 1.0, 1.0);
-	result.ambient = ambient; // STANDARD VALUE 0.1
-	result.diffuse = diffuse; // STANDARD VALUE 0.9
-	result.specular = specular; // STANDARD VALUE 0.9
-	result.shininess = shininess; // STANDARD VALUE 200.0
-	result.reflective = reflective; // STANDARD VALUE 0.0
-	result.transparency = transparency; // STANDARD VALUE 1.0
-	result.refractive_index = refractive_index; // STANDARD VALUE 1.5
+	result.ambient = ambient;
+	result.diffuse = diffuse;
+	result.specular = specular;
+	result.shininess = shininess;
+	result.reflective = reflective;
+	result.transparency = transparency;
+	result.refractive_index = refractive_index;
 	result.pattern = pattern;
 	return (result);
 }
@@ -52,28 +54,30 @@ t_light	light_constructor(t_vec3 position, t_vec3 color, float brightness)
 ** @param normalv:   The surface normal at the point (normalized).
 ** @param in_shadow: Boolean flag indicating if the point is obscured.
 */
-t_vec3 lighting(t_material m, const t_object *obj, const t_light *light, const t_ambient_light *a_light, t_vec3 point, t_vec3 eyev, t_vec3 normalv, bool in_shadow)
+t_vec3	lighting(t_material m, const t_object *obj, const t_light *light,
+		const t_ambient_light *a_light, t_vec3 point, t_vec3 eyev,
+		t_vec3 normalv, bool in_shadow)
 {
-	t_vec3  color;
-	t_vec3  light_intensity;
-	t_vec3  effective_color;
-	t_vec3  lightv;
-	t_vec3  ambient;
-	t_vec3  diffuse;
-	t_vec3  specular;
-	t_vec3  reflectv;
-	float   light_dot_normal;
-	float   reflect_dot_eye;
-	float   factor;
-	
+	t_vec3	color;
+	t_vec3	light_intensity;
+	t_vec3	effective_color;
+	t_vec3	lightv;
+	t_vec3	ambient;
+	t_vec3	diffuse;
+	t_vec3	specular;
+	t_vec3	reflectv;
+	float	light_dot_normal;
+	float	reflect_dot_eye;
+	float	factor;
+
 	if (m.pattern.type != PATTERN_SOLID)
 		color = pattern_at_object(m.pattern, obj, point);
 	else
 		color = m.color;
-	
 	light_intensity = vector_scale(light->color, light->brightness);
 	effective_color = vector_multiply(color, light_intensity);
-	ambient = vector_multiply(color, vector_scale(a_light->color, a_light->ratio * m.ambient));
+	ambient = vector_multiply(color, vector_scale(a_light->color, a_light->ratio
+				* m.ambient));
 	if (in_shadow)
 		return (ambient);
 	lightv = vector_normalization(vector_sub(light->position, point));
@@ -103,10 +107,7 @@ t_material	material_default(void)
 {
 	t_pattern	pattern;
 
-	pattern = pattern_constructor(
-		PATTERN_SOLID,
-		color_constructor(0, 0, 0),
-		color_constructor(1, 1, 1)
-	);
+	pattern = pattern_constructor(PATTERN_SOLID, color_constructor(0, 0, 0),
+			color_constructor(1, 1, 1));
 	return (new_material(0.1f, 0.8f, 0.2f, 32.0f, 0.0f, 0.0f, 1.0f, pattern));
 }

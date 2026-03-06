@@ -14,8 +14,6 @@ t_vec3	gradient_at(t_pattern pattern, t_vec3 point)
 
 	distance = vector_sub(pattern.b, pattern.a);
 	fraction = point.x - floorf(point.x);
-	return (vector_add(
-		pattern.a,
-		vector_scale(distance, fraction)
-	));
+	return (vector_add(pattern.a, vector_scale(distance, fraction)));
 }
+

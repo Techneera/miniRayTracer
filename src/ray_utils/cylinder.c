@@ -1,7 +1,6 @@
 #include "ray.h"
 
-static
-bool	check_caps(const t_ray *ray, float t)
+static bool	check_caps(const t_ray *ray, float t)
 {
 	float	x;
 	float	z;
@@ -11,8 +10,8 @@ bool	check_caps(const t_ray *ray, float t)
 	return ((x * x + z * z) <= 1.0f + EPSILON);
 }
 
-static
-void	intersect_caps(const t_object *cy, const t_ray *ray, t_intersect *xs)
+static void	intersect_caps(const t_object *cy, const t_ray *ray,
+		t_intersect *xs)
 {
 	float	t;
 
@@ -45,11 +44,14 @@ t_intersect	local_intersect_cylinder(const t_object *cylinder, const t_ray *ray)
 	float		y1;
 
 	res.count = 0;
-	q.a = ray->direction.x * ray->direction.x + ray->direction.z * ray->direction.z;
+	q.a = ray->direction.x * ray->direction.x + ray->direction.z
+		* ray->direction.z;
 	if (fabsf(q.a) >= EPSILON)
 	{
-		q.b = 2.0f * ray->origin.x * ray->direction.x + 2.0f * ray->origin.z * ray->direction.z;
-		q.c = ray->origin.x * ray->origin.x + ray->origin.z * ray->origin.z - 1.0f;
+		q.b = 2.0f * ray->origin.x * ray->direction.x + 2.0f * ray->origin.z
+			* ray->direction.z;
+		q.c = ray->origin.x * ray->origin.x + ray->origin.z * ray->origin.z
+			- 1.0f;
 		q.discriminant = q.b * q.b - 4.0f * q.a * q.c;
 		if (q.discriminant >= 0.0f)
 		{

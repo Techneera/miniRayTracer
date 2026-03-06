@@ -1,26 +1,11 @@
+#include "canvas.h"
 #include "librt.h"
 #include "parser.h"
-#include "vector.h"
-#include "canvas.h"
 #include "patterns.h"
 #include "ray.h"
+#include "vector.h"
 
-typedef struct s_helper
-{
-	t_vec3	pos;
-	t_vec3	vec;
-	t_vec3	color;
-	float	diameter;
-	float	height;
-	t_mat4	scale;
-	t_mat4	rot;
-	t_mat4	trans;
-	t_mat4	transform;
-	t_mat4	temp;
-}	t_helper;
-
-static
-t_mat4	align_up_vector(t_vec3 target_up)
+static t_mat4	align_up_vector(t_vec3 target_up)
 {
 	t_vec3	up;
 	t_vec3	right;
@@ -39,19 +24,13 @@ t_mat4	align_up_vector(t_vec3 target_up)
 	right = vector_normalization(vector_cross_product(up, target_up));
 	forward = vector_cross_product(target_up, right);
 	matrix_identity(&result);
-	result = (t_mat4){
-		.m = {
-			right.x, target_up.x, forward.x, 0.0f,
-			right.y, target_up.y, forward.y, 0.0f,
-			right.z, target_up.z, forward.z, 0.0f,
-			0.0f, 0.0f, 0.0f, 1.0f
-		}
-	};
+	result = (t_mat4){.m = {right.x, target_up.x, forward.x, 0.0f, right.y,
+		target_up.y, forward.y, 0.0f, right.z, target_up.z, forward.z, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f}};
 	return (result);
 }
 
-static
-int	set_up(char **line, t_helper *h, t_object *obj, t_obj_type type)
+static int	set_up(char **line, t_helper *h, t_object *obj, t_obj_type type)
 {
 	obj->type = type;
 	obj->id = get_shape_id();
@@ -78,31 +57,13 @@ int	parse_sphere(char *line, t_scene *scene)
 	if (parse_vec3(&line, &h.color) != 0 || is_valid_color(h.color) == false)
 		return (1);
 	color_normalize(&h.color);
-	h.scale = matrix_scale(h.diameter * 0.5f, h.diameter * 0.5f, h.diameter * 0.5f);
+	h.scale = matrix_scale(h.diameter * 0.5f, h.diameter * 0.5f, h.diameter
+			* 0.5f);
 	h.trans = matrix_translation(h.pos.x, h.pos.y, h.pos.z);
 	h.transform = matrix_multiply(&h.trans, &h.scale);
 	set_transform(obj, &h.transform);
 	obj->material = material_default();
 	obj->material.color = h.color;
-	/*
-	// Hack: If the sphere is almost black, make it a perfect mirror!
-    if (h.color.x < 0.1f && h.color.y < 0.1f && h.color.z < 0.1f)
-    {
-        obj->material.reflective = 0.9f;   // 90% reflective
-        obj->material.diffuse = 0.1f;      // Very little standard color
-        obj->material.shininess = 300.0f;  // Tight, sharp specular highlight
-    }
-    // Hack: Enable the checkerboard pattern on the floor
-    if (obj->type == PLANE && h.vec.y > 0.9f)
-    {
-        obj->material.pattern = pattern_constructor(
-            PATTERN_CHECKER, 
-            color_constructor(1.0f, 1.0f, 1.0f), 
-            color_constructor(0.2f, 0.2f, 0.2f)
-        );
-        obj->material.reflective = 0.3f; // Give the floor a slight glossy shine
-    }
-	*/
 	++scene->world.object_count;
 	return (0);
 }
@@ -134,8 +95,7 @@ int	parse_plane(char *line, t_scene *scene)
 	return (0);
 }
 
-static
-void	set_cylinder_params(t_object *obj, t_helper *h)
+static void	set_cylinder_params(t_object *obj, t_helper *h)
 {
 	obj->cy.min_y = -h->height * 0.5f;
 	obj->cy.max_y = h->height * 0.5f;
