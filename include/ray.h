@@ -69,4 +69,6 @@ t_intersect		local_intersect_cube(const t_object *cube, const t_ray *ray);
 
 t_vec3  		local_normal_at_cylinder(const t_object *obj, t_vec3 local_point);
 t_intersect		local_intersect_cylinder(const t_object *cube, const t_ray *ray);
+
+bool			check_caps(const t_ray *ray, float t);
 #endif
