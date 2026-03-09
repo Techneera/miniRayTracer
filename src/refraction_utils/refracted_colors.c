@@ -9,7 +9,6 @@ t_vec3	refracted_color(t_world *world, t_computation *comps, int depth)
 	float	cos_i;
 	float	sin2_t;
 	float	cos_t;
-	t_vec3	direction;
 
 	if (depth <= 0 || comps->object->material.transparency == 0.0f)
 		return (color_constructor(0.0f, 0.0f, 0.0f));
@@ -19,9 +18,9 @@ t_vec3	refracted_color(t_world *world, t_computation *comps, int depth)
 	if (sin2_t > 1.0)
 		return (color_constructor(0.0f, 0.0f, 0.0f));
 	cos_t = sqrtf(1.0f - sin2_t);
-	direction = vector_sub(vector_scale(comps->normalv, (n_ratio * cos_i)
-				- cos_t), vector_scale(comps->eyev, n_ratio));
-	refracted_ray = ray_constructor(comps->under_point, direction);
+	refracted_ray = ray_constructor(comps->under_point,
+			vector_sub(vector_scale(comps->normalv, (n_ratio * cos_i) - cos_t),
+				vector_scale(comps->eyev, n_ratio)));
 	return (vector_scale(color_at(world, &refracted_ray, depth - 1),
 			comps->object->material.transparency));
 }

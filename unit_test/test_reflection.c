@@ -53,7 +53,13 @@ int main(void)
     pat.transform_inv = matrix_inverse(&pat.transform);
     
     // Give it a slightly glossy finish
-    obj->material = new_material(0.1f, 0.7f, 0.3f, 200.0f, 0.2f, pat);
+    obj->material = material_default();
+    obj->material.ambient = 0.1f;
+    obj->material.diffuse = 0.7f;
+    obj->material.specular = 0.3f;
+    obj->material.shininess = 200.0f;
+    obj->material.reflective = 0.2f;
+    obj->material.pattern = pat;
 
     // --- 2. Middle Sphere (Diagonal Stripes & Semi-Reflective) ---
     obj = &world.objects[world.object_count++];
@@ -70,7 +76,13 @@ int main(void)
     pat.transform_inv = matrix_inverse(&pat.transform);
     
     // Mix diffuse and reflective so we see both the pattern and the reflection
-    obj->material = new_material(0.1f, 0.5f, 0.9f, 300.0f, 0.5f, pat);
+    obj->material = material_default();
+    obj->material.ambient = 0.1f;
+    obj->material.diffuse = 0.5f;
+    obj->material.specular = 0.9f;
+    obj->material.shininess = 300.0f;
+    obj->material.reflective = 0.5f;
+    obj->material.pattern = pat;
 
     // --- 3. Right Sphere (Smooth Gradient) ---
     obj = &world.objects[world.object_count++];
@@ -87,7 +99,13 @@ int main(void)
     pat.transform = matrix_translation(1.0f, 0.0f, 0.0f);
     pat.transform_inv = matrix_inverse(&pat.transform);
     
-    obj->material = new_material(0.1f, 0.7f, 0.3f, 200.0f, 0.1f, pat);
+    obj->material = material_default();
+    obj->material.ambient = 0.1f;
+    obj->material.diffuse = 0.7f;
+    obj->material.specular = 0.3f;
+    obj->material.shininess = 200.0f;
+    obj->material.reflective = 0.1f;
+    obj->material.pattern = pat;
 
     // --- 4. Left Sphere (Bullseye Rings) ---
     obj = &world.objects[world.object_count++];
@@ -103,7 +121,13 @@ int main(void)
     pat.transform = matrix_scale(0.2f, 0.2f, 0.2f);
     pat.transform_inv = matrix_inverse(&pat.transform);
     
-    obj->material = new_material(0.1f, 0.9f, 0.1f, 10.0f, 0.0f, pat);
+    obj->material = material_default();
+    obj->material.ambient = 0.1f;
+    obj->material.diffuse = 0.9f;
+    obj->material.specular = 0.1f;
+    obj->material.shininess = 10.0f;
+    obj->material.reflective = 0.0f;
+    obj->material.pattern = pat;
 
     // --- 5. Setup Camera ---
     camera = camera_constructor(800, 600, 60.0f); 

@@ -18,8 +18,19 @@ void		apply_rot_y(t_object *obj, float angle);
 void		apply_rot_z(t_object *obj, float angle);
 
 /*			MATERIAL SETTERS			*/
+typedef struct s_optics_params
+{
+	float	diffuse;
+	float	specular;
+	float	reflective;
+	float	transparency;
+	float	refractive_index;
+}	t_optics_params;
+
 void		set_color(t_object *obj, t_vec3 color);
-void		set_pattern(t_object *obj, t_pattern_type type, t_vec3 color_a, t_vec3 color_b, float scale);
-void		set_optics(t_object *obj, float diffuse, float specular, float reflective, float transparency, float refractive_index);
+void		set_pattern(t_object *obj, t_pattern pattern);
+t_pattern	pattern_scaled(t_pattern_type type, t_vec3 color_a,
+			t_vec3 color_b, float scale);
+void		set_optics(t_object *obj, t_optics_params params);
 
 #endif

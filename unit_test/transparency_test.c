@@ -35,17 +35,17 @@ static void build_glass_showcase(t_scene *scene)
     
     // The Floor (Checkered so we can see the refraction bend the straight lines)
     floor = spawn_plane(&scene->world);
-    set_pattern(floor, PATTERN_CHECKER, 
+    set_pattern(floor, pattern_scaled(PATTERN_CHECKER,
                 color_constructor(0.8f, 0.8f, 0.8f),
-                color_constructor(0.2f, 0.2f, 0.2f), 0.25f);
-    set_optics(floor, 0.7f, 0.3f, 0.2f, 0.0f, 1.0f);
+                color_constructor(0.2f, 0.2f, 0.2f), 0.25f));
+    set_optics(floor, (t_optics_params){0.7f, 0.3f, 0.2f, 0.0f, 1.0f});
     
     // Back Wall (Dark grey to contrast the bright highlights)
     wall = spawn_plane(&scene->world);
     apply_rot_x(wall, M_PI / 2.0f); 
     apply_translation(wall, 0.0f, 0.0f, 5.0f);
     set_color(wall, color_constructor(0.2f, 0.2f, 0.2f));
-    set_optics(wall, 0.9f, 0.1f, 0.0f, 0.0f, 1.0f);
+    set_optics(wall, (t_optics_params){0.9f, 0.1f, 0.0f, 0.0f, 1.0f});
     
     // --- The Test Objects ---
 
@@ -54,7 +54,8 @@ static void build_glass_showcase(t_scene *scene)
     clear_glass = spawn_sphere(&scene->world);
     apply_translation(clear_glass, -1.2f, 1.0f, 0.0f);
     set_color(clear_glass, color_constructor(0.0f, 0.0f, 0.0f)); // Black base
-    set_optics(clear_glass, 0.0f, 1.0f, 0.9f, 0.9f, 1.5f); // Diffuse 0.0, Spec 1.0
+    set_optics(clear_glass, (t_optics_params){0.0f, 1.0f, 0.9f, 0.9f,
+                1.5f}); // Diffuse 0.0, Spec 1.0
     clear_glass->material.ambient = 0.0f;       // Rule 2
     clear_glass->material.shininess = 300.0f;   // Rule 4
     
@@ -63,7 +64,8 @@ static void build_glass_showcase(t_scene *scene)
     tinted_glass = spawn_sphere(&scene->world);
     apply_translation(tinted_glass, 1.2f, 1.0f, 0.0f);
     set_color(tinted_glass, color_constructor(0.2f, 0.0f, 0.0f)); // Very dark red (Rule 3)
-    set_optics(tinted_glass, 0.1f, 1.0f, 0.8f, 0.8f, 1.5f); // Slight diffuse to show color
+    set_optics(tinted_glass, (t_optics_params){0.1f, 1.0f, 0.8f, 0.8f,
+                1.5f}); // Slight diffuse to show color
     tinted_glass->material.ambient = 0.05f;     // Very low ambient (Rule 3)
     tinted_glass->material.shininess = 300.0f;  // Rule 4
 
@@ -73,10 +75,11 @@ static void build_glass_showcase(t_scene *scene)
     anchor_sphere = spawn_sphere(&scene->world);
     apply_scale(anchor_sphere, 1.5f, 1.5f, 1.5f);
     apply_translation(anchor_sphere, 0.0f, 1.5f, 3.0f);
-    set_pattern(anchor_sphere, PATTERN_GRADIENT, 
-                color_constructor(0.0f, 0.0f, 1.0f),  // Blue
-                color_constructor(0.0f, 1.0f, 0.0f), 1.0f); // Green
-    set_optics(anchor_sphere, 0.8f, 0.2f, 0.0f, 0.0f, 1.0f); // Matte
+    set_pattern(anchor_sphere, pattern_scaled(PATTERN_GRADIENT,
+                color_constructor(0.0f, 0.0f, 1.0f),
+                color_constructor(0.0f, 1.0f, 0.0f), 1.0f)); // Green
+    set_optics(anchor_sphere, (t_optics_params){0.8f, 0.2f, 0.0f, 0.0f,
+                1.0f}); // Matte
 
     // --- Camera Setup ---
     scene->camera = camera_constructor(WIN_WIDTH, WIN_HEIGHT, 60.0f);

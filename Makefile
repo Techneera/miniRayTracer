@@ -32,7 +32,7 @@ APIDIR = $(SDIR)scene_api
 
 # ------------------------------ VECTORS -------------------------------- #
 
-_VEC_SRCS = base.c
+_VEC_SRCS = base.c operations.c multiply.c
 VEC_SRCS = $(patsubst %.c, $(VECDIR)/%.c, $(_VEC_SRCS))
 VEC_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(VEC_SRCS))
 
@@ -47,7 +47,9 @@ CANVAS_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)%.o, $(CANVAS_SRCS))
 
 # ------------------------------ MATRIX -------------------------------- #
 
-_MATRIX_SRCS = matrix_ops.c matrix_transforms.c object_transform_utils.c
+_MATRIX_SRCS = matrix_ops.c matrix_transforms.c matrix_rotations.c \
+			 matrix_determinant_utils.c matrix_inverse_utils.c \
+			 object_transform_utils.c
 MATRIX_SRCS = $(patsubst %.c, $(MATDIR)/%.c, $(_MATRIX_SRCS))
 MATRIX_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(MATRIX_SRCS))
 
@@ -81,14 +83,14 @@ PARSE_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(PARSE_SRCS))
 
 # ------------------------------ SHADES -------------------------------- #
 
-_SHADES_SRCS = shades_utils.c
+_SHADES_SRCS = shades_utils.c lighting.c
 
 SHADES_SRCS = $(patsubst %.c, $(SHADESDIR)/%.c, $(_SHADES_SRCS))
 SHADES_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(SHADES_SRCS))
 
 # ------------------------------ SCENE -------------------------------- #
 
-_SCENE_SRCS = world.c
+_SCENE_SRCS = world.c world_camera.c world_refraction.c
 
 SCENE_SRCS = $(patsubst %.c, $(SCENEDIR)/%.c, $(_SCENE_SRCS))
 SCENE_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(SCENE_SRCS))

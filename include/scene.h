@@ -25,6 +25,8 @@ typedef struct s_computation
 
 t_intersect 	intersect_world(t_world *world, t_ray *ray);
 t_computation   prepare_computations(t_intersection hit, t_ray *ray, t_intersect *xs);
+void			set_refractive_indices(t_computation *comps, t_intersection hit,
+				t_intersect *xs);
 t_vec3			shade_hit(t_world *world, t_computation *computations, int depth);
 t_vec3	        color_at(t_world *world, t_ray *ray, int depth);
 t_mat4	        view_transform(t_vec3 from, t_vec3 to, t_vec3 up);
