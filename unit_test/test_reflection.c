@@ -139,8 +139,8 @@ int main(void)
 
     // --- 6. Render ---
     printf("Rendering scene...\n");
-    // Pass the properly initialized mlx pointer!
-    canvas = render(mlx, &camera, &world); 
+    canvas.mlx = mlx;
+    render(&canvas, &camera, &world);
 
     // --- 7. Display ---
     canvas.win = mlx_new_window(mlx, canvas.width, canvas.height, "Patterns Sandbox");
