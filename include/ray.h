@@ -35,13 +35,22 @@ typedef struct s_quadratic
 	float	discriminant;
 }	t_quadratic;
 
-typedef	struct s_helper_cube
+typedef struct s_helper_cube
 {
 	float	tmin;
 	float	tmax;
 	float	tmax_curr;
 	float	tmin_curr;
 }	t_helper_cube;
+
+typedef struct s_helper_cone
+{
+	float	tmp;
+	float	t0;
+	float	t1;
+	float	y0;
+	float	y1;
+}	t_helper_cone;
 
 t_ray			ray_constructor(t_vec3 origin, t_vec3 direction);
 t_vec3			ray_position(const t_ray *ray, float t);
@@ -68,5 +77,16 @@ t_vec3  		local_normal_at_cube(t_vec3 local_point);
 t_intersect		local_intersect_cube(const t_object *cube, const t_ray *ray);
 
 t_vec3  		local_normal_at_cylinder(const t_object *obj, t_vec3 local_point);
-t_intersect		local_intersect_cylinder(const t_object *cube, const t_ray *ray);
+
+bool			check_caps(const t_ray *ray, float t);
+t_intersect		local_intersect_cylinder(const t_object *cylinder, const t_ray *ray);
+
+t_vec3  		local_normal_at_cone(const t_object *obj, t_vec3 local_point);
+t_intersect		local_intersect_cone(const t_object *cone, const t_ray *ray);
+
+void add_cone_intersect(t_intersect *res, const t_object *cone, \
+const t_ray *ray, float t);
+void calc_cone_roots(t_intersect *res, const t_object *cone, \
+const t_ray *ray, t_quadratic *q);
+
 #endif

@@ -14,40 +14,20 @@ t_vec3	color_constructor(float r, float g, float b)
 
 t_vec3	color_add(t_vec3 u, t_vec3 v)
 {
-	return (color_constructor(
-			u.x + v.x,
-			u.y + v.y,
-			u.z + v.z
-		)
-	);
+	return (color_constructor(u.x + v.x, u.y + v.y, u.z + v.z));
 }
 
 t_vec3	color_subtract(t_vec3 u, t_vec3 v)
 {
-	return (color_constructor(
-			u.x - v.x,
-			u.y - v.y,
-			u.z - v.z
-		)
-	);
+	return (color_constructor(u.x - v.x, u.y - v.y, u.z - v.z));
 }
 
 t_vec3	color_scalar(t_vec3 u, float scalar)
 {
-	return (color_constructor(
-			u.x * scalar,
-			u.y * scalar,
-			u.z * scalar
-		)
-	);
+	return (color_constructor(u.x * scalar, u.y * scalar, u.z * scalar));
 }
 
 t_vec3	color_multiply(t_vec3 u, t_vec3 v)
 {
-	return (color_constructor(
-			u.x * v.x,
-			u.y * v.y,
-			u.z * v.z
-		)
-	);
+	return (color_constructor(u.x * v.x, u.y * v.y, u.z * v.z));
 }

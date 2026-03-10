@@ -34,10 +34,10 @@ static void build_room_scene(t_scene *scene)
 	
 	// 1. Floor
 	floor = spawn_plane(&scene->world);
-	set_pattern(floor, PATTERN_CHECKER, 
-	            color_constructor(0.8f, 0.8f, 0.8f),
-	            color_constructor(0.2f, 0.2f, 0.2f), 0.25f);
-	set_optics(floor, 0.7f, 0.3f, 0.2f, 0.0f, 1.0f);
+	set_pattern(floor, pattern_scaled(PATTERN_CHECKER,
+			color_constructor(0.8f, 0.8f, 0.8f),
+			color_constructor(0.2f, 0.2f, 0.2f), 0.25f));
+	set_optics(floor, (t_optics_params){0.7f, 0.3f, 0.2f, 0.0f, 1.0f});
 	
 	// 2. Left Wall
 	left_wall = spawn_plane(&scene->world);
@@ -45,7 +45,7 @@ static void build_room_scene(t_scene *scene)
 	apply_rot_y(left_wall, -M_PI / 4.0f);     // Angle it inwards (-45 deg)
 	apply_translation(left_wall, 0.0f, 0.0f, 5.0f); // Push it back
 	set_color(left_wall, color_constructor(0.6f, 0.4f, 0.5f)); // Muted mauve
-	set_optics(left_wall, 0.9f, 0.1f, 0.0f, 0.0f, 1.0f);
+	set_optics(left_wall, (t_optics_params){0.9f, 0.1f, 0.0f, 0.0f, 1.0f});
 	
 	// 3. Right Wall
 	right_wall = spawn_plane(&scene->world);
@@ -53,7 +53,7 @@ static void build_room_scene(t_scene *scene)
 	apply_rot_y(right_wall, M_PI / 4.0f);      // Angle it inwards (+45 deg)
 	apply_translation(right_wall, 0.0f, 0.0f, 5.0f); // Push it back
 	set_color(right_wall, color_constructor(0.4f, 0.5f, 0.6f)); // Muted slate blue
-	set_optics(right_wall, 0.9f, 0.1f, 0.0f, 0.0f, 1.0f);
+	set_optics(right_wall, (t_optics_params){0.9f, 0.1f, 0.0f, 0.0f, 1.0f});
 	
 	// --- Objects (3 Spheres) ---
 	
@@ -61,23 +61,25 @@ static void build_room_scene(t_scene *scene)
 	middle_sphere = spawn_sphere(&scene->world);
 	apply_translation(middle_sphere, -0.5f, 1.0f, 0.5f);
 	set_color(middle_sphere, color_constructor(0.0f, 0.0f, 0.0f));
-	set_optics(middle_sphere, 0.1f, 0.9f, 0.9f, 1.0f, 1.5f); // High reflection, Glass RI
+	set_optics(middle_sphere, (t_optics_params){0.1f, 0.9f, 0.9f, 1.0f,
+			1.5f}); // High reflection, Glass RI
 	
 	// 2. Right Sphere (Gradient)
 	right_sphere = spawn_sphere(&scene->world);
 	apply_scale(right_sphere, 0.5f, 0.5f, 0.5f);
 	apply_translation(right_sphere, 1.5f, 0.5f, -0.5f);
-	set_pattern(right_sphere, PATTERN_GRADIENT, 
-	            color_constructor(1.0f, 0.0f, 0.0f), 
-	            color_constructor(0.0f, 0.0f, 1.0f), 1.0f);
-	set_optics(right_sphere, 0.7f, 0.3f, 0.1f, 0.0f, 1.0f);
+	set_pattern(right_sphere, pattern_scaled(PATTERN_GRADIENT,
+			color_constructor(1.0f, 0.0f, 0.0f),
+			color_constructor(0.0f, 0.0f, 1.0f), 1.0f));
+	set_optics(right_sphere, (t_optics_params){0.7f, 0.3f, 0.1f, 0.0f,
+			1.0f});
 	
 	// 3. Left Sphere (Solid/Matte)
 	left_sphere = spawn_sphere(&scene->world);
 	apply_scale(left_sphere, 0.33f, 0.33f, 0.33f);
 	apply_translation(left_sphere, -1.5f, 0.33f, -0.75f);
 	set_color(left_sphere, color_constructor(0.2f, 0.8f, 0.2f)); // Bright green
-	set_optics(left_sphere, 0.9f, 0.1f, 0.0f, 0.0f, 1.0f);
+	set_optics(left_sphere, (t_optics_params){0.9f, 0.1f, 0.0f, 0.0f, 1.0f});
 	
 	// --- Camera Setup ---
 	scene->camera = camera_constructor(WIN_WIDTH, WIN_HEIGHT, 60.0f);

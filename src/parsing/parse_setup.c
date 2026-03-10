@@ -19,12 +19,13 @@ int	parse_ambient_light(char *line, t_scene *scene)
 
 bool	is_valid_direction(t_vec3 v)
 {
-	return (
-		v.x >= -1.0f && v.x <= 1.0f
-		&& v.y >= -1.0f && v.y <= 1.0f
+	return (v.x >= -1.0f
+		&& v.x <= 1.0f
+		&& v.y >= -1.0f
+		&& v.y <= 1.0f
 		&& v.z >= -1.0f && v.z <= 1.0f
-		&& !(fabs(v.x) < EPSILON && fabs(v.y) < EPSILON && fabs(v.z) < EPSILON)
-	);
+		&& !(fabs(v.x) < EPSILON && fabs(v.y) < EPSILON && fabs(v.z) < EPSILON
+		));
 }
 
 int	parse_camera(char *line, t_scene *scene)
@@ -40,14 +41,12 @@ int	parse_camera(char *line, t_scene *scene)
 		return (1);
 	pos.w = 1.0f;
 	line = skip_to_next(line);
-	if (parse_vec3(&line, &dir) != 0
-	 	|| !is_valid_direction(dir))
+	if (parse_vec3(&line, &dir) != 0 || !is_valid_direction(dir))
 		return (1);
 	dir = vector_normalization(dir);
 	dir.w = 0.0f;
 	line = skip_to_next(line);
-	if (parse_float(&line, &fov) != 0
-		|| fov < 0.0f || fov > 180.0f)
+	if (parse_float(&line, &fov) != 0 || fov < 0.0f || fov > 180.0f)
 		return (1);
 	scene->camera = camera_constructor(WIN_WIDTH, WIN_HEIGHT, fov);
 	to = vector_add(pos, dir);
@@ -64,7 +63,8 @@ int	parse_light(char *line, t_scene *scene)
 	scene->world.light.position.w = 1.0f;
 	line = skip_to_next(line);
 	if (parse_float(&line, &scene->world.light.brightness) != 0
-		|| scene->world.light.brightness < 0.0f || scene->world.light.brightness > 1.0f)
+		|| scene->world.light.brightness < 0.0f
+		|| scene->world.light.brightness > 1.0f)
 		return (1);
 	line = skip_to_next(line);
 	if (parse_vec3(&line, &scene->world.light.color) != 0

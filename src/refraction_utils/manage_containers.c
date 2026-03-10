@@ -1,22 +1,28 @@
 #include "librt.h"
 #include "refraction.h"
 
-void	manage_containers(const t_object *containers[], int *count, const t_object *obj)
+static int	find_container_idx(const t_object *containers[], int count,
+		const t_object *obj)
+{
+	int	i;
+
+	i = 0;
+	while (i < count)
+	{
+		if (containers[i] == obj)
+			return (i);
+		i++;
+	}
+	return (-1);
+}
+
+void	manage_containers(const t_object *containers[], int *count,
+		const t_object *obj)
 {
 	int	i;
 	int	found_idx;
 
-	i = 0;
-	found_idx = -1;
-	while (i < *count)
-	{
-		if (containers[i] == obj)
-		{
-			found_idx = i;
-			break;
-		}
-		i++;
-	}
+	found_idx = find_container_idx(containers, *count, obj);
 	if (found_idx != -1)
 	{
 		i = found_idx;
