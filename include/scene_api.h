@@ -8,6 +8,7 @@ t_object	*spawn_sphere(t_world *world);
 t_object	*spawn_plane(t_world *world);
 t_object	*spawn_cube(t_world *world);
 t_object	*spawn_cylinder(t_world *world, float min_y, float max_y, bool closed);
+t_object	*spawn_cone(t_world *world, float min_y, float max_y, bool closed);
 
 /*			TRANSFORMATIONS				*/
 void		chain_transform(t_object *obj, t_mat4 *new_transform);

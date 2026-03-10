@@ -52,3 +52,17 @@ t_object	*spawn_cylinder(t_world *world, float min_y, float max_y,
 	}
 	return (obj);
 }
+
+t_object	*spawn_cone(t_world *world, float min_y, float max_y, bool closed)
+{
+	t_object	*obj;
+
+	obj = init_base_object(world, CONE);
+	if (obj)
+	{
+		obj->co.min_y = min_y;
+		obj->co.max_y = max_y;
+		obj->co.closed = closed;
+	}
+	return (obj);
+}
