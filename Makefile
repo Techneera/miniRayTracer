@@ -65,6 +65,7 @@ _RAY_SRCS = ray_constructor.c \
 			cube.c \
 			cylinder.c \
 			cylinder_utils.c \
+			cone_utils.c \
 			cone.c
 RAY_SRCS = $(patsubst %.c, $(RAYDIR)/%.c, $(_RAY_SRCS))
 RAY_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(RAY_SRCS))
