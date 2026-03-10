@@ -1,4 +1,4 @@
-#incldue "triangle.h"
+#include "triangle.h"
 
 t_tri	triangle_constructor(t_vec3	p1, t_vec3 p2, t_vec3 p3)
 {
@@ -16,31 +16,25 @@ t_tri	triangle_constructor(t_vec3	p1, t_vec3 p2, t_vec3 p3)
 t_intersect	local_intersect_triangle(const t_object *triangle, const t_ray *ray)
 {
 	t_intersect	res;
-	t_vec3		dir_cross_e2;
-	t_vec3		origin_cross_e1
-	float		det;
-	float		u;
-	float		v;
+	t_products	p;
+	t_vec3		p1_to_origin;
 
 	res.count = 0;
-	dir_cross_e2 = vector_cross_product(ray->direction, triangle->edge.e2);
-	det = vector_dot_product(triangle->edge.e1, dir_cross_e2);
-	if (fabsf(det) < EPSILON)
+	p1_to_origin = vector_sub(ray->origin, triangle->edge.p1);
+	p.dir_cross_e2 = vector_cross_product(ray->direction, triangle->edge.e2);
+	p.det = vector_dot_product(triangle->edge.e1, p.dir_cross_e2);
+	if (fabsf(p.det) < EPSILON)
 		return (res);
-	u = vector_dot_product(
-				vector_sub(ray->direction, triangle->edge.p1),
-				dir_cross_e2) * (1.0f / det));
-	if (u < 0.0f || u > 1.0f)
+	p.inv_det = 1.0f / p.det;
+	p.u = vector_dot_product(p1_to_origin, p.dir_cross_e2) * p.inv_det;
+	if (p.u < 0.0f || p.u > 1.0f)
 		return (res);
-	origin_cross_e1 = vector_cross_product(
-				vector_sub(ray->direction, triangle->edge.p1),
-				triangle->edge.e1);
-	v = vector_dot_product(
-			ray->direction, origin_cross_e1) * (1.0f / det);
-	if (v < 0.0f || (u + v) > 1.0f)
+	p.origin_cross_e1 = vector_cross_product(p1_to_origin, triangle->edge.e1);
+	p.v = vector_dot_product(ray->direction, p.origin_cross_e1) * p.inv_det;
+	if (p.v < 0.0f || (p.u + p.v) > 1.0f)
 		return (res);
 	res.count = 1;
-	res.i[0].t = vector_dot_product(obj->tri.e2, origin_cross_e1) * (1.0f / det);
+	res.i[0].t = vector_dot_product(obj->tri.e2, p.origin_cross_e1) * p.inv_det;
 	res.i[0].obj = triangle;
 	return (res);
 }
