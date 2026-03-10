@@ -1,6 +1,6 @@
-#include "scene_api.h"
 #include "matrix.h"
 #include "ray.h"
+#include "scene_api.h"
 
 void	chain_transform(t_object *obj, t_mat4 *new_transform)
 {

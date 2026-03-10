@@ -42,4 +42,6 @@ t_mat4	matrix_rot_z(float angle);
 t_mat4	matrix_shear(t_shear p);
 t_vec3	matrix_shearing(t_shear p, t_vec3 target);
 
+t_mat4	align_up_vector(t_vec3 target_up);
+
 #endif
