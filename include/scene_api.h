@@ -7,8 +7,10 @@
 t_object	*spawn_sphere(t_world *world);
 t_object	*spawn_plane(t_world *world);
 t_object	*spawn_cube(t_world *world);
-t_object	*spawn_cylinder(t_world *world, float min_y, float max_y, bool closed);
-t_object	*spawn_cone(t_world *world, float min_y, float max_y, bool closed);
+t_object	*spawn_cylinder(t_world *world, \
+float min_y, float max_y, bool closed);
+t_object	*spawn_cone(t_world *world, float min_y, \
+float max_y, bool closed);
 
 /*			TRANSFORMATIONS				*/
 void		chain_transform(t_object *obj, t_mat4 *new_transform);
@@ -30,8 +32,8 @@ typedef struct s_optics_params
 
 void		set_color(t_object *obj, t_vec3 color);
 void		set_pattern(t_object *obj, t_pattern pattern);
-t_pattern	pattern_scaled(t_pattern_type type, t_vec3 color_a,
-			t_vec3 color_b, float scale);
+t_pattern	pattern_scaled(t_pattern_type type, \
+t_vec3 color_a, t_vec3 color_b, float scale);
 void		set_optics(t_object *obj, t_optics_params params);
 
 #endif
