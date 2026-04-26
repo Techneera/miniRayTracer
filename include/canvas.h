@@ -8,7 +8,7 @@
 # include <mlx.h>
 # include "vector.h"
 
-typedef unsigned int t_uint;
+typedef unsigned int	t_uint;
 
 typedef struct s_img
 {

@@ -1,30 +1,8 @@
-#include "scene_api.h"
-#include "matrix.h"
-#include "shades.h"
-#include "ray.h"
 #include "libft.h"
-
-static
-t_object	*init_base_object(t_world *world, t_obj_type type)
-{
-	t_object	*obj;
-	t_mat4		ident;
-
-	if (world->object_count >= MAX_OBJECTS)
-	{
-		ft_putstr("Error\nMaximum number of objects reached\n");
-		return (NULL);
-	}
-	obj = &world->objects[world->object_count++];
-	obj->type = type;
-	obj->id = get_shape_id();
-
-	matrix_identity(&ident);
-	set_transform(obj, &ident);
-
-	obj->material = material_default();
-	return (obj);
-}
+#include "matrix.h"
+#include "ray.h"
+#include "scene_api.h"
+#include "shades.h"
 
 t_object	*spawn_sphere(t_world *world)
 {
@@ -41,7 +19,8 @@ t_object	*spawn_plane(t_world *world)
 	return (init_base_object(world, PLANE));
 }
 
-t_object	*spawn_cylinder(t_world *world, float min_y, float max_y, bool closed)
+t_object	*spawn_cylinder(t_world *world, float min_y, float max_y,
+		bool closed)
 {
 	t_object	*obj;
 

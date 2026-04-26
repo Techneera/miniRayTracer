@@ -10,6 +10,20 @@
 # define BUF_SIZE 4096
 # define LINE_SIZE 1024
 
+typedef struct s_helper
+{
+	t_vec3		pos;
+	t_vec3		vec;
+	t_vec3		color;
+	float		diameter;
+	float		height;
+	t_mat4		scale;
+	t_mat4		rot;
+	t_mat4		trans;
+	t_mat4		transform;
+	t_mat4		temp;
+}				t_helper;
+
 typedef struct e_reader
 {
 	int		fd;
@@ -18,7 +32,7 @@ typedef struct e_reader
 	char	buf[BUF_SIZE];
 }	t_reader;
 
-typedef int (*t_parse_fn)(char *, t_scene *);
+typedef int	(*t_parse_fn)(char *, t_scene *);
 
 int		parse_line(char *line, t_scene *scene);
 int		parse_float(char **line, float *value);

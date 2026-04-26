@@ -1,7 +1,6 @@
 #include "parser.h"
 
-static
-int	get_char(t_reader *r, char *c)
+static int	get_char(t_reader *r, char *c)
 {
 	if (r->pos == r->size)
 	{

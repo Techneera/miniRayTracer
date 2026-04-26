@@ -3,8 +3,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <fcntl.h>
 
-#define EPSILON 0.00001
+#define TEST_EPSILON 0.00001
 #define GREEN "\033[0;32m"
 #define RED "\033[0;31m"
 #define RESET "\033[0m"
@@ -19,7 +20,7 @@ static int g_tests_passed = 0;
 static bool assert_float_eq(float actual, float expected, const char *msg)
 {
 	g_tests_run++;
-	if (fabs(actual - expected) < EPSILON)
+	if (fabs(actual - expected) < TEST_EPSILON)
 	{
 		g_tests_passed++;
 		printf("%s[PASS]%s %s\n", GREEN, RESET, msg);
@@ -139,16 +140,19 @@ void test_load_scene(void)
 
 	// Test Case 1: Wrong Extension
 	ft_memset(&scene, 0, sizeof(t_scene));
-	assert_int_eq(load_scene("unit_test/test_files/test.txt", &scene), 1, "Reject file with .txt extension");
+	assert_int_eq(load_scene("unit_test/scene_files/test.txt", &scene), 1,
+		"Reject file with .txt extension");
 
 	// Test Case 2: Non-existent file
 	ft_memset(&scene, 0, sizeof(t_scene));
-	assert_int_eq(load_scene("unit_test/test_files/non_existent.rt", &scene), 1, "Handle non-existent .rt file");
+	assert_int_eq(load_scene("unit_test/scene_files/non_existent.rt", &scene),
+		1, "Handle non-existent .rt file");
 
 	// Test Case 3: Missing Mandatory Elements (Assuming empty_but_valid_ext.rt exists)
 	// Create a dummy file if needed: touch empty.rt
 	ft_memset(&scene, 0, sizeof(t_scene));
-	assert_int_eq(load_scene("unit_test/test_files/empty.rt", &scene), 1, "Fail if A or C are missing");
+	assert_int_eq(load_scene("unit_test/scene_files/empty.rt", &scene), 1,
+		"Fail if A or C are missing");
 
 	/* Note: For the following tests, ensure these files exist with content:
 	   valid_minimal.rt:
@@ -158,10 +162,11 @@ void test_load_scene(void)
 	
 	// Test Case 4: Valid Minimal Scene
 	ft_memset(&scene, 0, sizeof(t_scene));
-	int res = load_scene("unit_test/test_files/valid_minimal.rt", &scene);
+	int res = load_scene("unit_test/scene_files/valid_minimal.rt", &scene);
 	if (assert_int_eq(res, 0, "Load valid minimal scene (A and C)"))
 	{
-		assert_float_eq(scene.a_light.ratio, 0.2f, "Verify Ambient Ratio");
+		assert_float_eq(scene.world.a_light.ratio, 0.2f,
+			"Verify Ambient Ratio");
 	}
 
 	// Test Case 5: Object Count Verification
@@ -173,9 +178,10 @@ void test_load_scene(void)
 	   pl 0,-1,0 0,1,0 255,255,255
 	*/
 	ft_memset(&scene, 0, sizeof(t_scene));
-	if (load_scene("unit_test/test_files/valid_objects.rt", &scene) == 0)
+	if (load_scene("unit_test/scene_files/valid_objects.rt", &scene) == 0)
 	{
-		assert_int_eq(scene.object_count, 2, "Correctly count 2 objects (sp and pl)");
+		assert_int_eq(scene.world.object_count, 3,
+			"Correctly count 3 objects (sp, pl, cy)");
 	}
 }
 
@@ -204,7 +210,7 @@ void test_get_line_buf(void)
 	int			fd;
 
 	printf("\n--- 4. get_line_buf (Buffered Reading) ---\n");
-	fd = open("unit_test/test_files/get_line_test.rt", O_RDONLY);
+	fd = open("unit_test/scene_files/get_line_test.rt", O_RDONLY);
 	if (fd < 0)
 	{
 		printf("%s[SKIP]%s Could not open get_line_test.rt\n", RED, RESET);
@@ -235,7 +241,7 @@ void test_get_line_buf(void)
 	close(fd);
 
 	// Test 5: Buffer Overflow Protection
-	fd = open("unit_test/test_files/get_line_test.rt", O_RDONLY);
+	fd = open("unit_test/scene_files/get_line_test.rt", O_RDONLY);
 	r.fd = fd;
 	r.pos = 0;
 	r.size = 0;
@@ -258,9 +264,10 @@ void test_parse_ambient(void)
 	ft_memset(&scene, 0, sizeof(t_scene));
 	char s1[] = "A 0.2 255,128,0";
 	assert_int_eq(parse_ambient_light(s1, &scene), 0, "Valid ambient light");
-	assert_float_eq(scene.a_light.ratio, 0.2f, "Ambient ratio correctly set");
+	assert_float_eq(scene.world.a_light.ratio, 0.2f,
+		"Ambient ratio correctly set");
 	// After color_normalize, 255 becomes ~1.0
-	assert_float_eq(scene.a_light.color.x, 1.0f, "Color R normalized");
+	assert_float_eq(scene.world.a_light.color.x, 1.0f, "Color R normalized");
 
 	// Invalid Ratio
 	char s2[] = "A 1.5 255,255,255";
@@ -280,9 +287,9 @@ void test_parse_camera(void)
 	ft_memset(&scene, 0, sizeof(t_scene));
 	char s1[] = "C -50,0,20 0,0,1 70";
 	assert_int_eq(parse_camera(s1, &scene), 0, "Valid camera line");
-	assert_float_eq(scene.camera.position.x, -50.0f, "Camera X position set");
-	assert_int_eq(scene.camera.position.w, 1, "Camera position marked as point (w=1)");
-	assert_float_eq(scene.camera.fov, 70.0f, "Camera FOV set");
+	assert_float_eq(scene.camera.field_of_view, 70.0f, "Camera FOV set");
+	assert_int_eq(scene.camera.hsize, WIN_WIDTH, "Camera width initialized");
+	assert_int_eq(scene.camera.vsize, WIN_HEIGHT, "Camera height initialized");
 
 	// Invalid Direction (is_valid_direction check)
 	char s2[] = "C 0,0,0 2,0,0 70";
@@ -300,15 +307,18 @@ void test_parse_sphere(void)
 
 	// Valid Case
 	ft_memset(&scene, 0, sizeof(t_scene));
-	scene.object_count = 0;
+	scene.world.object_count = 0;
 	char s1[] = "sp 0,0,20 10.5 255,0,0";
 	assert_int_eq(parse_sphere(s1, &scene), 0, "Valid sphere line");
-	assert_int_eq(scene.object_count, 1, "Object count incremented");
-	assert_float_eq(scene.objects[0].object.sp.center.z, 20.0f, "Sphere center Z set");
-	assert_float_eq(scene.objects[0].object.sp.radius, 10.5f, "Sphere radius set");
+	assert_int_eq(scene.world.object_count, 1, "Object count incremented");
+	assert_int_eq(scene.world.objects[0].type, SPHERE, "Object type is sphere");
+	assert_float_eq(scene.world.objects[0].transform.m[11], 20.0f,
+		"Sphere center Z set");
+	assert_float_eq(scene.world.objects[0].transform.m[0], 5.25f,
+		"Sphere radius encoded as scale");
 
 	// Max Objects Overflow
-	scene.object_count = MAX_OBJECTS;
+	scene.world.object_count = MAX_OBJECTS;
 	assert_int_eq(parse_sphere(s1, &scene), 1, "Fail when MAX_OBJECTS reached");
 }
 
@@ -321,10 +331,12 @@ void test_parse_light(void)
 	ft_memset(&scene, 0, sizeof(t_scene));
 	char s1[] = "L -40,0,30 0.7 255,255,255";
 	assert_int_eq(parse_light(s1, &scene), 0, "Valid light line");
-	assert_float_eq(scene.light.position.x, -40.0f, "Light X position set");
-	assert_int_eq(scene.light.position.w, 1, "Light position marked as point (w=1)");
-	assert_float_eq(scene.light.brightness, 0.7f, "Light brightness set");
-	assert_float_eq(scene.light.color.y, 1.0f, "Light color normalized (G)");
+	assert_float_eq(scene.world.light.position.x, -40.0f, "Light X position set");
+	assert_int_eq(scene.world.light.position.w, 1,
+		"Light position marked as point (w=1)");
+	assert_float_eq(scene.world.light.brightness, 0.7f, "Light brightness set");
+	assert_float_eq(scene.world.light.color.y, 1.0f,
+		"Light color normalized (G)");
 
 	// Invalid Brightness: Out of bounds
 	char s2[] = "L 0,0,0 1.1 255,255,255";

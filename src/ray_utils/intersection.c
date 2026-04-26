@@ -23,7 +23,7 @@ t_intersect	*intersections(t_intersection *items, t_intersect *result, int size)
 	return (result);
 }
 
-t_intersection *hit(t_intersect *items, t_intersection *smallest, int size)
+t_intersection	*hit(t_intersect *items, t_intersection *smallest, int size)
 {
 	int		i;
 	bool	found;

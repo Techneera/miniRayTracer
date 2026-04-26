@@ -35,13 +35,22 @@ typedef struct s_quadratic
 	float	discriminant;
 }	t_quadratic;
 
-typedef	struct s_helper_cube
+typedef struct s_helper_cube
 {
 	float	tmin;
 	float	tmax;
 	float	tmax_curr;
 	float	tmin_curr;
 }	t_helper_cube;
+
+typedef struct s_helper_cone
+{
+	float	tmp;
+	float	t0;
+	float	t1;
+	float	y0;
+	float	y1;
+}	t_helper_cone;
 
 t_ray			ray_constructor(t_vec3 origin, t_vec3 direction);
 t_vec3			ray_position(const t_ray *ray, float t);
@@ -50,7 +59,8 @@ t_ray			ray_transform(const t_ray *r, const t_mat4 *m);
 t_intersect		intersect(const t_ray *ray, const t_object *obj);
 t_vec3			normal_at(const t_object *obj, t_vec3 world_point);
 t_intersection	intersection(float t, const t_object *obj);
-t_intersect		*intersections(t_intersection *items, t_intersect *result, int size);
+t_intersect		*intersections(t_intersection *items, \
+t_intersect *result, int size);
 t_intersection	*hit(t_intersect *items, t_intersection *smallest, int size);
 
 void			set_transform(t_object *obj, const t_mat4 *t);
@@ -59,17 +69,27 @@ t_object		test_object(void);
 int				get_shape_id(void);
 
 t_vec3			local_normal_at_sphere(t_vec3 local_point);
-t_intersect		local_intersect_sphere(const t_object *sphere, const t_ray *ray);
-
-t_vec3  		local_normal_at_plane(void);
+t_intersect		local_intersect_sphere(const t_object *sphere, \
+const t_ray *ray);
+t_vec3			local_normal_at_plane(void);
 t_intersect		local_intersect_plane(const t_object *plane, const t_ray *ray);
 
-t_vec3  		local_normal_at_cube(t_vec3 local_point);
+t_vec3			local_normal_at_cube(t_vec3 local_point);
 t_intersect		local_intersect_cube(const t_object *cube, const t_ray *ray);
 
-t_vec3  		local_normal_at_cylinder(const t_object *obj, t_vec3 local_point);
-t_intersect		local_intersect_cylinder(const t_object *cylinder, const t_ray *ray);
+t_vec3			local_normal_at_cylinder(const t_object *obj, \
+t_vec3 local_point);
 
-t_vec3  		local_normal_at_cone(const t_object *obj, t_vec3 local_point);
+bool			check_caps(const t_ray *ray, float t);
+t_intersect		local_intersect_cylinder(const t_object *cylinder, \
+const t_ray *ray);
+
+t_vec3			local_normal_at_cone(const t_object *obj, t_vec3 local_point);
 t_intersect		local_intersect_cone(const t_object *cone, const t_ray *ray);
+
+void			add_cone_intersect(t_intersect *res, const t_object *cone, \
+const t_ray *ray, float t);
+void			calc_cone_roots(t_intersect *res, const t_object *cone, \
+const t_ray *ray, t_quadratic *q);
+
 #endif
