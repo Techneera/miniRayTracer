@@ -4,6 +4,8 @@
 # include "librt.h"
 
 /*			OBJECT SPWAN				*/
+t_object	*init_base_object(t_world *world, \
+t_obj_type type);
 t_object	*spawn_sphere(t_world *world);
 t_object	*spawn_plane(t_world *world);
 t_object	*spawn_cube(t_world *world);

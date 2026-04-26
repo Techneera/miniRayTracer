@@ -100,6 +100,7 @@ SCENE_OBJS = $(patsubst $(SDIR)%.c, $(ODIR)$(SDIR)%.o, $(SCENE_SRCS))
 # ------------------------------ SCENE API -------------------------------- #
 
 _SCENE_API_SRCS = material_setters.c \
+				  base_object.c \
 				  object_spawn.c \
 				  rotations.c \
 				  transformations.c
