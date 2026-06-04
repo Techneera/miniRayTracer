@@ -29,4 +29,5 @@ void	ft_error(char *msg)
 {
 	ft_putstr("Error\n");
 	ft_putstr(msg);
+	exit(2);
 }
