@@ -16,7 +16,7 @@ This project implements a CPU-based ray tracer capable of rendering spheres, pla
 
 ### Prerequisites
 
-- A Unix-like operating system (Linux / macOS)
+- A Unix-like operating system (Linux)
 - GCC or Clang compiler
 - X11 development libraries (for MiniLibX on Linux)
 - GNU Make
@@ -54,7 +54,7 @@ Run the program with a single argument: the path to a valid scene file with the 
 Example:
 
 ```bash
-./build/miniRT scenes/basic_sphere.rt
+./build/miniRT review_files/basic_sphere.rt
 ```
 
 A window will open displaying the rendered scene. You can interact with the window as follows:
