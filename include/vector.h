@@ -5,7 +5,7 @@
 # include <math.h>
 # include <stdbool.h>
 
-typedef float t_f4 __attribute__((vector_size(16)));
+typedef float	t_f4 __attribute__((vector_size(16)));
 
 typedef struct __attribute__((aligned(16))) s_vec3
 {

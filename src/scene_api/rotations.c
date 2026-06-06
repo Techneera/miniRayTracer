@@ -1,5 +1,5 @@
-#include "scene_api.h"
 #include "matrix.h"
+#include "scene_api.h"
 
 void	apply_rot_x(t_object *obj, float angle)
 {

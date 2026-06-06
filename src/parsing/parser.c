@@ -1,15 +1,19 @@
+#include "canvas.h"
 #include "libft.h"
 #include "parser.h"
-#include "canvas.h"
 
 int	parse_line(char *line, t_scene *scene)
 {
-	static t_parse_fn	parse[] = {
-		parse_ambient_light, parse_camera,
-		parse_light, parse_sphere, parse_plane, parse_cylinder,
-	};
 	static char			*elem[] = {"A ", "C ", "L ", "sp ", "pl ", "cy ", NULL};
 	int					i;
+	static t_parse_fn	parse[] = {
+		parse_ambient_light,
+		parse_camera,
+		parse_light,
+		parse_sphere,
+		parse_plane,
+		parse_cylinder,
+	};
 
 	if (line == NULL)
 		return (1);
@@ -38,8 +42,7 @@ int	parse_float(char **line, float *value)
 
 int	parse_vec3(char **line, t_vec3 *v)
 {
-	if (parse_float(line, &v->x) != 0
-		|| parse_float(line, &v->y) != 0
+	if (parse_float(line, &v->x) != 0 || parse_float(line, &v->y) != 0
 		|| parse_float(line, &v->z) != 0)
 		return (1);
 	return (0);
@@ -47,11 +50,8 @@ int	parse_vec3(char **line, t_vec3 *v)
 
 bool	is_valid_color(t_vec3 color)
 {
-	return (
-		color.x >= 0 && color.x <= RGB_MAX
-		&& color.y >= 0 && color.y <= RGB_MAX
-		&& color.z >= 0 && color.z <= RGB_MAX
-	);
+	return (color.x >= 0 && color.x <= RGB_MAX && color.y >= 0
+		&& color.y <= RGB_MAX && color.z >= 0 && color.z <= RGB_MAX);
 }
 
 void	color_normalize(t_vec3 *color)

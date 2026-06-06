@@ -5,12 +5,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-int get_shape_id(void)
-{
-	static int	id;
-	return (id++);
-}
-
 void	set_transform(t_object *obj, const t_mat4 *t)
 {
 	obj->transform = *t;
@@ -32,14 +26,18 @@ t_intersect	intersect(const t_ray *ray, const t_object *obj)
 		result = local_intersect_cube(obj, &local_ray);
 	else if (obj->type == CYLINDER)
 		result = local_intersect_cylinder(obj, &local_ray);
+	else if (obj->type == CONE)
+		result = local_intersect_cone(obj, &local_ray);
 	return (result);
 }
 
 static int	is_identity_transform(const t_object *obj)
 {
-	return (obj->transform.m[0] == 1.0f && obj->transform.m[5] == 1.0f && obj->transform.m[10] == 1.0f &&
-		obj->transform.m[1] == 0.0f && obj->transform.m[2] == 0.0f && obj->transform.m[4] == 0.0f &&
-		obj->transform.m[6] == 0.0f && obj->transform.m[8] == 0.0f && obj->transform.m[9] == 0.0f);
+	return (obj->transform.m[0] == 1.0f && obj->transform.m[5] == 1.0f
+		&& obj->transform.m[10] == 1.0f && obj->transform.m[1] == 0.0f
+		&& obj->transform.m[2] == 0.0f && obj->transform.m[4] == 0.0f
+		&& obj->transform.m[6] == 0.0f && obj->transform.m[8] == 0.0f
+		&& obj->transform.m[9] == 0.0f);
 }
 
 static t_vec3	compute_default_normal(const t_object *obj, t_vec3 local_point)
@@ -48,7 +46,8 @@ static t_vec3	compute_default_normal(const t_object *obj, t_vec3 local_point)
 	t_mat4	transpose_inverse;
 	t_vec3	world_normal;
 
-	local_normal = vector_constructor(local_point.x, local_point.y, local_point.z);
+	local_normal = vector_constructor(local_point.x, local_point.y,
+			local_point.z);
 	local_normal.w = 0.0f;
 	local_normal = vector_normalization(local_normal);
 	transpose_inverse = matrix_transpose(&obj->transform_inv);
@@ -75,6 +74,8 @@ t_vec3	normal_at(const t_object *obj, t_vec3 world_point)
 		local_normal = local_normal_at_cube(local_point);
 	else if (obj->type == CYLINDER)
 		local_normal = local_normal_at_cylinder(obj, local_point);
+	else if (obj->type == CONE)
+		local_normal = local_normal_at_cone(obj, local_point);
 	else
 		return (compute_default_normal(obj, local_point));
 	transpose_inverse = matrix_transpose(&obj->transform_inv);

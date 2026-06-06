@@ -1,5 +1,5 @@
-#include "scene.h"
 #include "canvas.h"
+#include "scene.h"
 
 t_vec3	reflected_color(t_world *world, t_computation *comps, int depth)
 {

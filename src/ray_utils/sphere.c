@@ -2,13 +2,14 @@
 
 t_intersect	local_intersect_sphere(const t_object *sphere, const t_ray *ray)
 {
-	t_intersect			result;
-	t_vec3				sphere_to_ray;
-	float				sqrt_disc;
-	t_quadratic			q;
+	t_intersect	result;
+	t_vec3		sphere_to_ray;
+	float		sqrt_disc;
+	t_quadratic	q;
 
 	result.count = 0;
-	sphere_to_ray = vector_sub(ray->origin, vector_constructor(0.0f, 0.0f, 0.0f));
+	sphere_to_ray = vector_sub(ray->origin, vector_constructor(0.0f, 0.0f,
+				0.0f));
 	q.a = vector_dot_product(ray->direction, ray->direction);
 	q.b = 2 * vector_dot_product(ray->direction, sphere_to_ray);
 	q.c = vector_dot_product(sphere_to_ray, sphere_to_ray) - 1.0f;

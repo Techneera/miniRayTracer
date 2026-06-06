@@ -2,8 +2,7 @@
 #include "parser.h"
 #include <fcntl.h>
 
-static
-int	check_extension(char *filename)
+static int	check_extension(char *filename)
 {
 	char	*extension;
 

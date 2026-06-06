@@ -1,6 +1,6 @@
-#include <stdlib.h>
 #include "canvas.h"
 #include "libft.h"
+#include <stdlib.h>
 
 bool	canvas_constructor(int width, int height, t_canvas *canvas)
 {
@@ -9,12 +9,8 @@ bool	canvas_constructor(int width, int height, t_canvas *canvas)
 	canvas->img.img = mlx_new_image(canvas->mlx, width, height);
 	if (canvas->img.img == NULL)
 		return (false);
-	canvas->img.addr = mlx_get_data_addr(
-		canvas->img.img,
-		&canvas->img.bpp,
-		&canvas->img.line_len,
-		&canvas->img.endian
-	);
+	canvas->img.addr = mlx_get_data_addr(canvas->img.img, &canvas->img.bpp,
+			&canvas->img.line_len, &canvas->img.endian);
 	if (canvas->img.addr == NULL)
 		return (false);
 	canvas->width = width;
@@ -40,34 +36,4 @@ void	canvas_destructor(t_canvas *c)
 	mlx_destroy_display(c->mlx);
 	free(c->mlx);
 	c->mlx = NULL;
-}
-
-void	write_pixel(t_canvas *c, int x, int y, t_vec3 color)
-{
-	char	*dest;
-
-	if (x >= c->width || x < 0 || y >= c->height || y < 0)
-		return ;
-	dest = c->img.addr + (y * c->img.line_len + x * (c->img.bpp / 8));
-	*(t_uint *)dest = (t_uint) color_to_int(color);
-}
-
-int	key_hook(int keycode, t_canvas *canvas)
-{
-	if (keycode == 65307)
-		close_program(canvas);
-	return (0);
-}
-
-int	close_program(t_canvas *canvas)
-{
-	canvas_destructor(canvas);
-	exit(0);
-	return (0);
-}
-
-void	ft_error(char *msg)
-{
-	ft_putstr("Error\n");
-	ft_putstr(msg);
 }

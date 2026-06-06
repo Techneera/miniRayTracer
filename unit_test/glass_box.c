@@ -30,17 +30,17 @@ void build_glassbox_scene(t_scene *scene)
 
     // Floor (Checkered to show off refraction bending)
     floor = spawn_plane(&scene->world);
-    set_pattern(floor, PATTERN_CHECKER, 
+    set_pattern(floor, pattern_scaled(PATTERN_CHECKER,
                 color_constructor(0.9f, 0.9f, 0.9f),
-                color_constructor(0.2f, 0.2f, 0.2f), 0.5f);
-    set_optics(floor, 0.8f, 0.2f, 0.0f, 0.0f, 1.0f); // Slightly reflective
+                color_constructor(0.2f, 0.2f, 0.2f), 0.5f));
+    set_optics(floor, (t_optics_params){0.8f, 0.2f, 0.0f, 0.0f, 1.0f});
 
     // Back Wall
     back_wall = spawn_plane(&scene->world);
     apply_rot_x(back_wall, M_PI / 2.0f);
     apply_translation(back_wall, 0.0f, 0.0f, 10.0f);
     set_color(back_wall, color_constructor(0.1f, 0.1f, 0.1f)); // Dark grey
-    set_optics(back_wall, 0.9f, 0.1f, 0.0f, 0.0f, 1.0f);
+    set_optics(back_wall, (t_optics_params){0.9f, 0.1f, 0.0f, 0.0f, 1.0f});
 
     // --- 2. The Glass Box ---
     // A 2x2x2 transparent cube. Because it has flat sides, it will distort 
@@ -51,7 +51,7 @@ void build_glassbox_scene(t_scene *scene)
     apply_translation(glass_cube, 0.0f, 2.0f, 0.0f);
     set_color(glass_cube, color_constructor(0.0f, 0.0f, 0.0f)); 
     // Diff: 0.0, Spec: 1.0, Refl: 0.9, Trans: 1.0, RI: 1.5 (Glass)
-    set_optics(glass_cube, 0.0f, 1.0f, 0.9f, 1.0f, 1.5f);
+    set_optics(glass_cube, (t_optics_params){0.0f, 1.0f, 0.9f, 1.0f, 1.5f});
     glass_cube->material.ambient = 0.0f;
     glass_cube->material.shininess = 300.0f;
 
@@ -60,10 +60,11 @@ void build_glassbox_scene(t_scene *scene)
     inner_sphere = spawn_sphere(&scene->world);
     apply_scale(inner_sphere, 0.8f, 0.8f, 0.8f);
     apply_translation(inner_sphere, 0.0f, 2.0f, 0.0f);
-    set_pattern(inner_sphere, PATTERN_RING, 
-                color_constructor(1.0f, 0.1f, 0.1f), 
-                color_constructor(1.0f, 1.0f, 1.0f), 0.2f);
-    set_optics(inner_sphere, 0.9f, 0.1f, 0.0f, 0.0f, 1.0f); // Pure Matte
+    set_pattern(inner_sphere, pattern_scaled(PATTERN_RING,
+                color_constructor(1.0f, 0.1f, 0.1f),
+                color_constructor(1.0f, 1.0f, 1.0f), 0.2f));
+    set_optics(inner_sphere, (t_optics_params){0.9f, 0.1f, 0.0f, 0.0f,
+                1.0f}); // Pure Matte
 
     // --- 4. Flanking Objects ---
     // Perfect Mirror Sphere to the right
@@ -71,7 +72,8 @@ void build_glassbox_scene(t_scene *scene)
     apply_scale(mirror_sphere, 1.5f, 1.5f, 1.5f);
     apply_translation(mirror_sphere, 3.5f, 1.5f, 2.0f);
     set_color(mirror_sphere, color_constructor(0.0f, 0.0f, 0.0f));
-    set_optics(mirror_sphere, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f); // 100% reflective
+    set_optics(mirror_sphere, (t_optics_params){0.0f, 1.0f, 1.0f, 0.0f,
+                1.0f}); // 100% reflective
     mirror_sphere->material.ambient = 0.0f;
 
     // Striped Cylinder (or use spawn_sphere if cylinder isn't ready) to the left
@@ -80,10 +82,11 @@ void build_glassbox_scene(t_scene *scene)
     apply_rot_x(striped_cylinder, -M_PI / 4.0f); // Tilt it forward
     apply_rot_y(striped_cylinder, M_PI / 4.0f);  // Angle it right
     apply_translation(striped_cylinder, -3.5f, 1.2f, 1.0f);
-    set_pattern(striped_cylinder, PATTERN_STRIPE, 
-                color_constructor(0.2f, 0.8f, 0.2f), 
-                color_constructor(0.1f, 0.1f, 0.5f), 0.3f);
-    set_optics(striped_cylinder, 0.7f, 0.3f, 0.2f, 0.0f, 1.0f); // Slight shine
+    set_pattern(striped_cylinder, pattern_scaled(PATTERN_STRIPE,
+                color_constructor(0.2f, 0.8f, 0.2f),
+                color_constructor(0.1f, 0.1f, 0.5f), 0.3f));
+    set_optics(striped_cylinder, (t_optics_params){0.7f, 0.3f, 0.2f, 0.0f,
+                1.0f}); // Slight shine
 
     // --- 5. Camera Setup ---
     scene->camera = camera_constructor(WIN_WIDTH, WIN_HEIGHT, 65.0f);
